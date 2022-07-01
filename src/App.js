@@ -1,0 +1,341 @@
+import './App.css';
+import React from 'react';
+import Select from 'react-select';
+import SUBJECTS from './2021_subjects.json';
+import SCALINGDATA from './2021_scaling_data.json';
+import ATARDATA from './2021_atar_data.json'
+
+
+class SubjectName extends React.Component {
+  render() {
+    return (
+      <span className="SubjectName">{this.props.name}</span>
+    );
+  }
+}
+
+class SubjectRawScore extends React.Component {
+  constructor(props) {
+    super(props);
+    this.handleScoreChange = this.handleScoreChange.bind(this);
+  }
+
+  handleScoreChange(e) {
+    this.props.onScoreChange(e.target.value)
+  }
+
+  render() {
+    return (
+      <input 
+        className="SubjectRawScore" 
+        type="number" 
+        min="0" 
+        max="100" 
+        value={this.props.score} 
+        onChange={this.handleScoreChange}>
+      </input>
+    );
+  }
+}
+
+class DeleteSubject extends React.Component {
+  constructor(props) {
+    super(props);
+    this.handleClick = this.handleClick.bind(this);
+  }
+
+  handleClick() {
+    this.props.onClick();
+  }
+  
+  render() {
+    return (
+      <span className="DeleteSubject" onClick={this.handleClick}></span>
+    );
+  }
+}
+
+class SubjectRow extends React.Component {
+  constructor(props) {
+    super(props);
+    this.handleScoreChange = this.handleScoreChange.bind(this);
+    this.handleSubjectDelete = this.handleSubjectDelete.bind(this);
+  }
+
+  handleScoreChange(score) {
+    this.props.onScoreChange(this.props.code, score);
+  }
+
+  handleSubjectDelete() {
+    this.props.onSubjectDelete(this.props.code);
+  }
+
+  render() {
+    return (
+      <li className="SubjectRow">
+        <DeleteSubject onClick={this.handleSubjectDelete} />
+        <SubjectName name={SUBJECTS[this.props.code]} />
+        <SubjectRawScore score={this.props.score} onScoreChange={this.handleScoreChange} />
+      </li>
+    );
+  }
+}
+
+class SubjectSelector extends React.Component {
+  constructor(props) {
+    super(props);
+    this.handleSubjectAdd = this.handleSubjectAdd.bind(this);
+
+    this.options = [];
+    for (let subjectCode of Object.keys(SUBJECTS)) {
+      this.options.push({value: subjectCode, label: SUBJECTS[subjectCode]});
+    }
+
+    this.filterOptions = (candidate, input) => {
+      // remove an option if it has already been added
+      if (Object.keys(this.props.subjects).includes(candidate.value) && this.props.subjects[candidate.value] !== undefined) {
+        return false;
+      }
+
+      // normal filter stuff
+      if (input) {
+        if (candidate.label.toLowerCase().includes(input.toLowerCase()))
+          return true;
+      } else {
+        // if no input, allow everything
+        return true;
+      }
+    }
+  }
+
+  handleSubjectAdd(selectedOption) {
+    this.props.onSubjectAdd(selectedOption);
+  }
+
+  render() {
+    return (
+      <Select 
+        className='SubjectSelector'
+        options={this.options} 
+        onChange={this.handleSubjectAdd}
+        filterOption={this.filterOptions}
+        placeholder="Add a subject..."
+      />
+    );
+  }
+}
+
+
+class SubjectsTable extends React.Component {
+  constructor(props) {
+    super(props);
+    this.handleScoreChange = this.handleScoreChange.bind(this);
+    this.handleSubjectAdd = this.handleSubjectAdd.bind(this);
+    this.handleSubjectDelete = this.handleSubjectDelete.bind(this);
+  }
+
+  handleScoreChange(subjectCode, score) {
+    this.props.onScoreChange(subjectCode, score);
+  }
+
+  handleSubjectAdd(selectedOption) {
+    this.props.onSubjectAdd(selectedOption);
+  }
+
+  handleSubjectDelete(subjectCode) {
+    this.props.onSubjectDelete(subjectCode);
+  }
+
+  render() {
+    // generate a row for each subject
+    let rows = [];
+    for (let subjectCode of Object.keys(this.props.subjects)) {
+      if (this.props.subjects[subjectCode] !== undefined) {
+        rows.push(
+          <SubjectRow 
+            key={subjectCode} 
+            code={subjectCode} 
+            score={this.props.subjects[subjectCode]} 
+            onScoreChange={this.handleScoreChange} 
+            onSubjectDelete={this.handleSubjectDelete} 
+          />
+        );
+      }
+    }
+
+    return (
+      <ul className='section'>
+        <h2>Subjects</h2>
+        {rows}
+        <li key="0">
+          <SubjectSelector onSubjectAdd={this.handleSubjectAdd} subjects={this.props.subjects}/>
+        </li>
+      </ul>
+    );
+  }
+}
+
+class ResultsRow extends React.Component {
+  render() {
+    return(
+      <tr>
+        <td id='subjects-row'>{SUBJECTS[this.props.code]}</td>
+        <td className='score'>{this.props.rawScore}</td>
+        <td className='score'>{this.props.scaledScore}</td>
+      </tr>
+    );
+  }
+}
+
+class ResultsTable extends React.Component {
+  render() {
+    let scaledScores = [];
+    let rows = [];
+    for (let subjectCode of Object.keys(this.props.subjectRawScores)) {
+      if (this.props.subjectRawScores[subjectCode] !== undefined) {
+        let rawScore = this.props.subjectRawScores[subjectCode];
+        if (rawScore.length > 0) { // only scale if there is an actual input. otherwise be blank
+          // calculate the scaled score
+          rawScore = Number(rawScore);
+          let a = Number(SCALINGDATA[subjectCode]["a"]);
+          let b = Number(SCALINGDATA[subjectCode]["b"]);
+          let c = Number(SCALINGDATA[subjectCode]["c"]);
+          var scaledScore = a / (1 + Math.exp(-b * (rawScore - c)));
+          scaledScores.push(scaledScore);
+          scaledScore = scaledScore.toFixed(2);
+        } else {
+          scaledScore = "";
+        }
+        rows.push(
+          <ResultsRow key={subjectCode} code={subjectCode} rawScore={rawScore} scaledScore={scaledScore} />
+        );
+      }
+    }
+    // if no subjects added, add blank boxes as placeholders
+    if (rows.length < 1) {
+      rows.push(
+        <ResultsRow key="0" code={""} rawScore={""} scaledScore={""} />
+      );
+    }
+
+    // calculate the TEA by taking the top 5 scaled scores
+    let tea = 0;
+    let numSubjects = scaledScores.length;
+    for (let i = 0; i < Math.min(5, numSubjects); i++) {
+      let maxScaledScore = Math.max(...scaledScores);
+      tea += maxScaledScore;
+
+      // remove the max score from the list
+      const index = scaledScores.indexOf(maxScaledScore);
+      if (index > -1) { // only splice array when item is found
+        scaledScores.splice(index, 1); // 2nd parameter means remove one item only
+      }
+    }
+
+    // calculate ATAR using TEA
+    let teaList= Object.keys(ATARDATA);     // assumes that ATARDATA is already sorted in ascending TEA order
+    for (let i = 0; i < teaList.length; i++) {
+      let currentTEA = Number(teaList[i]);
+      if (tea < currentTEA) {
+        let maxATAR = ATARDATA[currentTEA].toFixed(2);
+
+        if (i === 0) {
+          // if TEA is below the lowest available datapoint
+          var calculatedATAR = `<${maxATAR}`;
+        } else {
+          let previousTEA = Number(teaList[i - 1]);
+          let minATAR = ATARDATA[previousTEA].toFixed(2);
+          if (minATAR === maxATAR || minATAR === "99.95") {
+            calculatedATAR = minATAR;
+          } else {
+            calculatedATAR = `${minATAR}-${maxATAR}`;
+          }
+        }
+
+        break;
+      }
+    }
+
+    return (
+      <div className='section'>
+        <h2>Results</h2>
+        <div id="results">
+          <div className='results'>
+            <p className='heading'>Estimated TEA</p>
+            <p className='resultNumber'>{tea.toFixed(2)}</p>
+            <p className='note'>Your top 5 scaled scores</p>
+          </div>
+          <div className='results'>
+            <p className='heading'>Estimated ATAR</p>
+            <p className='resultNumber'>{calculatedATAR}</p>
+            <p className='note'>No data for ATARs below 97.60</p>
+          </div>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>Subject</th>
+              <th>Raw Score</th>
+              <th>Scaled Score</th>
+            </tr>
+          </thead>
+          <tbody>
+            {rows}
+          </tbody>
+        </table>
+      </div>
+    );
+  }
+}
+
+class Calculator extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {};
+    this.handleScoreChange = this.handleScoreChange.bind(this);
+    this.handleSubjectAdd = this.handleSubjectAdd.bind(this);
+    this.handleSubjectDelete = this.handleSubjectDelete.bind(this);
+  }
+
+  handleScoreChange(subjectCode, score) {
+    let selectedSubjects = {};
+    selectedSubjects[subjectCode] = score;
+    this.setState(selectedSubjects);
+  }
+
+  handleSubjectAdd(selectedOption) {
+    let selectedSubjects = {};
+    selectedSubjects[selectedOption['value']] = "";
+    this.setState(selectedSubjects);
+  }
+
+  handleSubjectDelete(subjectCode) {
+    // delete a subject by making its score undefined
+    // IMPORTANT if anything iterates through the state, it must ignore undefined values
+    let selectedSubjects = {};
+    selectedSubjects[subjectCode] = undefined;
+    this.setState(selectedSubjects);
+  }
+
+  render() {
+    return (
+      <div id="content">
+        <h1>QCE ATAR Caclulator</h1>
+        <p className='note'>QTAC does not endorse or have any involvement in any material appearing on this website. Based on 2021 scaling data. May be inaccurate. Use at your own risk!</p>
+        <SubjectsTable 
+          id="subjects-table"
+          subjects={this.state} 
+          onScoreChange={this.handleScoreChange}
+          onSubjectAdd={this.handleSubjectAdd}
+          onSubjectDelete={this.handleSubjectDelete}
+        />
+        <ResultsTable 
+          id="results-table"
+          subjectRawScores={this.state} 
+        />
+      </div>
+    );
+  }
+}
+
+export default Calculator;

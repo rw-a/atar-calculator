@@ -1,0 +1,106 @@
+ul {
+    list-style-type: none;
+    padding: 0px;
+}
+
+li {
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+th, td {
+    border: 1px solid;
+    padding: 4px;
+}
+
+td:empty::after{
+    content: "\00a0";
+}
+
+input {
+    height: 18px;
+    border: 1px solid #cccccc;
+    border-radius: 3px;
+    padding: 3px;
+}
+
+p {
+    margin-top: 0px;
+    margin-bottom: 10px;
+}
+
+h1, h2 {
+    margin: 0px;
+    margin-bottom: 5px;;
+}
+
+.SubjectRow {
+    display: flex; 
+    justify-content: space-between;
+}
+
+.SubjectName {
+    margin-right: auto;
+}
+
+.DeleteSubject {
+    background: none;
+    background-image: url("./delete.svg");
+    background-size: 20px 20px;
+
+    border: none;
+    
+    height: 20px;
+    width: 20px;
+    min-width: 20px;
+    
+    padding: 0px;
+    margin-left: 1px;
+    margin-right: 1px;
+}
+
+.DeleteSubject:hover {
+    background-image: url("./delete_filled.svg");
+}
+
+div.results {
+    text-align: center;
+}
+
+p.heading {
+    font-size: large;
+}
+
+p.resultNumber {
+    font-size: x-large;
+}
+
+p.note {
+    font-size: small;
+    font-style: italic;
+}
+
+td.score {
+    text-align: center;
+}
+
+#content {
+    max-width: 700px;
+    margin: auto;
+    padding: 20px;
+    padding-top: 50px;
+}
+
+#results {
+    display: flex;
+    justify-content: space-around;
+}
+
+#subjects-row {
+    min-width: 50%;
+}
