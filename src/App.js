@@ -125,7 +125,6 @@ class SubjectSelector extends React.Component {
   }
 }
 
-
 class SubjectsTable extends React.Component {
   constructor(props) {
     super(props);
