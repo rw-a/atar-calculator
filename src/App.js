@@ -187,6 +187,48 @@ class ResultsRow extends React.Component {
   }
 }
 
+function calculateTeaFromScaledScores(scaledScores) {
+   // calculate the TEA by taking the top 5 scaled scores
+   let tea = 0;
+   let numSubjects = scaledScores.length;
+   for (let i = 0; i < Math.min(5, numSubjects); i++) {
+     let maxScaledScore = Math.max(...scaledScores);
+     tea += maxScaledScore;
+
+     // remove the max score from the list
+     const index = scaledScores.indexOf(maxScaledScore);
+     if (index > -1) { // only splice array when item is found
+       scaledScores.splice(index, 1); // 2nd parameter means remove one item only
+     }
+   }
+   return tea;
+}
+
+function calculateAtarFromTea(tea) {
+  // calculate ATAR using TEA
+  let teaList = Object.keys(ATARDATA);     // assumes that ATARDATA is already sorted in ascending TEA order
+  for (let i = 0; i < teaList.length; i++) {
+    let currentTEA = Number(teaList[i]);
+    if (tea < currentTEA) {
+      let maxATAR = ATARDATA[currentTEA].toFixed(2);
+
+      if (i === 0) {
+        // if TEA is below the lowest available datapoint
+        return `<${maxATAR}`;
+      } else {
+        let previousTEA = Number(teaList[i - 1]);
+        let minATAR = ATARDATA[previousTEA].toFixed(2);
+        if (minATAR === maxATAR || minATAR === "99.95") {
+          return minATAR;
+        } else {
+          return `${minATAR}-${maxATAR}`;
+        }
+      }
+    }
+  }
+  return "99.95";
+}
+
 class ResultsTable extends React.Component {
   render() {
     let scaledScores = [];
@@ -218,44 +260,9 @@ class ResultsTable extends React.Component {
       );
     }
 
-    // calculate the TEA by taking the top 5 scaled scores
-    let tea = 0;
-    let numSubjects = scaledScores.length;
-    for (let i = 0; i < Math.min(5, numSubjects); i++) {
-      let maxScaledScore = Math.max(...scaledScores);
-      tea += maxScaledScore;
-
-      // remove the max score from the list
-      const index = scaledScores.indexOf(maxScaledScore);
-      if (index > -1) { // only splice array when item is found
-        scaledScores.splice(index, 1); // 2nd parameter means remove one item only
-      }
-    }
-
-    // calculate ATAR using TEA
-    let teaList= Object.keys(ATARDATA);     // assumes that ATARDATA is already sorted in ascending TEA order
-    for (let i = 0; i < teaList.length; i++) {
-      let currentTEA = Number(teaList[i]);
-      if (tea < currentTEA) {
-        let maxATAR = ATARDATA[currentTEA].toFixed(2);
-
-        if (i === 0) {
-          // if TEA is below the lowest available datapoint
-          var calculatedATAR = `<${maxATAR}`;
-        } else {
-          let previousTEA = Number(teaList[i - 1]);
-          let minATAR = ATARDATA[previousTEA].toFixed(2);
-          if (minATAR === maxATAR || minATAR === "99.95") {
-            calculatedATAR = minATAR;
-          } else {
-            calculatedATAR = `${minATAR}-${maxATAR}`;
-          }
-        }
-
-        break;
-      }
-    }
-
+   let tea = calculateTeaFromScaledScores(scaledScores);
+   let calculatedATAR = calculateAtarFromTea(tea);
+    
     return (
       <div className='section'>
         <h2>Results</h2>
