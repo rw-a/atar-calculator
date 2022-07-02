@@ -120,6 +120,7 @@ class SubjectSelector extends React.Component {
         onChange={this.handleSubjectAdd}
         filterOption={this.filterOptions}
         placeholder="Add a subject..."
+        value={null} 
       />
     );
   }
@@ -167,7 +168,10 @@ class SubjectsTable extends React.Component {
         <h2>Subjects</h2>
         {rows}
         <li key="0">
-          <SubjectSelector onSubjectAdd={this.handleSubjectAdd} subjects={this.props.subjects}/>
+          <SubjectSelector 
+            onSubjectAdd={this.handleSubjectAdd} 
+            subjects={this.props.subjects}
+          />
         </li>
       </ul>
     );
