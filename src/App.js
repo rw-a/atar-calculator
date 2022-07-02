@@ -21,7 +21,15 @@ class SubjectRawScore extends React.Component {
   }
 
   handleScoreChange(e) {
-    this.props.onScoreChange(e.target.value)
+    // only allow integer values between 0 and 100
+    let score = Math.round(e.target.value);
+    if (score > 100) {
+      score = 100;
+    } else if (score < 0) {
+      score = 0;
+    }
+    if (e.target.value.length < 1) score = "";  // allow blank values
+    this.props.onScoreChange(String(score));
   }
 
   render() {
