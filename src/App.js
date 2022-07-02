@@ -234,30 +234,40 @@ function calculateAtarFromTea(tea) {
 
 class ResultsTable extends React.Component {
   render() {
+    let subjectRawScores = this.props.subjectRawScores;
+    let subjectCodes = Object.keys(subjectRawScores).filter((value) => {return value !== undefined});
+
+    // calculate the scaled scores
+    let subjectScaledScores = {};
+    for (let subjectCode of subjectCodes) {
+      let rawScore = subjectRawScores[subjectCode];
+      if (rawScore.length > 0) { // only scale if there is an actual input. otherwise be blank
+        // calculate the scaled score
+        rawScore = Number(rawScore);
+        let a = Number(SCALINGDATA[subjectCode]["a"]);
+        let b = Number(SCALINGDATA[subjectCode]["b"]);
+        let c = Number(SCALINGDATA[subjectCode]["c"]);
+        subjectScaledScores[subjectCode] = a / (1 + Math.exp(-b * (rawScore - c)));
+      } else {
+        subjectScaledScores[subjectCode] = "";
+      }
+    }
+
     // sort the subjects
+    subjectCodes.sort((a, b) => {
+      // by scaled score
+      return (subjectScaledScores[b] - subjectScaledScores[a]);
+    });
 
     // generate the rows of the table
-    let scaledScores = [];
     let rows = [];
-    for (let subjectCode of Object.keys(this.props.subjectRawScores)) {
-      if (this.props.subjectRawScores[subjectCode] !== undefined) {
-        let rawScore = this.props.subjectRawScores[subjectCode];
-        if (rawScore.length > 0) { // only scale if there is an actual input. otherwise be blank
-          // calculate the scaled score
-          rawScore = Number(rawScore);
-          let a = Number(SCALINGDATA[subjectCode]["a"]);
-          let b = Number(SCALINGDATA[subjectCode]["b"]);
-          let c = Number(SCALINGDATA[subjectCode]["c"]);
-          var scaledScore = a / (1 + Math.exp(-b * (rawScore - c)));
-          scaledScores.push(scaledScore);
-          scaledScore = scaledScore.toFixed(2);
-        } else {
-          scaledScore = "";
-        }
-        rows.push(
-          <ResultsRow key={subjectCode} code={subjectCode} rawScore={rawScore} scaledScore={scaledScore} />
-        );
-      }
+    for (let subjectCode of subjectCodes) {
+      let rawScore = subjectRawScores[subjectCode];
+      let scaledScore = subjectScaledScores[subjectCode];
+      scaledScore = (scaledScore ? Number(scaledScore).toFixed(2) : "");  // round the scaled score to 2 d.p.
+      rows.push(
+        <ResultsRow key={subjectCode} code={subjectCode} rawScore={rawScore} scaledScore={scaledScore} />
+      );
     }
     // if no subjects added, add blank boxes as placeholders
     if (rows.length < 1) {
@@ -266,8 +276,10 @@ class ResultsTable extends React.Component {
       );
     }
 
-   let tea = calculateTeaFromScaledScores(scaledScores);
-   let calculatedATAR = calculateAtarFromTea(tea);
+    // do the math
+    let scaledScores = Object.values(subjectScaledScores);    // only the values, don't care about which subject
+    let tea = calculateTeaFromScaledScores(scaledScores);
+    let calculatedATAR = calculateAtarFromTea(tea);
     
     return (
       <div className='section'>
@@ -314,7 +326,6 @@ class Calculator extends React.Component {
     let selectedSubjects = {};
     selectedSubjects[subjectCode] = score;
     this.setState(selectedSubjects);
-    console.log(this.state);
   }
 
   handleSubjectAdd(selectedOption) {
