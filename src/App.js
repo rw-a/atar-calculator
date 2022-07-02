@@ -243,7 +243,7 @@ function calculateAtarFromTea(tea) {
 class ResultsTable extends React.Component {
   render() {
     let subjectRawScores = this.props.subjectRawScores;
-    let subjectCodes = Object.keys(subjectRawScores).filter((value) => {return value !== undefined});
+    let subjectCodes = Object.keys(subjectRawScores).filter((subjectCode) => {return (subjectRawScores[subjectCode] !== undefined)});
 
     // calculate the scaled scores
     let subjectScaledScores = {};
