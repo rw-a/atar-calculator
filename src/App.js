@@ -1,9 +1,9 @@
 import './App.css';
 import React from 'react';
 import Select from 'react-select';
-import SUBJECTS from './2021_subjects.json';
-import SCALINGDATA from './2021_scaling_data.json';
-import ATARDATA from './2021_atar_data.json'
+import SUBJECTS from './data/2021_subjects.json';
+import SCALINGDATA from './data/2021_scaling_data.json';
+import ATARDATA from './data/2021_atar_data.json'
 
 
 class SubjectName extends React.Component {
@@ -234,6 +234,9 @@ function calculateAtarFromTea(tea) {
 
 class ResultsTable extends React.Component {
   render() {
+    // sort the subjects
+
+    // generate the rows of the table
     let scaledScores = [];
     let rows = [];
     for (let subjectCode of Object.keys(this.props.subjectRawScores)) {
@@ -311,6 +314,7 @@ class Calculator extends React.Component {
     let selectedSubjects = {};
     selectedSubjects[subjectCode] = score;
     this.setState(selectedSubjects);
+    console.log(this.state);
   }
 
   handleSubjectAdd(selectedOption) {
