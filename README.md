@@ -15,6 +15,7 @@
 4. The calculator will estimate your TEA (the sum of your 5 highest scaled scores).
 5. The calculator will try to determine your ATAR using your estimated TEA (using data collected by hand of people's raw score and ATAR).
 ## Info
-- Based on 2021 scaling data.
+- Based on 2021 scaling data, sourced from the [QTAC ATAR Report 2021](https://www.qtac.edu.au/wp-content/uploads/2022/02/QTAC-ATAR-Report-2021.pdf).
+- Scaling data was extrapolated using logistic regression models on Desmos. The models can be found on [here](https://www.desmos.com/calculator/ggjgw4hwma).
 - Designed only for the QCE system.
-- Website built using Node.js and React
+- Website built using [React](https://reactjs.org/).
