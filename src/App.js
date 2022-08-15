@@ -353,7 +353,7 @@ class Calculator extends React.Component {
   render() {
     return (
       <div id="content">
-        <h1>QCE ATAR Caclulator</h1>
+        <h1>QCE ATAR Calculator</h1>
         <p className='note'>QTAC does not endorse or have any involvement in any material appearing on this website. Based on 2021 scaling data. May be inaccurate. Use at your own risk!</p>
         <SubjectsTable 
           id="subjects-table"
