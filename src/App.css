@@ -104,3 +104,14 @@ td.score {
 #subjects-row {
     min-width: 50%;
 }
+
+#save_img {
+    height: 28px;
+    width: 28px;
+    float: right;
+    opacity: 30%;
+}
+
+#save_img:hover {
+    opacity: 60%;;
+}

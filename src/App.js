@@ -6,6 +6,29 @@ import SCALINGDATA from './data/2021_scaling_data.json';
 import ATARDATA from './data/2021_atar_data.json'
 
 
+function setCookie(cname, cvalue, exdays) {
+  const d = new Date();
+  d.setTime(d.getTime() + (exdays*24*60*60*1000));
+  let expires = "expires="+ d.toUTCString();
+  document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+}
+
+function getCookie(cname) {
+  let name = cname + "=";
+  let decodedCookie = decodeURIComponent(document.cookie);
+  let ca = decodedCookie.split(';');
+  for(let i = 0; i <ca.length; i++) {
+    let c = ca[i];
+    while (c.charAt(0) === ' ') {
+      c = c.substring(1);
+    }
+    if (c.indexOf(name) === 0) {
+      return c.substring(name.length, c.length);
+    }
+  }
+  return "";
+}
+
 class SubjectName extends React.Component {
   render() {
     return (
@@ -24,11 +47,13 @@ class SubjectRawScore extends React.Component {
     // only allow integer values between 0 and 100
     let score = Math.round(e.target.value);
     if (score > 100) {
-      score = 100;
+      return;
     } else if (score < 0) {
-      score = 0;
+      score = Math.abs(score);
     }
-    if (e.target.value.length < 1) score = "";  // allow blank values
+    if (e.target.value.length < 1) {
+      score = "";  // allow blank values 
+    }
     this.props.onScoreChange(String(score));
   }
 
@@ -38,7 +63,7 @@ class SubjectRawScore extends React.Component {
         className="SubjectRawScore" 
         type="number" 
         min="0" 
-        max="100" 
+        max="100"
         value={this.props.score} 
         onChange={this.handleScoreChange}>
       </input>
@@ -134,12 +159,35 @@ class SubjectSelector extends React.Component {
   }
 }
 
+class SaveButton extends React.Component {
+  constructor(props) {
+    super(props);
+    this.handleClick = this.handleClick.bind(this);
+  }
+
+  handleClick() {
+    this.props.onClick();
+  }
+
+  render() {
+    if (this.props.saved) {
+      var img_src = require("./assets/save_filled.svg").default;
+    } else {
+      img_src = require("./assets/save.svg").default;
+    }
+    return (
+      <img src={img_src} id="save_img" title="Save Subjects" alt="Save Subjects" onClick={this.handleClick}></img>
+    );
+  }
+}
+
 class SubjectsTable extends React.Component {
   constructor(props) {
     super(props);
     this.handleScoreChange = this.handleScoreChange.bind(this);
     this.handleSubjectAdd = this.handleSubjectAdd.bind(this);
     this.handleSubjectDelete = this.handleSubjectDelete.bind(this);
+    this.handleSubjectsSave = this.handleSubjectsSave.bind(this);
   }
 
   handleScoreChange(subjectCode, score) {
@@ -152,6 +200,10 @@ class SubjectsTable extends React.Component {
 
   handleSubjectDelete(subjectCode) {
     this.props.onSubjectDelete(subjectCode);
+  }
+
+  handleSubjectsSave() {
+    this.props.onSubjectsSave();
   }
 
   render() {
@@ -172,16 +224,19 @@ class SubjectsTable extends React.Component {
     }
 
     return (
-      <ul className='section'>
-        <h2>Subjects</h2>
-        {rows}
-        <li key="0">
-          <SubjectSelector 
-            onSubjectAdd={this.handleSubjectAdd} 
-            subjects={this.props.subjects}
-          />
-        </li>
-      </ul>
+      <div>
+        <SaveButton onClick={this.handleSubjectsSave} saved={this.props.saved}/>
+        <ul className='section'>
+          <h2>Subjects</h2>
+          {rows}
+          <li key="0">
+            <SubjectSelector 
+              onSubjectAdd={this.handleSubjectAdd} 
+              subjects={this.props.subjects}
+            />
+          </li>
+        </ul>
+      </div>
     );
   }
 }
@@ -328,6 +383,7 @@ class Calculator extends React.Component {
     this.handleScoreChange = this.handleScoreChange.bind(this);
     this.handleSubjectAdd = this.handleSubjectAdd.bind(this);
     this.handleSubjectDelete = this.handleSubjectDelete.bind(this);
+    this.handleSubjectsSave = this.handleSubjectsSave.bind(this);
   }
 
   handleScoreChange(subjectCode, score) {
@@ -350,7 +406,33 @@ class Calculator extends React.Component {
     this.setState(selectedSubjects);
   }
 
+  handleSubjectsSave() {
+    setCookie("subjects", JSON.stringify(this.state), 180);
+    this.forceUpdate();
+  }
+
+  componentDidMount() {
+    // Load previously saved state
+    let state = getCookie("subjects");
+    if (state !== "") {
+      state = JSON.parse(state);
+      let selectedSubjects = {};
+      for (let subjectCode of Object.keys(state)) {
+        selectedSubjects[subjectCode] = state[subjectCode];
+      }
+      this.setState(selectedSubjects);
+    }
+  }
+
   render() {
+    // check if saved state matches current state
+    let saved_state = getCookie("subjects");
+    if (saved_state == JSON.stringify(this.state)) {
+      var saved = true;
+    } else {
+      saved = false;
+    }
+
     return (
       <div id="content">
         <h1>QCE ATAR Calculator</h1>
@@ -358,9 +440,11 @@ class Calculator extends React.Component {
         <SubjectsTable 
           id="subjects-table"
           subjects={this.state} 
+          saved={saved}
           onScoreChange={this.handleScoreChange}
           onSubjectAdd={this.handleSubjectAdd}
           onSubjectDelete={this.handleSubjectDelete}
+          onSubjectsSave={this.handleSubjectsSave}
         />
         <ResultsTable 
           id="results-table"
