@@ -435,8 +435,8 @@ class Calculator extends React.Component {
 
     return (
       <div id="content">
-        <h1>QCE ATAR Calculator</h1>
-        <p className='note'>QTAC does not endorse or have any involvement in any material appearing on this website. Based on 2021 scaling data. May be inaccurate. Use at your own risk!</p>
+        <h1>QLD ATAR Calculator</h1>
+        <p className='note'>Calculates your ATAR using your raw scores. Designed for the Queensland (QCE) system using 2021 data. Neither QTAC nor QCAA endorse or are affiliated with this website. May be inaccurate, so use at your own risk!</p>
         <SubjectsTable 
           id="subjects-table"
           subjects={this.state} 
