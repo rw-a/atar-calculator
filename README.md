@@ -1,5 +1,5 @@
-# ATAR Calculator for Queensland
-[**Visit the calculator website**](https://rw-a.github.io/atar-calculator/)
+# ATAR Calculator for Queensland (QCE)
+Visit the calculator website here: **https://rw-a.github.io/atar-calculator/**
 
 ## Disclaimer
 - This service is provided “as is” and takes no liability for damages arising out of its use.
