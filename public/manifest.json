@@ -1,6 +1,7 @@
 {
-  "short_name": "ATARCalc",
-  "name": "QCE ATAR Calculator",
+  "short_name": "ATAR Calculator QLD",
+  "name": "ATAR Calculator QLD",
+  "description": "Accurate ATAR Calculator for Queensland (QCE). Designed using 2021 QLD data.",
   "icons": [
     {
       "src": "favicon.ico",
