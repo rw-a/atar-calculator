@@ -423,14 +423,20 @@ function drawScalingGraph(subjects) {
     target: "#subject-scaling-graph",
     width: width,
     height: width,
-    xAxis: { domain: [0, 100] },
-    yAxis: { domain: [0, 100] },
+    xAxis: { 
+      label: "Raw Score ", // blank (unicode, not space) charcter here for padding
+      domain: [0, 100] 
+    },
+    yAxis: { 
+      label: "Scaled Score ",
+      domain: [0, 100] 
+    },
     grid: true,
     data: scalingFunctions,
     tip: {
       xLine: true,
       yLine: true,
-      renderer: (x, y, index) => {return `${subjectNames[index]} (${x.toFixed(3)} ${y.toFixed(3)})`}
+      renderer: (x, y, index) => {return `${subjectNames[index]} (${x.toFixed(3)}, ${y.toFixed(3)})`}
     }
   });
 }
