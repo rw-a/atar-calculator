@@ -1,10 +1,24 @@
 import './App.css';
 import React from 'react';
 import Select from 'react-select';
+import functionPlot from 'function-plot';
+import { hsl as d3Hsl } from 'd3-color'
 import SUBJECTS from './data/2021_subjects.json';
 import SCALINGDATA from './data/2021_scaling_data.json';
 import ATARDATA from './data/2021_atar_data.json'
 
+functionPlot.globals.COLORS = [
+  'steelblue',
+  'red',
+  '#05b378', // green
+  'orange',
+  '#4040e8', // purple
+  'brown',
+  'magenta',
+  'cyan'
+].map(function (v) {
+  return d3Hsl(v)
+})
 
 function setCookie(cname, cvalue, exdays) {
   const d = new Date();
@@ -376,6 +390,51 @@ class ResultsTable extends React.Component {
   }
 }
 
+class ScalingGraph extends React.Component {
+  render() {
+    return(
+      <div>
+        <h2 style={{marginBottom: 0}}>Subject Scaling Graph</h2>
+        <span id="subject-scaling-graph"></span>
+      </div>
+    );
+  }
+}
+
+function drawScalingGraph(subjects) {
+  let subjectCodes = Object.keys(subjects).filter((subjectCode) => {return (subjects[subjectCode] !== undefined)});
+
+  // create the scaling function of each subject
+  let scalingFunctions = [];
+  let subjectNames = {};
+  for (let [subjectIndex, subjectCode] of subjectCodes.entries()) {
+    subjectNames[subjectIndex] = SUBJECTS[subjectCode]; // saves the name of the subject to the correct function for labelling later
+    let a = SCALINGDATA[subjectCode]["a"];
+    let b = SCALINGDATA[subjectCode]["b"];
+    let c = SCALINGDATA[subjectCode]["c"];
+    scalingFunctions.push({fn: `${a} / (1 + exp(-${b} * (x - ${c})))`, range: [0, 100]});
+  }
+
+  let width = Math.min(720, document.querySelector('#root').getBoundingClientRect().width - 40);  // kinda janky, tries to find width after padding
+
+  if (document.querySelector('svg[class="function-plot"]')) document.querySelector('svg[class="function-plot"]').remove();
+
+  functionPlot({
+    target: "#subject-scaling-graph",
+    width: width,
+    height: width,
+    xAxis: { domain: [0, 100] },
+    yAxis: { domain: [0, 100] },
+    grid: true,
+    data: scalingFunctions,
+    tip: {
+      xLine: true,
+      yLine: true,
+      renderer: (x, y, index) => {return `${subjectNames[index]} (${x.toFixed(3)} ${y.toFixed(3)})`}
+    }
+  });
+}
+
 class Calculator extends React.Component {
   constructor(props) {
     super(props);
@@ -395,7 +454,10 @@ class Calculator extends React.Component {
   handleSubjectAdd(selectedOption) {
     let selectedSubjects = {};
     selectedSubjects[selectedOption['value']] = "";
-    this.setState(selectedSubjects);
+    this.setState(selectedSubjects, () => {
+      // callback so happens once state has been set
+      drawScalingGraph(this.state);
+    });
   }
 
   handleSubjectDelete(subjectCode) {
@@ -403,7 +465,10 @@ class Calculator extends React.Component {
     // IMPORTANT if anything iterates through the state, it must ignore undefined values
     let selectedSubjects = {};
     selectedSubjects[subjectCode] = undefined;
-    this.setState(selectedSubjects);
+    this.setState(selectedSubjects, () => {
+      // callback so happens once state has been set
+      drawScalingGraph(this.state); 
+    });
   }
 
   handleSubjectsSave() {
@@ -422,6 +487,7 @@ class Calculator extends React.Component {
       }
       this.setState(selectedSubjects);
     }
+    drawScalingGraph(state);
   }
 
   render() {
@@ -450,6 +516,8 @@ class Calculator extends React.Component {
           id="results-table"
           subjectRawScores={this.state} 
         />
+        <br/>
+        <ScalingGraph/>
       </div>
     );
   }
