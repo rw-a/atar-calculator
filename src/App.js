@@ -394,7 +394,7 @@ class ScalingGraph extends React.Component {
   render() {
     return(
       <div>
-        <h2>Subject Scaling Graph</h2>
+        <h2 style={{marginBottom: 0}}>Subject Scaling Graph</h2>
         <span id="subject-scaling-graph"></span>
       </div>
     );
@@ -428,6 +428,8 @@ function drawScalingGraph(subjects) {
     grid: true,
     data: scalingFunctions,
     tip: {
+      xLine: true,
+      yLine: true,
       renderer: (x, y, index) => {return `${subjectNames[index]} (${x.toFixed(3)} ${y.toFixed(3)})`}
     }
   });
