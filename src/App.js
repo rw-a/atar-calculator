@@ -392,34 +392,6 @@ class ResultsTable extends React.Component {
 
 class ScalingGraph extends React.Component {
   render() {
-    let subjects = this.props.subjects;
-    let subjectCodes = Object.keys(subjects).filter((subjectCode) => {return (subjects[subjectCode] !== undefined)});
-
-    // create the scaling function of each subject
-    let data = [];
-    let subjectNames = {};
-    for (let [subjectIndex, subjectCode] of subjectCodes.entries()) {
-      subjectNames[subjectIndex] = SUBJECTS[subjectCode]; // saves the name of the subject to the correct function for labelling later
-      let a = SCALINGDATA[subjectCode]["a"];
-      let b = SCALINGDATA[subjectCode]["b"];
-      let c = SCALINGDATA[subjectCode]["c"];
-      data.push({fn: `${a} / (1 + exp(-${b} * (x - ${c})))`});
-    }
-
-    functionPlot({
-      target: "#subject-scaling-graph",
-      width: 720,
-      height: 720,
-      xAxis: { domain: [0, 100] },
-      yAxis: { domain: [0, 100] },
-      grid: true,
-      disableZoom: true,
-      data,
-      tip: {
-        renderer: (x, y, index) => {return `${subjectNames[index]} (${x.toFixed(3)} ${y.toFixed(3)})`}
-      }
-    });
-
     return(
       <div>
         <h2>Subject Scaling Graph</h2>
@@ -427,6 +399,38 @@ class ScalingGraph extends React.Component {
       </div>
     );
   }
+}
+
+function drawScalingGraph(subjects) {
+  let subjectCodes = Object.keys(subjects).filter((subjectCode) => {return (subjects[subjectCode] !== undefined)});
+
+  // create the scaling function of each subject
+  let scalingFunctions = [];
+  let subjectNames = {};
+  for (let [subjectIndex, subjectCode] of subjectCodes.entries()) {
+    subjectNames[subjectIndex] = SUBJECTS[subjectCode]; // saves the name of the subject to the correct function for labelling later
+    let a = SCALINGDATA[subjectCode]["a"];
+    let b = SCALINGDATA[subjectCode]["b"];
+    let c = SCALINGDATA[subjectCode]["c"];
+    scalingFunctions.push({fn: `${a} / (1 + exp(-${b} * (x - ${c})))`, range: [0, 100]});
+  }
+
+  let width = Math.min(720, document.querySelector('#root').getBoundingClientRect().width - 40);  // kinda janky, tries to find width after padding
+
+  if (document.querySelector('svg[class="function-plot"]')) document.querySelector('svg[class="function-plot"]').remove();
+
+  functionPlot({
+    target: "#subject-scaling-graph",
+    width: width,
+    height: width,
+    xAxis: { domain: [0, 100] },
+    yAxis: { domain: [0, 100] },
+    grid: true,
+    data: scalingFunctions,
+    tip: {
+      renderer: (x, y, index) => {return `${subjectNames[index]} (${x.toFixed(3)} ${y.toFixed(3)})`}
+    }
+  });
 }
 
 class Calculator extends React.Component {
@@ -449,6 +453,7 @@ class Calculator extends React.Component {
     let selectedSubjects = {};
     selectedSubjects[selectedOption['value']] = "";
     this.setState(selectedSubjects);
+    drawScalingGraph(this.state);
   }
 
   handleSubjectDelete(subjectCode) {
@@ -457,6 +462,7 @@ class Calculator extends React.Component {
     let selectedSubjects = {};
     selectedSubjects[subjectCode] = undefined;
     this.setState(selectedSubjects);
+    drawScalingGraph(this.state);
   }
 
   handleSubjectsSave() {
@@ -474,6 +480,7 @@ class Calculator extends React.Component {
         selectedSubjects[subjectCode] = state[subjectCode];
       }
       this.setState(selectedSubjects);
+      drawScalingGraph(state);
     }
   }
 
@@ -504,9 +511,7 @@ class Calculator extends React.Component {
           subjectRawScores={this.state} 
         />
         <br/>
-        <ScalingGraph
-          subjects={this.state}
-        />
+        <ScalingGraph/>
       </div>
     );
   }
