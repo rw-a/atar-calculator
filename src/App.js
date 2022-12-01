@@ -1,10 +1,24 @@
 import './App.css';
 import React from 'react';
 import Select from 'react-select';
+import functionPlot from 'function-plot';
+import { hsl as d3Hsl } from 'd3-color'
 import SUBJECTS from './data/2021_subjects.json';
 import SCALINGDATA from './data/2021_scaling_data.json';
 import ATARDATA from './data/2021_atar_data.json'
 
+functionPlot.globals.COLORS = [
+  'steelblue',
+  'red',
+  '#05b378', // green
+  'orange',
+  '#4040e8', // purple
+  'brown',
+  'magenta',
+  'cyan'
+].map(function (v) {
+  return d3Hsl(v)
+})
 
 function setCookie(cname, cvalue, exdays) {
   const d = new Date();
@@ -376,6 +390,45 @@ class ResultsTable extends React.Component {
   }
 }
 
+class ScalingGraph extends React.Component {
+  render() {
+    let subjects = this.props.subjects;
+    let subjectCodes = Object.keys(subjects).filter((subjectCode) => {return (subjects[subjectCode] !== undefined)});
+
+    // create the scaling function of each subject
+    let data = [];
+    let subjectNames = {};
+    for (let [subjectIndex, subjectCode] of subjectCodes.entries()) {
+      subjectNames[subjectIndex] = SUBJECTS[subjectCode]; // saves the name of the subject to the correct function for labelling later
+      let a = SCALINGDATA[subjectCode]["a"];
+      let b = SCALINGDATA[subjectCode]["b"];
+      let c = SCALINGDATA[subjectCode]["c"];
+      data.push({fn: `${a} / (1 + exp(-${b} * (x - ${c})))`});
+    }
+
+    functionPlot({
+      target: "#subject-scaling-graph",
+      width: 720,
+      height: 720,
+      xAxis: { domain: [0, 100] },
+      yAxis: { domain: [0, 100] },
+      grid: true,
+      disableZoom: true,
+      data,
+      tip: {
+        renderer: (x, y, index) => {return `${subjectNames[index]} (${x.toFixed(3)} ${y.toFixed(3)})`}
+      }
+    });
+
+    return(
+      <div>
+        <h2>Subject Scaling Graph</h2>
+        <span id="subject-scaling-graph"></span>
+      </div>
+    );
+  }
+}
+
 class Calculator extends React.Component {
   constructor(props) {
     super(props);
@@ -449,6 +502,10 @@ class Calculator extends React.Component {
         <ResultsTable 
           id="results-table"
           subjectRawScores={this.state} 
+        />
+        <br/>
+        <ScalingGraph
+          subjects={this.state}
         />
       </div>
     );
