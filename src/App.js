@@ -452,8 +452,10 @@ class Calculator extends React.Component {
   handleSubjectAdd(selectedOption) {
     let selectedSubjects = {};
     selectedSubjects[selectedOption['value']] = "";
-    this.setState(selectedSubjects);
-    drawScalingGraph(this.state);
+    this.setState(selectedSubjects, () => {
+      // callback so happens once state has been set
+      drawScalingGraph(this.state);
+    });
   }
 
   handleSubjectDelete(subjectCode) {
@@ -461,8 +463,10 @@ class Calculator extends React.Component {
     // IMPORTANT if anything iterates through the state, it must ignore undefined values
     let selectedSubjects = {};
     selectedSubjects[subjectCode] = undefined;
-    this.setState(selectedSubjects);
-    drawScalingGraph(this.state);
+    this.setState(selectedSubjects, () => {
+      // callback so happens once state has been set
+      drawScalingGraph(this.state); 
+    });
   }
 
   handleSubjectsSave() {
@@ -480,8 +484,8 @@ class Calculator extends React.Component {
         selectedSubjects[subjectCode] = state[subjectCode];
       }
       this.setState(selectedSubjects);
-      drawScalingGraph(state);
     }
+    drawScalingGraph(state);
   }
 
   render() {
