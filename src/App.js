@@ -436,7 +436,7 @@ function drawScalingGraph(subjects) {
     tip: {
       xLine: true,
       yLine: true,
-      renderer: (x, y, index) => {return `${subjectNames[index]} (${x.toFixed(3)}, ${y.toFixed(3)})`}
+      renderer: (x, y, index) => {return `${subjectNames[index]} (${x.toFixed(2)}, ${y.toFixed(2)})`}
     }
   });
 }
