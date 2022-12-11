@@ -1,5 +1,5 @@
 import React from 'react';
-import JXG from 'jsxgraph';
+import JXG, { JSXGraph } from 'jsxgraph';
 import { calculateScaledScore } from './results';
 import SUBJECTS from './../data/2021_subjects.json';
 import SCALINGDATA from './../data/2021_scaling_data.json';
@@ -28,8 +28,8 @@ const COLORS = [
 ];
 
 export default class ScalingGraph extends React.Component {
-  componentDidUpdate() {
-    let board = JXG.JSXGraph.initBoard("jsxgraph", { 
+  componentDidMount() {
+    this.board = JXG.JSXGraph.initBoard("jsxgraph", { 
       axis: true, 
       boundingbox: [-9, 104, 105, -6], 
       showCopyright: false, 
@@ -55,25 +55,32 @@ export default class ScalingGraph extends React.Component {
       },
       showFullscreen: true
     });
-    
-    board.suspendUpdate();
+  }
+  
+  componentDidUpdate() {
+    this.board.suspendUpdate();
+
+    // JSXGraph.freeBoard(this.board);
+
     let subjects = Object.keys(this.props.subjects).filter((subjectCode) => {return this.props.subjects[subjectCode] !== undefined});
     for (let [subjectIndex, subjectCode] of subjects.entries()) {
       // create function
       let a = SCALINGDATA[subjectCode]["a"];
       let b = SCALINGDATA[subjectCode]["b"];
       let c = SCALINGDATA[subjectCode]["c"];
-      board.create('functiongraph', [function(x){
+      this.board.create('functiongraph', [function(x){
         return (a / (1 + Math.exp(-b * (x - c))));
       }, 0, 100], {strokeColor: COLORS[subjectIndex]});
 
       // plot raw score input
       let rawScore = this.props.subjects[subjectCode];
+      if (!rawScore) continue;
       let scaledScore = calculateScaledScore(rawScore, subjectCode);
-      let point = board.create('point', [rawScore, scaledScore], {face: "cross"});
+      let point = this.board.create('point', [rawScore, scaledScore], {face: "cross", name: SUBJECTS[subjectCode]});
     }
-    board.create('legend', [5, 100], {labels: subjects.map((subjectCode) => {return SUBJECTS[subjectCode]}), colors: COLORS} );
-    board.unsuspendUpdate();
+    // this.board.on('')
+    this.board.create('legend', [5, 100], {labels: subjects.map((subjectCode) => {return SUBJECTS[subjectCode]}), colors: COLORS} );
+    this.board.unsuspendUpdate();
   }
 
   render() {
