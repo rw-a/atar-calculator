@@ -56,6 +56,14 @@ function calculateAtarFromTea(tea) {
 	}
 	return "99.95";
 }
+
+export function calculateScaledScore(rawScore, subjectCode) {
+	rawScore = Number(rawScore);
+	let a = Number(SCALINGDATA[subjectCode]["a"]);
+	let b = Number(SCALINGDATA[subjectCode]["b"]);
+	let c = Number(SCALINGDATA[subjectCode]["c"]);
+	return a / (1 + Math.exp(-b * (rawScore - c)));
+}
   
 export default class ResultsTable extends React.Component {
 	render() {
@@ -67,12 +75,7 @@ export default class ResultsTable extends React.Component {
 		for (let subjectCode of subjectCodes) {
 			let rawScore = subjectRawScores[subjectCode];
 			if (rawScore.length > 0) { // only scale if there is an actual input. otherwise be blank
-				// calculate the scaled score
-				rawScore = Number(rawScore);
-				let a = Number(SCALINGDATA[subjectCode]["a"]);
-				let b = Number(SCALINGDATA[subjectCode]["b"]);
-				let c = Number(SCALINGDATA[subjectCode]["c"]);
-				subjectScaledScores[subjectCode] = a / (1 + Math.exp(-b * (rawScore - c)));
+				subjectScaledScores[subjectCode] = calculateScaledScore(rawScore, subjectCode);
 			} else {
 				subjectScaledScores[subjectCode] = "";
 			}
