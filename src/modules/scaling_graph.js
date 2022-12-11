@@ -28,10 +28,15 @@ const COLORS = [
 ];
 
 export default class ScalingGraph extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {createdObjects: []};
+  }
+
   componentDidMount() {
     this.board = JXG.JSXGraph.initBoard("jsxgraph", { 
       axis: true, 
-      boundingbox: [-9, 104, 105, -6], 
+      boundingbox: [-9, 104, 113, -6], 
       showCopyright: false, 
       showScreenshot: true, 
       showInfobox: true,
@@ -55,12 +60,21 @@ export default class ScalingGraph extends React.Component {
       },
       showFullscreen: true
     });
+    console.log(this.board.objects);
+    this.setState({originalObjects: [...this.board.objectsList]})
   }
-  
+
   componentDidUpdate() {
+    // console.log(this.board.objects);
     this.board.suspendUpdate();
 
-    // JSXGraph.freeBoard(this.board);
+    console.log(this.state.originalObjects);
+    for (let object of this.board.objectsList) {
+      // if (object.elType === "line" || object.elType === "curve" || (object.elType === "text" && object.htmlStr.length > 3) || (object.elType === "point" && object.Xjc !== null))
+      if (this.state.originalObjects.includes(object)) continue;
+      console.log(object);
+      this.board.removeObject(object);
+    }
 
     let subjects = Object.keys(this.props.subjects).filter((subjectCode) => {return this.props.subjects[subjectCode] !== undefined});
     for (let [subjectIndex, subjectCode] of subjects.entries()) {
@@ -76,7 +90,7 @@ export default class ScalingGraph extends React.Component {
       let rawScore = this.props.subjects[subjectCode];
       if (!rawScore) continue;
       let scaledScore = calculateScaledScore(rawScore, subjectCode);
-      let point = this.board.create('point', [rawScore, scaledScore], {face: "cross", name: SUBJECTS[subjectCode]});
+      this.board.create('point', [rawScore, scaledScore], {face: "cross", name: SUBJECTS[subjectCode]});
     }
     // this.board.on('')
     this.board.create('legend', [5, 100], {labels: subjects.map((subjectCode) => {return SUBJECTS[subjectCode]}), colors: COLORS} );
