@@ -49,7 +49,7 @@ export default class ScalingGraph extends React.Component {
       boundingbox: [-9, 104, 113, -6], 
       showCopyright: false, 
       showScreenshot: true, 
-      showInfobox: true,
+      showInfobox: false,
       zoom: {
         factorX: 1.25,  // horizontal zoom factor (multiplied to JXG.Board#zoomX)
         factorY: 1.25,  // vertical zoom factor (multiplied to JXG.Board#zoomY)
@@ -106,9 +106,12 @@ export default class ScalingGraph extends React.Component {
     // create coordinates at mouse
     let mouseCoordinates = this.board.create('point', [0, 0], {
       fixed: true,
-      fillColor: 'black', 
-      fillOpacity: 0.7, 
       size: 2, 
+      fillColor: 'black', 
+      highlightFillColor: 'black', 
+      fillOpacity: 0.7, 
+      highlightFillOpacity: 0.7, 
+      highlightStrokeWidth: 0,
       strokeWidth: 0,   // disable stroke so only fill is considered
       precision: {  // ensures always highlighted
         touch: 0,
