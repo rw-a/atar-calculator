@@ -1,6 +1,8 @@
 import './App.css';
 import React from 'react';
 import SubjectsTable from './modules/subjects';
+import ResultsTable from './modules/results'
+import ScalingGraph from './modules/scaling_graph';
 
 
 function setCookie(cname, cvalue, exdays) {
