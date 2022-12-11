@@ -3,29 +3,10 @@ import JXG, { COORDS_BY_SCREEN, JSXGraph } from 'jsxgraph';
 import { calculateScaledScore } from './results';
 import SUBJECTS from './../data/2021_subjects.json';
 import SCALINGDATA from './../data/2021_scaling_data.json';
-import { toHaveDescription } from '@testing-library/jest-dom/dist/matchers';
 
-const COLORS1 = [
-  "#ff0000",
-  "#ff8700",
-  "#ffd300",
-  "#deff0a",
-  "#a1ff0a",
-  "#0aff99",
-  "#0aefff",
-  "#147df5",
-  "#580aff",
-  "#be0aff"
-];
-
-JXG.Options.precision = {
-  touch: 30,
-  touchMax: 100,
-  mouse: 4,
-  pen: 4,
-  epsilon: 0.0001,
-  hasPoint: 4
-}
+// replace default font
+JXG.Options.text.cssDefaultStyle = '';
+JXG.Options.text.highlightCssDefaultStyle = '';
   
 const COLORS = [
   'steelblue',
@@ -119,7 +100,6 @@ export default class ScalingGraph extends React.Component {
         pen: 0
       }
     });
-
     let updateMouseCoordinates = () => {
       if (subjects.length < 1) return false;
 
@@ -139,7 +119,6 @@ export default class ScalingGraph extends React.Component {
         mouseCoordinates.hideElement();
       }
     }
-    
     this.board.on('touchstart', updateMouseCoordinates);
     this.board.on('pointermove', updateMouseCoordinates);
 
