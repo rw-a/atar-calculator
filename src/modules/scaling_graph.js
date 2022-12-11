@@ -60,7 +60,6 @@ export default class ScalingGraph extends React.Component {
       },
       showFullscreen: true
     });
-    console.log(this.board.objects);
     this.setState({originalObjects: [...this.board.objectsList]})
   }
 
@@ -68,15 +67,13 @@ export default class ScalingGraph extends React.Component {
     // console.log(this.board.objects);
     this.board.suspendUpdate();
 
-    console.log(this.state.originalObjects);
-    for (let object of this.board.objectsList) {
-      // if (object.elType === "line" || object.elType === "curve" || (object.elType === "text" && object.htmlStr.length > 3) || (object.elType === "point" && object.Xjc !== null))
-      if (this.state.originalObjects.includes(object)) continue;
-      console.log(object);
+    for (let object of [...this.board.objectsList]) {
+      if (object.elType === "line" || object.elType === "curve" || (object.elType === "text" && object.htmlStr.length > 3) || (object.elType === "point" && object.Xjc !== null) || !this.state.originalObjects.includes(object))
       this.board.removeObject(object);
     }
 
     let subjects = Object.keys(this.props.subjects).filter((subjectCode) => {return this.props.subjects[subjectCode] !== undefined});
+    console.log(subjects);
     for (let [subjectIndex, subjectCode] of subjects.entries()) {
       // create function
       let a = SCALINGDATA[subjectCode]["a"];
@@ -95,6 +92,7 @@ export default class ScalingGraph extends React.Component {
     // this.board.on('')
     this.board.create('legend', [5, 100], {labels: subjects.map((subjectCode) => {return SUBJECTS[subjectCode]}), colors: COLORS} );
     this.board.unsuspendUpdate();
+    console.log(this.board.objectsList);
   }
 
   render() {
