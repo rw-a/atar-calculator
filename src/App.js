@@ -1,13 +1,25 @@
 import './App.css';
 import React from 'react';
 import Select from 'react-select';
-import functionPlot from 'function-plot';
-import { hsl as d3Hsl } from 'd3-color'
+import JXG from 'jsxgraph';
 import SUBJECTS from './data/2021_subjects.json';
 import SCALINGDATA from './data/2021_scaling_data.json';
 import ATARDATA from './data/2021_atar_data.json'
 
-functionPlot.globals.COLORS = [
+const COLORS1 = [
+  "#ff0000",
+  "#ff8700",
+  "#ffd300",
+  "#deff0a",
+  "#a1ff0a",
+  "#0aff99",
+  "#0aefff",
+  "#147df5",
+  "#580aff",
+  "#be0aff"
+]
+
+const COLORS = [
   'steelblue',
   'red',
   '#05b378', // green
@@ -16,9 +28,8 @@ functionPlot.globals.COLORS = [
   'brown',
   'magenta',
   'cyan'
-].map(function (v) {
-  return d3Hsl(v)
-})
+]
+
 
 function setCookie(cname, cvalue, exdays) {
   const d = new Date();
@@ -390,56 +401,50 @@ class ResultsTable extends React.Component {
   }
 }
 
+class JSXGraph extends React.Component {
+  constructor(props) {
+    super(props);
+    this.id = 'jsxgraph_' + Math.random().toString(36).substr(2, 9);
+  }
+
+  componentDidMount() {
+    let board = JXG.JSXGraph.initBoard(this.id, this.props.attributes);
+    
+    board.suspendUpdate();
+    for (let subjectCode of Object.keys(this.props.subjects)) {
+      if (this.props.subjects[subjectCode] === undefined) return false;
+      board.create('functiongraph', [function(x){
+        return (100 / (1 + Math.exp(-0.05 * (x - 50))));
+      }, 0, 100]);
+    }
+    board.create('legend', [5, 100], {labels:["English as an Additional Language", 2, 3, 4, 5], colors: COLORS} );
+    board.unsuspendUpdate();
+  }
+
+  render() {
+    return(
+      <div id={this.id} style={this.props.style}></div>
+    );
+  }
+}
+
+
 class ScalingGraph extends React.Component {
   render() {
+    let width = Math.min(720, document.querySelector('#root').getBoundingClientRect().width - 40);  // kinda janky, tries to find width after padding
     return(
       <div>
         <h2 style={{marginBottom: 0}}>Subject Scaling Graph</h2>
-        <span id="subject-scaling-graph"></span>
+        <JSXGraph 
+          style={{width: width, height: width}}
+          subjects={this.props.subjects}
+          attributes={{ axis: true, boundingbox: [-5, 104, 105, -6], showCopyright: false }}
+        />
       </div>
     );
   }
 }
 
-function drawScalingGraph(subjects) {
-  let subjectCodes = Object.keys(subjects).filter((subjectCode) => {return (subjects[subjectCode] !== undefined)});
-
-  // create the scaling function of each subject
-  let scalingFunctions = [];
-  let subjectNames = {};
-  for (let [subjectIndex, subjectCode] of subjectCodes.entries()) {
-    subjectNames[subjectIndex] = SUBJECTS[subjectCode]; // saves the name of the subject to the correct function for labelling later
-    let a = SCALINGDATA[subjectCode]["a"];
-    let b = SCALINGDATA[subjectCode]["b"];
-    let c = SCALINGDATA[subjectCode]["c"];
-    scalingFunctions.push({fn: `${a} / (1 + exp(-${b} * (x - ${c})))`, range: [0, 100]});
-  }
-
-  let width = Math.min(720, document.querySelector('#root').getBoundingClientRect().width - 40);  // kinda janky, tries to find width after padding
-
-  if (document.querySelector('svg[class="function-plot"]')) document.querySelector('svg[class="function-plot"]').remove();
-
-  functionPlot({
-    target: "#subject-scaling-graph",
-    width: width,
-    height: width,
-    xAxis: { 
-      label: "Raw Score ", // blank (unicode, not space) charcter here for padding
-      domain: [0, 100] 
-    },
-    yAxis: { 
-      label: "Scaled Score ",
-      domain: [0, 100] 
-    },
-    grid: true,
-    data: scalingFunctions,
-    tip: {
-      xLine: true,
-      yLine: true,
-      renderer: (x, y, index) => {return `${subjectNames[index]} (${x.toFixed(2)}, ${y.toFixed(2)})`}
-    }
-  });
-}
 
 class Calculator extends React.Component {
   constructor(props) {
@@ -460,10 +465,7 @@ class Calculator extends React.Component {
   handleSubjectAdd(selectedOption) {
     let selectedSubjects = {};
     selectedSubjects[selectedOption['value']] = "";
-    this.setState(selectedSubjects, () => {
-      // callback so happens once state has been set
-      drawScalingGraph(this.state);
-    });
+    this.setState(selectedSubjects);
   }
 
   handleSubjectDelete(subjectCode) {
@@ -471,10 +473,7 @@ class Calculator extends React.Component {
     // IMPORTANT if anything iterates through the state, it must ignore undefined values
     let selectedSubjects = {};
     selectedSubjects[subjectCode] = undefined;
-    this.setState(selectedSubjects, () => {
-      // callback so happens once state has been set
-      drawScalingGraph(this.state); 
-    });
+    this.setState(selectedSubjects);
   }
 
   handleSubjectsSave() {
@@ -493,7 +492,6 @@ class Calculator extends React.Component {
       }
       this.setState(selectedSubjects);
     }
-    drawScalingGraph(state);
   }
 
   render() {
@@ -523,7 +521,7 @@ class Calculator extends React.Component {
           subjectRawScores={this.state} 
         />
         <br/>
-        <ScalingGraph/>
+        <ScalingGraph subjects={this.state}/>
       </div>
     );
   }
