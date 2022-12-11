@@ -104,22 +104,20 @@ export default class ScalingGraph extends React.Component {
     this.board.create('legend', [5, 100], {labels: subjects.map((subjectCode) => {return SUBJECTS[subjectCode]}), colors: COLORS} );
 
     // create coordinates at mouse
-    let mousePoint = this.board.create('point', [0, 0], {
+    let mouseCoordinates = this.board.create('point', [0, 0], {
       fixed: true,
       fillColor: 'black', 
-      highlightFillColor: 'black',
       fillOpacity: 0.7, 
-      highlightFillOpacity: 0.7,
       size: 2, 
       strokeWidth: 0,   // disable stroke so only fill is considered
-      highlightStrokeWidth: 0,  
       precision: {  // ensures always highlighted
-        touch: 1000,
-        mouse: 1000,
-        pen: 1000
+        touch: 0,
+        mouse: 0,
+        pen: 0
       }
     });
-    this.board.on('move', () => {
+
+    let updateMouseCoordinates = () => {
       if (subjects.length < 1) return false;
 
       let coords = new JXG.Coords(COORDS_BY_SCREEN, this.board.getMousePosition(), this.board).usrCoords.slice(1);
@@ -127,15 +125,20 @@ export default class ScalingGraph extends React.Component {
       let nearestX = coords[0];
 
       if (nearestX >= 0 && nearestX <= 100) {
-        mousePoint.showElement();
+        mouseCoordinates.showElement();
         let closestSubject = subjects.reduce((subjectCode1, subjectCode2) => {  // get the subject with raw score closest to the cursor
           return (Math.abs(calculateScaledScore(nearestX, subjectCode1) - coords[1]) < Math.abs(calculateScaledScore(nearestX, subjectCode2) - coords[1])) ? subjectCode1 : subjectCode2;
         })
-        mousePoint.moveTo([nearestX, calculateScaledScore(nearestX, closestSubject)]);
+        let nearestY = calculateScaledScore(nearestX, closestSubject)
+        mouseCoordinates.moveTo([nearestX, nearestY]);
+        mouseCoordinates.setAttribute({name: `(${nearestX.toFixed(2)}, ${nearestY.toFixed(2)})`})
       } else {
-        mousePoint.hideElement();
+        mouseCoordinates.hideElement();
       }
-    });
+    }
+    
+    this.board.on('touchstart', updateMouseCoordinates);
+    this.board.on('pointermove', updateMouseCoordinates);
 
     this.board.unsuspendUpdate();
   }
