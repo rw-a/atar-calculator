@@ -1,8 +1,9 @@
 import React from 'react';
-import JXG, { JSXGraph } from 'jsxgraph';
+import JXG, { COORDS_BY_SCREEN, JSXGraph } from 'jsxgraph';
 import { calculateScaledScore } from './results';
 import SUBJECTS from './../data/2021_subjects.json';
 import SCALINGDATA from './../data/2021_scaling_data.json';
+import { toHaveDescription } from '@testing-library/jest-dom/dist/matchers';
 
 const COLORS1 = [
   "#ff0000",
@@ -16,6 +17,15 @@ const COLORS1 = [
   "#580aff",
   "#be0aff"
 ];
+
+JXG.Options.precision = {
+  touch: 30,
+  touchMax: 100,
+  mouse: 4,
+  pen: 4,
+  epsilon: 0.0001,
+  hasPoint: 4
+}
   
 const COLORS = [
   'steelblue',
@@ -64,24 +74,24 @@ export default class ScalingGraph extends React.Component {
   }
 
   componentDidUpdate() {
-    // console.log(this.board.objects);
     this.board.suspendUpdate();
 
+    // clear board
     for (let object of [...this.board.objectsList]) {
       if (object.elType === "line" || object.elType === "curve" || (object.elType === "text" && object.htmlStr.length > 3) || (object.elType === "point" && object.Xjc !== null) || !this.state.originalObjects.includes(object))
       this.board.removeObject(object);
     }
 
     let subjects = Object.keys(this.props.subjects).filter((subjectCode) => {return this.props.subjects[subjectCode] !== undefined});
-    console.log(subjects);
     for (let [subjectIndex, subjectCode] of subjects.entries()) {
       // create function
       let a = SCALINGDATA[subjectCode]["a"];
       let b = SCALINGDATA[subjectCode]["b"];
       let c = SCALINGDATA[subjectCode]["c"];
-      this.board.create('functiongraph', [function(x){
+      let subjectFunction = this.board.create('functiongraph', [function(x){
         return (a / (1 + Math.exp(-b * (x - c))));
       }, 0, 100], {strokeColor: COLORS[subjectIndex]});
+      subjectFunction.hasPoint = function(x, y) {return false;}; // disable highlighting
 
       // plot raw score input
       let rawScore = this.props.subjects[subjectCode];
@@ -89,10 +99,18 @@ export default class ScalingGraph extends React.Component {
       let scaledScore = calculateScaledScore(rawScore, subjectCode);
       this.board.create('point', [rawScore, scaledScore], {face: "cross", name: SUBJECTS[subjectCode]});
     }
-    // this.board.on('')
+
+    // create legend
     this.board.create('legend', [5, 100], {labels: subjects.map((subjectCode) => {return SUBJECTS[subjectCode]}), colors: COLORS} );
+
+    // create coordinates at mouse
+    let mousePoint = this.board.create('point', [0, 0], {name: "Lmao"})
+    this.board.on('move', () => {
+      let coords = new JXG.Coords(COORDS_BY_SCREEN, this.board.getMousePosition(), this.board).usrCoords.slice(1);
+      mousePoint.moveTo(coords);
+    })
+
     this.board.unsuspendUpdate();
-    console.log(this.board.objectsList);
   }
 
   render() {
