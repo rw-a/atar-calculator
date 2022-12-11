@@ -24,7 +24,6 @@ const COLORS = [
   'red',
   '#05b378', // green
   'orange',
-  '#4040e8', // purple
   'brown',
   'magenta',
   'cyan'
@@ -401,45 +400,32 @@ class ResultsTable extends React.Component {
   }
 }
 
-class JSXGraph extends React.Component {
-  constructor(props) {
-    super(props);
-    this.id = 'jsxgraph_' + Math.random().toString(36).substr(2, 9);
-  }
 
-  componentDidMount() {
-    let board = JXG.JSXGraph.initBoard(this.id, this.props.attributes);
+class ScalingGraph extends React.Component {
+  componentDidUpdate() {
+    let board = JXG.JSXGraph.initBoard("jsxgraph", { axis: true, boundingbox: [-5, 104, 105, -6], showCopyright: false });
     
     board.suspendUpdate();
-    for (let subjectCode of Object.keys(this.props.subjects)) {
-      if (this.props.subjects[subjectCode] === undefined) return false;
+    let subjects = Object.keys(this.props.subjects).filter((subjectCode) => {return this.props.subjects[subjectCode] !== undefined});
+    for (let [subjectIndex, subjectCode] of subjects.entries()) {
+      let a = SCALINGDATA[subjectCode]["a"];
+      let b = SCALINGDATA[subjectCode]["b"];
+      let c = SCALINGDATA[subjectCode]["c"];
+
       board.create('functiongraph', [function(x){
-        return (100 / (1 + Math.exp(-0.05 * (x - 50))));
-      }, 0, 100]);
+        return (a / (1 + Math.exp(-b * (x - c))));
+      }, 0, 100], {strokeColor: COLORS[subjectIndex]});
     }
-    board.create('legend', [5, 100], {labels:["English as an Additional Language", 2, 3, 4, 5], colors: COLORS} );
+    board.create('legend', [5, 100], {labels: subjects.map((subjectCode) => {return SUBJECTS[subjectCode]}), colors: COLORS} );
     board.unsuspendUpdate();
   }
 
-  render() {
-    return(
-      <div id={this.id} style={this.props.style}></div>
-    );
-  }
-}
-
-
-class ScalingGraph extends React.Component {
   render() {
     let width = Math.min(720, document.querySelector('#root').getBoundingClientRect().width - 40);  // kinda janky, tries to find width after padding
     return(
       <div>
         <h2 style={{marginBottom: 0}}>Subject Scaling Graph</h2>
-        <JSXGraph 
-          style={{width: width, height: width}}
-          subjects={this.props.subjects}
-          attributes={{ axis: true, boundingbox: [-5, 104, 105, -6], showCopyright: false }}
-        />
+        <div id="jsxgraph" style={{width: width, height: width}}></div>
       </div>
     );
   }
