@@ -26,7 +26,6 @@ export default class ScalingGraph extends React.Component {
       axis: true, 
       boundingbox: BOUNDINGBOX, 
       showCopyright: false, 
-      showScreenshot: true, 
       showInfobox: false,
       zoom: {
         factorX: 1.25,  // horizontal zoom factor (multiplied to JXG.Board#zoomX)
