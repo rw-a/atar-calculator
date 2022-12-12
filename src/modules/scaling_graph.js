@@ -104,6 +104,9 @@ export default class ScalingGraph extends React.Component {
         let point = this.board.create('point', [rawScore, scaledScore], {face: "cross", name: SUBJECTS[subjectCode], withLabel: true});
         point.label.setAttribute({offset: [10, 0]});
         point.setAttribute({withLabel: false});
+        point.hasPoint = function(x, y) {return false;}; // disable highlighting
+
+        // show/hide labels and/or legend depending on zoom level
         this.board.on('boundingbox', () => {
           let boundingBox = this.board.getBoundingBox();
           let zoomFactor = (BOUNDINGBOX[2] - BOUNDINGBOX[0]) / (boundingBox[2] - boundingBox[0]);
