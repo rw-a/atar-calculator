@@ -28,6 +28,7 @@ export default class ScalingGraph extends React.Component {
     this.board = JXG.JSXGraph.initBoard("jsxgraph", { 
       axis: true, 
       boundingbox: BOUNDINGBOX, 
+      maxboundingbox: [-100, 200, 200, -100],
       showCopyright: false, 
       showInfobox: false,
       zoom: {
