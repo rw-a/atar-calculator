@@ -142,6 +142,7 @@ export default class ScalingGraph extends React.Component {
       let legendHeightOffset = this.isMobile ? 36 : 60;
       let legendHeight = legend.lines.at(-1).getTextAnchor().scrCoords.at(-1) + legendHeightOffset;
       document.getElementById('jsxlegend').style.top = `${this.graphHeight - legendHeight}px`;
+      document.getElementById('jsxlegenddummy').style.top = `${this.graphHeight - legendHeight}px`;
     }
     
     // create coordinates at mouse
@@ -199,6 +200,7 @@ export default class ScalingGraph extends React.Component {
         <div style={{position: "relative"}}>
           <div id="jsxgraph" style={{width: this.maxWidth, height: this.graphHeight}}></div>
           <div id="jsxlegend" style={{position: "absolute", top: this.graphHeight - 250 /* estimate, will be accurately calculated later */, right: 0, width: legendWidth, height: this.graphHeight}}></div>
+          <div id="jsxlegenddummy" style={{position: "absolute", top: this.graphHeight - 250, right: 0, width: legendWidth, height: this.graphHeight, zIndex: -10}}></div>
         </div>
       </div>
     );
