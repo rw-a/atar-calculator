@@ -21,11 +21,6 @@ JXG.Options.text.cssDefaultStyle = '';
 JXG.Options.text.highlightCssDefaultStyle = '';
 
 export default class ScalingGraph extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {createdObjects: []};
-  }
-
   componentDidMount() {
     this.board = JXG.JSXGraph.initBoard("jsxgraph", { 
       axis: true, 
@@ -65,7 +60,7 @@ export default class ScalingGraph extends React.Component {
                    // by pinch-to-toom gesture on touch devices
         needShift: true,   // mouse wheel zooming needs pressing of the shift key
         min: 1,        // minimal values of JXG.Board#zoomX and JXG.Board#zoomY, limits zoomOut
-        max: 11,       // maximal values of JXG.Board#zoomX and JXG.Board#zoomY, limits zoomIn
+        max: 1,       // maximal values of JXG.Board#zoomX and JXG.Board#zoomY, limits zoomIn
       
         pinchHorizontal: false, // Allow pinch-to-zoom to zoom only horizontal axis
         pinchVertical: false,   // Allow pinch-to-zoom to zoom only vertical axis
