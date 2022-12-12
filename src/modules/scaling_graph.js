@@ -172,13 +172,14 @@ export default class ScalingGraph extends React.Component {
       if (nearestX >= -1.5 && nearestX <= 101.5) {
         if (nearestX <= 0) nearestX = 0;
         if (nearestX >= 100) nearestX = 100;  // adds leeway so you don't have to get exactly 100
+        nearestX = Math.round(nearestX);
         mouseCoordinates.showElement();
         let closestSubject = subjects.reduce((subjectCode1, subjectCode2) => {  // get the subject with raw score closest to the cursor
           return (Math.abs(calculateScaledScore(nearestX, subjectCode1) - coords[1]) < Math.abs(calculateScaledScore(nearestX, subjectCode2) - coords[1])) ? subjectCode1 : subjectCode2;
         })
         let nearestY = calculateScaledScore(nearestX, closestSubject)
         mouseCoordinates.moveTo([nearestX, nearestY]);
-        mouseCoordinates.setAttribute({name: `(${nearestX.toFixed(2)}, ${nearestY.toFixed(2)})`})
+        mouseCoordinates.setAttribute({name: `(${nearestX.toFixed(0)}, ${nearestY.toFixed(2)})`})
       } else {
         mouseCoordinates.hideElement();
       }
@@ -200,7 +201,7 @@ export default class ScalingGraph extends React.Component {
         <div style={{position: "relative"}}>
           <div id="jsxgraph" style={{width: this.maxWidth, height: this.graphHeight}}></div>
           <div id="jsxlegend" style={{position: "absolute", top: this.graphHeight - 250 /* estimate, will be accurately calculated later */, right: 0, width: legendWidth, height: this.graphHeight}}></div>
-          <div id="jsxlegenddummy" style={{position: "absolute", top: this.graphHeight - 250, right: 0, width: legendWidth, height: this.graphHeight, zIndex: -10}}></div>
+          <div id="jsxlegenddummy" style={{position: "absolute", top: this.graphHeight - 250, right: 0, width: legendWidth, height: this.graphHeight, zIndex: -10 /* same as regular legend except blank and at the back to prevent the screen size from changing as the legend is hidden*/}}></div>
         </div>
       </div>
     );
