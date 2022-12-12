@@ -3,10 +3,6 @@ import JXG, { COORDS_BY_SCREEN, JSXGraph } from 'jsxgraph';
 import { calculateScaledScore } from './results';
 import SUBJECTS from './../data/2021_subjects.json';
 import SCALINGDATA from './../data/2021_scaling_data.json';
-
-// replace default font
-JXG.Options.text.cssDefaultStyle = '';
-JXG.Options.text.highlightCssDefaultStyle = '';
   
 const COLORS = [
   'steelblue',
@@ -19,6 +15,10 @@ const COLORS = [
 ];
 
 const BOUNDINGBOX = [-9, 104, 113, -6]; // min x, max y, max x, min y
+
+// replace default font
+JXG.Options.text.cssDefaultStyle = '';
+JXG.Options.text.highlightCssDefaultStyle = '';
 
 export default class ScalingGraph extends React.Component {
   constructor(props) {
@@ -90,8 +90,9 @@ export default class ScalingGraph extends React.Component {
       this.board.removeObject(object);
     }
     
-    // generate scaling graphs
     let subjects = Object.keys(this.props.subjects).filter((subjectCode) => {return this.props.subjects[subjectCode] !== undefined});
+    
+    // generate scaling graphs
     for (let [subjectIndex, subjectCode] of subjects.entries()) {
       // create function
       let a = SCALINGDATA[subjectCode]["a"];
@@ -106,12 +107,22 @@ export default class ScalingGraph extends React.Component {
       let rawScore = this.props.subjects[subjectCode];
       if (rawScore) {
         let scaledScore = calculateScaledScore(rawScore, subjectCode);
-        this.board.create('point', [rawScore, scaledScore], {face: "cross", name: SUBJECTS[subjectCode]});
+        let point = this.board.create('point', [rawScore, scaledScore], {face: "cross", name: SUBJECTS[subjectCode], withLabel: false});
         this.board.on('boundingbox', () => {
-          console.log(this.board.getBoundingBox())
           let boundingBox = this.board.getBoundingBox();
           let zoomFactor = (BOUNDINGBOX[2] - BOUNDINGBOX[0]) / (boundingBox[2] - boundingBox[0]);
-          console.log(zoomFactor);
+          if (zoomFactor > 1.7) {
+            point.setAttribute({withLabel: true});
+          } else {
+            point.setAttribute({withLabel: false});
+          }
+          if (this.isMobile) {
+            if (zoomFactor > 5) {
+              document.getElementById('jsxlegend').style.display = 'none';
+            } else {
+              document.getElementById('jsxlegend').style.display = '';
+            }
+          }
         });
       }
     }
@@ -127,14 +138,15 @@ export default class ScalingGraph extends React.Component {
       let longestSubjectName = subjectsNames.reduce((subject1, subject2) => {return (subject1.length > subject2.length) ? subject1 : subject2});
       let numLines = Math.ceil(longestSubjectName.length / 12);
       let rowHeight = numLines * 9 + 10;
-      let legend = this.legend.create('legend', [0, 100], {labels: subjectsNames, colors: COLORS, rowHeight: rowHeight} );
-      let legendHeightOffset = (this.maxWidth > 400) ? 60 : 36;
+      var legend = this.legend.create('legend', [0, 100], {labels: subjectsNames, colors: COLORS, rowHeight: rowHeight} );
+      let legendHeightOffset = this.isMobile ? 36 : 60;
       let legendHeight = legend.lines.at(-1).getTextAnchor().scrCoords.at(-1) + legendHeightOffset;
       document.getElementById('jsxlegend').style.top = `${this.graphHeight - legendHeight}px`;
     }
     
     // create coordinates at mouse
     let mouseCoordinates = this.board.create('point', [0, 0], {
+      visible: false,
       fixed: true,
       size: 2, 
       fillColor: 'black', 
@@ -149,7 +161,6 @@ export default class ScalingGraph extends React.Component {
         pen: 0
       }
     });
-    mouseCoordinates.hideElement();
     let updateMouseCoordinates = () => {
       if (subjects.length < 1) return false;
 
@@ -157,7 +168,9 @@ export default class ScalingGraph extends React.Component {
       // let nearestX = Math.round(coords[0]);
       let nearestX = coords[0];
 
-      if (nearestX >= 0 && nearestX <= 100) {
+      if (nearestX >= -1.5 && nearestX <= 101.5) {
+        if (nearestX <= 0) nearestX = 0;
+        if (nearestX >= 100) nearestX = 100;  // adds leeway so you don't have to get exactly 100
         mouseCoordinates.showElement();
         let closestSubject = subjects.reduce((subjectCode1, subjectCode2) => {  // get the subject with raw score closest to the cursor
           return (Math.abs(calculateScaledScore(nearestX, subjectCode1) - coords[1]) < Math.abs(calculateScaledScore(nearestX, subjectCode2) - coords[1])) ? subjectCode1 : subjectCode2;
@@ -179,6 +192,7 @@ export default class ScalingGraph extends React.Component {
     this.maxWidth = Math.min(720, document.querySelector('#root').getBoundingClientRect().width - 40);  // kinda janky, tries to find width after padding
     this.graphHeight = Math.abs(this.maxWidth * (BOUNDINGBOX[1] - BOUNDINGBOX[3]) / (BOUNDINGBOX[2] - BOUNDINGBOX[0]));  // ensures that 1x1 aspect ratio is maintained
     let legendWidth = 110;
+    this.isMobile = this.maxWidth < 400;
     return(
       <div>
         <h2 style={{marginBottom: 0}}>Subject Scaling Graph</h2>
