@@ -107,7 +107,9 @@ export default class ScalingGraph extends React.Component {
       let rawScore = this.props.subjects[subjectCode];
       if (rawScore) {
         let scaledScore = calculateScaledScore(rawScore, subjectCode);
-        let point = this.board.create('point', [rawScore, scaledScore], {face: "cross", name: SUBJECTS[subjectCode], withLabel: false});
+        let point = this.board.create('point', [rawScore, scaledScore], {face: "cross", name: SUBJECTS[subjectCode], withLabel: true});
+        point.label.setAttribute({offset: [10, 0]});
+        point.setAttribute({withLabel: false});
         this.board.on('boundingbox', () => {
           let boundingBox = this.board.getBoundingBox();
           let zoomFactor = (BOUNDINGBOX[2] - BOUNDINGBOX[0]) / (boundingBox[2] - boundingBox[0]);
@@ -162,6 +164,7 @@ export default class ScalingGraph extends React.Component {
         pen: 0
       }
     });
+    mouseCoordinates.label.setAttribute({offset: [7, 13]}); // set offset of coordinates at mouse
     let updateMouseCoordinates = () => {
       if (subjects.length < 1) return false;
 
@@ -191,10 +194,12 @@ export default class ScalingGraph extends React.Component {
   }
 
   render() {
-    this.maxWidth = Math.min(720, document.querySelector('#root').getBoundingClientRect().width - 40);  // kinda janky, tries to find width after padding
-    this.graphHeight = Math.abs(this.maxWidth * (BOUNDINGBOX[1] - BOUNDINGBOX[3]) / (BOUNDINGBOX[2] - BOUNDINGBOX[0]));  // ensures that 1x1 aspect ratio is maintained
     let legendWidth = 110;
     this.isMobile = this.maxWidth < 400;
+
+    this.maxWidth = Math.min(720, document.querySelector('#root').getBoundingClientRect().width - 40);  // kinda janky, tries to find width after padding
+    this.graphHeight = Math.abs(this.maxWidth * (BOUNDINGBOX[1] - BOUNDINGBOX[3]) / (BOUNDINGBOX[2] - BOUNDINGBOX[0]));  // ensures that 1x1 aspect ratio is maintained
+    
     return(
       <div>
         <h2 style={{marginBottom: 0}}>Subject Scaling Graph</h2>
