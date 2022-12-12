@@ -18,6 +18,8 @@ const COLORS = [
   'magenta',
 ];
 
+const BOUNDINGBOX = [-9, 104, 113, -6]; // min x, max y, max x, min y
+
 export default class ScalingGraph extends React.Component {
   constructor(props) {
     super(props);
@@ -27,7 +29,7 @@ export default class ScalingGraph extends React.Component {
   componentDidMount() {
     this.board = JXG.JSXGraph.initBoard("jsxgraph", { 
       axis: true, 
-      boundingbox: [-9, 104, 113, -6], // min x, max y, max x, min y
+      boundingbox: BOUNDINGBOX, 
       showCopyright: false, 
       showScreenshot: true, 
       showInfobox: false,
@@ -102,9 +104,16 @@ export default class ScalingGraph extends React.Component {
 
       // plot raw score input
       let rawScore = this.props.subjects[subjectCode];
-      if (!rawScore) continue;
-      let scaledScore = calculateScaledScore(rawScore, subjectCode);
-      this.board.create('point', [rawScore, scaledScore], {face: "cross", name: SUBJECTS[subjectCode]});
+      if (rawScore) {
+        let scaledScore = calculateScaledScore(rawScore, subjectCode);
+        this.board.create('point', [rawScore, scaledScore], {face: "cross", name: SUBJECTS[subjectCode]});
+        this.board.on('boundingbox', () => {
+          console.log(this.board.getBoundingBox())
+          let boundingBox = this.board.getBoundingBox();
+          let zoomFactor = (BOUNDINGBOX[2] - BOUNDINGBOX[0]) / (boundingBox[2] - boundingBox[0]);
+          console.log(zoomFactor);
+        });
+      }
     }
 
     // clear legend
@@ -120,9 +129,8 @@ export default class ScalingGraph extends React.Component {
       let rowHeight = numLines * 9 + 10;
       let legend = this.legend.create('legend', [0, 100], {labels: subjectsNames, colors: COLORS, rowHeight: rowHeight} );
       let legendHeightOffset = (this.maxWidth > 400) ? 60 : 36;
-      console.log(legendHeightOffset);
       let legendHeight = legend.lines.at(-1).getTextAnchor().scrCoords.at(-1) + legendHeightOffset;
-      document.getElementById('jsxlegend').style.top = `${this.maxWidth - legendHeight}px`;
+      document.getElementById('jsxlegend').style.top = `${this.graphHeight - legendHeight}px`;
     }
     
     // create coordinates at mouse
@@ -169,13 +177,14 @@ export default class ScalingGraph extends React.Component {
 
   render() {
     this.maxWidth = Math.min(720, document.querySelector('#root').getBoundingClientRect().width - 40);  // kinda janky, tries to find width after padding
+    this.graphHeight = Math.abs(this.maxWidth * (BOUNDINGBOX[1] - BOUNDINGBOX[3]) / (BOUNDINGBOX[2] - BOUNDINGBOX[0]));  // ensures that 1x1 aspect ratio is maintained
     let legendWidth = 110;
     return(
       <div>
         <h2 style={{marginBottom: 0}}>Subject Scaling Graph</h2>
         <div style={{position: "relative"}}>
-          <div id="jsxgraph" style={{width: this.maxWidth, height: this.maxWidth}}></div>
-          <div id="jsxlegend" style={{position: "absolute", top: this.maxWidth - 250 /* estimate, will be accurately calculated later */, right: 0, width: legendWidth, height: this.maxWidth}}></div>
+          <div id="jsxgraph" style={{width: this.maxWidth, height: this.graphHeight}}></div>
+          <div id="jsxlegend" style={{position: "absolute", top: this.graphHeight - 250 /* estimate, will be accurately calculated later */, right: 0, width: legendWidth, height: this.graphHeight}}></div>
         </div>
       </div>
     );
