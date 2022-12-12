@@ -113,12 +113,18 @@ export default class ScalingGraph extends React.Component {
     }
 
     // create legend
-    let legend = this.legend.create('legend', [0, 100], {labels: subjects.map((subjectCode) => {return SUBJECTS[subjectCode]}), colors: COLORS, rowHeight: 30} );
-    console.log(legend.lines.at(-1).label.getTextAnchor().usrCoords.at(-1));
-    this.board.on('boundingbox', () => {
-      console.log(this.board.getBoundingBox());
-    })
-
+    if (subjects.length > 0) {
+      let subjectsNames = subjects.map((subjectCode) => {return SUBJECTS[subjectCode]});
+      let longestSubjectName = subjectsNames.reduce((subject1, subject2) => {return (subject1.length > subject2.length) ? subject1 : subject2});
+      let numLines = Math.ceil(longestSubjectName.length / 12);
+      let rowHeight = numLines * 9 + 10;
+      let legend = this.legend.create('legend', [0, 100], {labels: subjectsNames, colors: COLORS, rowHeight: rowHeight} );
+      let legendHeight = legend.lines.at(-1).getTextAnchor().scrCoords.at(-1) + 60;
+      console.log(legendHeight);
+      console.log(legend.style.top)
+      document.getElementById('jsxlegend').style.top = `${this.maxWidth - legendHeight}px`;
+    }
+    
     // create coordinates at mouse
     let mouseCoordinates = this.board.create('point', [0, 0], {
       fixed: true,
@@ -162,14 +168,14 @@ export default class ScalingGraph extends React.Component {
   }
 
   render() {
-    let maxWidth = Math.min(720, document.querySelector('#root').getBoundingClientRect().width - 40);  // kinda janky, tries to find width after padding
+    this.maxWidth = Math.min(720, document.querySelector('#root').getBoundingClientRect().width - 40);  // kinda janky, tries to find width after padding
     let legendWidth = 110;
     return(
       <div>
         <h2 style={{marginBottom: 0}}>Subject Scaling Graph</h2>
-        <div style={{display: "flex", justifyContent: "center"}}>
-          <div id="jsxgraph" style={{width: maxWidth - legendWidth, height: maxWidth - legendWidth}}></div>
-          <div id="jsxlegend" style={{width: legendWidth, height: maxWidth - legendWidth}}></div>
+        <div style={{position: "relative"}}>
+          <div id="jsxgraph" style={{width: this.maxWidth, height: this.maxWidth}}></div>
+          <div id="jsxlegend" style={{position: "absolute", top: this.maxWidth - 250 /* estimate, will be accurately calculated later */, right: 0, width: legendWidth, height: this.maxWidth}}></div>
         </div>
       </div>
     );
