@@ -16,6 +16,9 @@ const COLORS = [
 
 const BOUNDINGBOX = [-9, 104, 113, -6]; // min x, max y, max x, min y
 
+const SUBJECT_LABELS_ZOOM_THRESHOLD = 1.7;
+const MOBILE_LEGEND_ZOOM_THRESHOLD = 5;
+
 // replace default font
 JXG.Options.text.cssDefaultStyle = '';
 JXG.Options.text.highlightCssDefaultStyle = '';
@@ -87,6 +90,7 @@ export default class ScalingGraph extends React.Component {
     let subjects = Object.keys(this.props.subjects).filter((subjectCode) => {return this.props.subjects[subjectCode] !== undefined});
     
     // generate scaling graphs
+    let points = [];
     for (let [subjectIndex, subjectCode] of subjects.entries()) {
       // create function
       let a = SCALINGDATA[subjectCode]["a"];
@@ -105,26 +109,40 @@ export default class ScalingGraph extends React.Component {
         point.label.setAttribute({offset: [10, 0]});
         point.setAttribute({withLabel: false});
         point.hasPoint = function(x, y) {return false;}; // disable highlighting
-
-        // show/hide labels and/or legend depending on zoom level
-        this.board.on('boundingbox', () => {
-          let boundingBox = this.board.getBoundingBox();
-          let zoomFactor = (BOUNDINGBOX[2] - BOUNDINGBOX[0]) / (boundingBox[2] - boundingBox[0]);
-          if (zoomFactor > 1.7) {
-            point.setAttribute({withLabel: true});
-          } else {
-            point.setAttribute({withLabel: false});
-          }
-          if (this.isMobile) {
-            if (zoomFactor > 5) {
-              document.getElementById('jsxlegend').style.display = 'none';
-            } else {
-              document.getElementById('jsxlegend').style.display = '';
-            }
-          }
-        });
+        points.push(point);
       }
     }
+
+    function zoomFactorChange(zoomFactor, previousZoomFactor, thresholdZoomFactor) {
+      // tests whether the zoom factor has crossed the threshold (for optimisation purposes so no redundant attribute setting)
+      if (zoomFactor >= thresholdZoomFactor) {
+        return previousZoomFactor < thresholdZoomFactor;
+      } else {
+        return previousZoomFactor > thresholdZoomFactor;
+      }
+    }
+
+    // show/hide labels and/or legend depending on zoom level
+    let previousZoomFactor = 1;
+    this.board.on('boundingbox', () => {
+      let boundingBox = this.board.getBoundingBox();
+      let zoomFactor = (BOUNDINGBOX[2] - BOUNDINGBOX[0]) / (boundingBox[2] - boundingBox[0]);
+      
+      // show/hide subject labels
+      if (zoomFactorChange(zoomFactor, previousZoomFactor, SUBJECT_LABELS_ZOOM_THRESHOLD)) {
+        let showLabels = zoomFactor >= SUBJECT_LABELS_ZOOM_THRESHOLD;
+        for (let point of points) {
+          point.setAttribute({withLabel: showLabels});
+        }
+      }
+      
+      // show/hide legend (only for mobile)
+      if (this.isMobile && zoomFactorChange(zoomFactor, previousZoomFactor, MOBILE_LEGEND_ZOOM_THRESHOLD)) {
+        document.getElementById('jsxlegend').style.display = (zoomFactor >= MOBILE_LEGEND_ZOOM_THRESHOLD) ? 'none' : ''; // none is hidden, blank is shown
+      }
+
+      previousZoomFactor = zoomFactor;
+    }); 
 
     // clear legend
     for (let object of [...this.legend.objectsList]) {
@@ -166,13 +184,11 @@ export default class ScalingGraph extends React.Component {
       if (subjects.length < 1) return false;
 
       let coords = new JXG.Coords(COORDS_BY_SCREEN, this.board.getMousePosition(), this.board).usrCoords.slice(1);
-      // let nearestX = Math.round(coords[0]);
-      let nearestX = coords[0];
+      let nearestX = Math.round(coords[0]);
 
-      if (nearestX >= -1.5 && nearestX <= 101.5) {
+      if (nearestX >= -1 && nearestX <= 101) {
         if (nearestX <= 0) nearestX = 0;
         if (nearestX >= 100) nearestX = 100;  // adds leeway so you don't have to get exactly 100
-        nearestX = Math.round(nearestX);
         mouseCoordinates.showElement();
         let closestSubject = subjects.reduce((subjectCode1, subjectCode2) => {  // get the subject with raw score closest to the cursor
           return (Math.abs(calculateScaledScore(nearestX, subjectCode1) - coords[1]) < Math.abs(calculateScaledScore(nearestX, subjectCode2) - coords[1])) ? subjectCode1 : subjectCode2;
