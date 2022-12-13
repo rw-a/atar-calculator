@@ -27,6 +27,7 @@ export default class ScalingGraph extends React.Component {
   componentDidMount() {
     this.board = JXG.JSXGraph.initBoard("jsxgraph", { 
       axis: true, 
+      maxFrameRate: 30,
       boundingbox: BOUNDINGBOX, 
       maxboundingbox: [-100, 200, 200, -100],
       showCopyright: false, 
@@ -53,26 +54,26 @@ export default class ScalingGraph extends React.Component {
     
     this.legend = JXG.JSXGraph.initBoard("jsxlegend", { 
       boundingbox: [0, 104, 20, -6], // min x, max y, max x, min y
+      maxFrameRate: 1,
       showCopyright: false, 
       showInfobox: false,
       showNavigation: false,
       zoom: {
-        factorX: 1,  // horizontal zoom factor (multiplied to JXG.Board#zoomX)
-        factorY: 1,  // vertical zoom factor (multiplied to JXG.Board#zoomY)
-        wheel: false,     // allow zooming by mouse wheel or
-                   // by pinch-to-toom gesture on touch devices
-        needShift: true,   // mouse wheel zooming needs pressing of the shift key
-        min: 1,        // minimal values of JXG.Board#zoomX and JXG.Board#zoomY, limits zoomOut
-        max: 1,       // maximal values of JXG.Board#zoomX and JXG.Board#zoomY, limits zoomIn
+        factorX: 1, 
+        factorY: 1, 
+        wheel: false,    
+        needShift: true, 
+        min: 1,      
+        max: 1, 
       
-        pinchHorizontal: false, // Allow pinch-to-zoom to zoom only horizontal axis
-        pinchVertical: false,   // Allow pinch-to-zoom to zoom only vertical axis
-        pinchSensitivity: 7    // Sensitivity (in degrees) for recognizing horizontal or vertical pinch-to-zoom gestures.
+        pinchHorizontal: false,
+        pinchVertical: false, 
+        pinchSensitivity: 7 
       },
       pan: {
-        enabled: false,   // Allow panning
-        needTwoFingers: true, // panning is done with two fingers on touch devices
-        needShift: true, // mouse panning needs pressing of the shift key
+        enabled: false,
+        needTwoFingers: true,
+        needShift: true,
       },
     }); 
 
