@@ -90,7 +90,7 @@ export default class ResultsTable extends React.Component {
 
 		// generate the rows of the table
 		let rows = [];
-		for (let subjectCode of subjectCodes) {
+		for (let [subjectIndex, subjectCode] of subjectCodes.entries()) {
 			let rawScore = subjectRawScores[subjectCode];
 			
 			if (rawScore === "") {
@@ -102,6 +102,10 @@ export default class ResultsTable extends React.Component {
 				if (rawScore < 100) {
 					// tea potential is how much the scaled score could increase if your raw score increased by 1
 					teaPotential = (calculateScaledScore(rawScore + 1, subjectCode) - scaledScore).toFixed(2);
+					if (subjectIndex > 4) {
+						let newScaledScore = calculateScaledScore(rawScore + 1, subjectCode);
+						if (newScaledScore < subjectScaledScores[subjectCodes[4]]) teaPotential = `(${teaPotential})`;	// if the new scaled score is less than the scaled score of the 5th subject, add parentheses
+					}
 				} else {
 					teaPotential = 0;
 				}
@@ -147,7 +151,7 @@ export default class ResultsTable extends React.Component {
 							<th>TEA Potential 
 								<div id="tea-potential-help">
 									<img className='help-icon' alt="What is TEA Potential?" src={require('./../assets/help.svg').default}></img>
-									<span className='help-tooltip'>How much your TEA would increase if the raw score increased by 1</span>
+									<span className='help-tooltip'>How much your TEA would increase if the raw score increased by 1. If in brackets, it means that it wouldn't be in your top 5 anyways, so would actually have no impact.</span>
 								</div>
 							</th>
 						</tr>
