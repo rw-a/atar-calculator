@@ -7,9 +7,10 @@ class ResultsRow extends React.Component {
 	render() {
 		return(
 			<tr>
-				<td id='subjects-row'>{SUBJECTS[this.props.code]}</td>
+				<td>{SUBJECTS[this.props.code]}</td>
 				<td className='score'>{this.props.rawScore}</td>
 				<td className='score'>{this.props.scaledScore}</td>
+				<td className='score'>{this.props.teaPotential}</td>
 			</tr>
 		);
 	}
@@ -91,16 +92,29 @@ export default class ResultsTable extends React.Component {
 		let rows = [];
 		for (let subjectCode of subjectCodes) {
 			let rawScore = subjectRawScores[subjectCode];
-			let scaledScore = subjectScaledScores[subjectCode];
-			scaledScore = (scaledScore ? Number(scaledScore).toFixed(2) : "");  // round the scaled score to 2 d.p.
+			
+			if (rawScore === "") {
+				var scaledScore = "";
+				var teaPotential = "";
+			} else {
+				rawScore = Number(rawScore);
+				scaledScore = subjectScaledScores[subjectCode].toFixed(2);
+				if (rawScore < 100) {
+					// tea potential is how much the scaled score could increase if your raw score increased by 1
+					teaPotential = (calculateScaledScore(rawScore + 1, subjectCode) - scaledScore).toFixed(2);
+				} else {
+					teaPotential = 0;
+				}
+			}
+
 			rows.push(
-				<ResultsRow key={subjectCode} code={subjectCode} rawScore={rawScore} scaledScore={scaledScore} />
+				<ResultsRow key={subjectCode} code={subjectCode} rawScore={rawScore} scaledScore={scaledScore} teaPotential={teaPotential}/>
 			);
 		}
 		// if no subjects added, add blank boxes as placeholders
 		if (rows.length < 1) {
 			rows.push(
-				<ResultsRow key="0" code={""} rawScore={""} scaledScore={""} />
+				<ResultsRow key="0" code={""} rawScore={""} scaledScore={""} teaPotential={""}/>
 			);
 		}
 
@@ -130,6 +144,12 @@ export default class ResultsTable extends React.Component {
 							<th>Subject</th>
 							<th>Raw Score</th>
 							<th>Scaled Score</th>
+							<th>TEA Potential 
+								<div id="tea-potential-help">
+									<img className='help-icon' alt="What is TEA Potential?" src={require('./../assets/help.svg').default}></img>
+									<span className='help-tooltip'>How much your TEA would increase if the raw score increased by 1</span>
+								</div>
+							</th>
 						</tr>
 					</thead>
 					<tbody>
