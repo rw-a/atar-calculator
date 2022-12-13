@@ -109,7 +109,7 @@ export default class ScalingGraph extends React.Component {
       if (rawScore) {
         let scaledScore = calculateScaledScore(rawScore, subjectCode);
         let point = this.board.create('point', [rawScore, scaledScore], {face: "cross", name: SUBJECTS[subjectCode], withLabel: true});
-        point.label.setAttribute({offset: [10, 0]});
+        point.label.setAttribute({offset: [10, -4]});
         point.setAttribute({withLabel: false});
         point.hasPoint = function(x, y) {return false;}; // disable highlighting
         points.push(point);
