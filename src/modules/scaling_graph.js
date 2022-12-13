@@ -184,7 +184,8 @@ export default class ScalingGraph extends React.Component {
     mouseCoordinates.label.setAttribute({offset: [7, 13]}); // set offset of coordinates at mouse
 
     // update position of mouse coordinates
-    let previousNearestX = 0;   // tracks whether there has been a change in nearestX (only update on change for optimisation)
+    let previousCoordinates = [0, 0];   // tracks whether there has been a change in coordinates (only update on change for optimisation)
+    let previouslyVisible = false;      // tracks whether coordinates were previously shown (for optimisation)
     let updateMouseCoordinates = () => {
       if (subjects.length < 1) return false;
 
@@ -192,22 +193,33 @@ export default class ScalingGraph extends React.Component {
       let nearestX = Math.round(coords[0]);
 
       if (nearestX >= -1 && nearestX <= 101) {
+        // adds leeway so you don't have to get exactly 0 or 100
         if (nearestX <= 0) nearestX = 0;
-        if (nearestX >= 100) nearestX = 100;  // adds leeway so you don't have to get exactly 100
+        if (nearestX >= 100) nearestX = 100;  
 
-        if (nearestX === previousNearestX) return false;
-        previousNearestX = nearestX;
-
-        mouseCoordinates.showElement();
+        // pick the closest subject to select
         let closestSubject = subjects.reduce((subjectCode1, subjectCode2) => {  // get the subject with raw score closest to the cursor
           return (Math.abs(calculateScaledScore(nearestX, subjectCode1) - coords[1]) < Math.abs(calculateScaledScore(nearestX, subjectCode2) - coords[1])) ? subjectCode1 : subjectCode2;
         })
         let nearestY = calculateScaledScore(nearestX, closestSubject)
 
-        mouseCoordinates.moveTo([nearestX, nearestY]);
+        // show coordinates if required
+        if (!previouslyVisible) {
+          mouseCoordinates.showElement();
+          previouslyVisible = true;
+        }
+
+        let coordinates = [nearestX, nearestY];
+        if (nearestX === previousCoordinates[0] && nearestY === previousCoordinates[1]) return false;
+        previousCoordinates = coordinates;
+        
+        mouseCoordinates.moveTo(coordinates);
         mouseCoordinates.setAttribute({name: `(${nearestX.toFixed(0)}, ${nearestY.toFixed(2)})`})
       } else {
-        mouseCoordinates.hideElement();
+        if (previouslyVisible) {
+          mouseCoordinates.hideElement();
+          previouslyVisible = false;
+        }
       }
     }
     this.board.on('touchstart', updateMouseCoordinates);
