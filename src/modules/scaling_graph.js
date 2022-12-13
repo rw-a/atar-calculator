@@ -55,6 +55,7 @@ export default class ScalingGraph extends React.Component {
     this.legend = JXG.JSXGraph.initBoard("jsxlegend", { 
       boundingbox: [0, 104, 20, -6], // min x, max y, max x, min y
       maxFrameRate: 1,
+      registerEvents: false,
       showCopyright: false, 
       showInfobox: false,
       showNavigation: false,
