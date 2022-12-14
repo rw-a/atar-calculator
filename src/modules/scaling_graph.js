@@ -41,8 +41,8 @@ export default class ScalingGraph extends React.Component {
         min: 1,        // minimal values of JXG.Board#zoomX and JXG.Board#zoomY, limits zoomOut
         max: 50,       // maximal values of JXG.Board#zoomX and JXG.Board#zoomY, limits zoomIn
       
-        pinchHorizontal: true, // Allow pinch-to-zoom to zoom only horizontal axis
-        pinchVertical: true,   // Allow pinch-to-zoom to zoom only vertical axis
+        pinchHorizontal: false, // Allow pinch-to-zoom to zoom only horizontal axis
+        pinchVertical: false,   // Allow pinch-to-zoom to zoom only vertical axis
         pinchSensitivity: 7    // Sensitivity (in degrees) for recognizing horizontal or vertical pinch-to-zoom gestures.
       },
       pan: {
