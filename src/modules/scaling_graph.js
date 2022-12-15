@@ -150,8 +150,10 @@ export default class ScalingGraph extends React.Component {
     }); 
 
     // clear legend
-    for (let object of [...this.legend.objectsList]) {
-      this.legend.removeObject(object);
+    let legendObjectsList = [...this.legend.objectsList];
+    for (let index = legendObjectsList.length - 1; index >= 0; index -= 1) {
+      let object = legendObjectsList[index];
+      this.legend.removeObject(object.id);
     }
 
     // create legend
