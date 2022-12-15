@@ -131,6 +131,11 @@ export default class ScalingGraph extends React.Component {
   }
 
   plotPoints() {
+    // determine whether to show the points, at the current zoom level
+    let boundingBox = this.board.getBoundingBox();
+    let zoomFactor = (BOUNDING_BOX[2] - BOUNDING_BOX[0]) / (boundingBox[2] - boundingBox[0]);
+    let showLabels = (zoomFactor >= SUBJECT_LABELS_ZOOM_THRESHOLD);
+
     for (let subjectCode of this.subjects) {
       // plot raw score input
       let rawScore = this.props.subjects[subjectCode];
@@ -138,7 +143,7 @@ export default class ScalingGraph extends React.Component {
         let scaledScore = calculateScaledScore(rawScore, subjectCode);
         let point = this.board.create('point', [rawScore, scaledScore], {face: "cross", name: SUBJECTS[subjectCode], withLabel: true});
         point.label.setAttribute({offset: [10, -4]});
-        point.setAttribute({withLabel: false});
+        if (!showLabels) point.setAttribute({withLabel: false});
         point.hasPoint = function(x, y) {return false;}; // disable highlighting
         this.points.push(point);
       }
@@ -164,7 +169,7 @@ export default class ScalingGraph extends React.Component {
       
       // show/hide subject labels
       if (this.zoomFactorChange(zoomFactor, previousZoomFactor, SUBJECT_LABELS_ZOOM_THRESHOLD)) {
-        let showLabels = zoomFactor >= SUBJECT_LABELS_ZOOM_THRESHOLD;
+        let showLabels = (zoomFactor >= SUBJECT_LABELS_ZOOM_THRESHOLD);
         for (let point of this.points) {
           point.setAttribute({withLabel: showLabels});
         }
