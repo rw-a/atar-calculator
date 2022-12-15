@@ -98,14 +98,14 @@ export default class ScalingGraph extends React.Component {
       let c = SCALINGDATA[subjectCode]["c"];
       let subjectFunction = this.board.create('functiongraph', [function(x){
         return (a / (1 + Math.exp(-b * (x - c))));
-      }, 0, 100], {strokeColor: COLORS[subjectIndex % COLORS.length]});
+      }, 0, 100], {strokeColor: COLORS[subjectIndex % COLORS.length]});   // modulus ensures colours repeat if exhausted
       subjectFunction.hasPoint = function(x, y) {return false;}; // disable highlighting
     }
   }
 
   plotScorePoints() {
     this.points = [];
-    for (let [subjectIndex, subjectCode] of this.subjects.entries()) {
+    for (let subjectCode of this.subjects) {
       // plot raw score input
       let rawScore = this.props.subjects[subjectCode];
       if (rawScore) {
