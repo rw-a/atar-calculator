@@ -78,7 +78,10 @@ export default class ScalingGraph extends React.Component {
       },
     }); 
 
-    this.originalObjects = [...this.board.objectsList];
+    this.addZoomLevelListeners(); // this could be further optimised by only updating subject label listener, not whole legend listener
+    this.createMouseCoordinates();
+
+    this.originalObjects = [...this.board.objectsList]; // this needs to be after the mouse coordinates is created so it is preserved
     this.points = [];
     this.subjects = [];
   }
@@ -214,16 +217,18 @@ export default class ScalingGraph extends React.Component {
         })
         let nearestY = calculateScaledScore(nearestX, closestSubject)
 
-        // show coordinates if required
+        // show coordinates if previously hidden
         if (!previouslyVisible) {
           mouseCoordinates.showElement();
           previouslyVisible = true;
         }
 
+        // only update if the coordinates have actually changed
         let coordinates = [nearestX, nearestY];
         if (nearestX === previousCoordinates[0] && nearestY === previousCoordinates[1]) return false;
         previousCoordinates = coordinates;
         
+        // move the point to the mouse and update it's name to be it's coordinate
         mouseCoordinates.moveTo(coordinates);
         mouseCoordinates.setAttribute({name: `(${nearestX.toFixed(0)}, ${nearestY.toFixed(2)})`})
       } else {
@@ -254,23 +259,19 @@ export default class ScalingGraph extends React.Component {
     let previousSubjects = [...this.subjects];
     this.subjects = Object.keys(this.props.subjects).filter((subjectCode) => {return this.props.subjects[subjectCode] !== undefined}); // this is a list, whereas this.props.subjects is an object
     this.subjectsHaveChanged = !(JSON.stringify(previousSubjects) === JSON.stringify(this.subjects));
-
+    
     if (this.subjectsHaveChanged) {
       this.clearBoard();
       if (this.subjects.length > 0) this.plotScalingFunctions();
       this.clearLegend();
-    if (this.subjects.length > 0) this.createLegend();
+      if (this.subjects.length > 0) this.createLegend();
     } else {
       this.clearPoints();
     }
     this.plotPoints();
-    this.addZoomLevelListeners();
-    this.createMouseCoordinates();
 
     this.board.unsuspendUpdate();
     this.legend.unsuspendUpdate();
-
-    console.log(this.board.objectsList);
   }
 
   render() {
