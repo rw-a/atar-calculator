@@ -169,10 +169,12 @@ export default class ScalingGraph extends React.Component {
       
       // show/hide subject labels
       if (this.zoomFactorChange(zoomFactor, previousZoomFactor, SUBJECT_LABELS_ZOOM_THRESHOLD)) {
+        this.board.suspendUpdate();
         let showLabels = (zoomFactor >= SUBJECT_LABELS_ZOOM_THRESHOLD);
         for (let point of this.points) {
           point.setAttribute({withLabel: showLabels});
         }
+        this.board.unsuspendUpdate();
       }
       
       // show/hide legend (only for mobile)
@@ -226,6 +228,7 @@ export default class ScalingGraph extends React.Component {
 
         // show coordinates if previously hidden
         if (!previouslyVisible) {
+          this.board.suspendUpdate();
           mouseCoordinates.showElement();
           previouslyVisible = true;
         }
@@ -236,8 +239,10 @@ export default class ScalingGraph extends React.Component {
         previousCoordinates = coordinates;
         
         // move the point to the mouse and update it's name to be it's coordinate
+        this.board.suspendUpdate();
         mouseCoordinates.moveTo(coordinates);
         mouseCoordinates.setAttribute({name: `(${nearestX.toFixed(0)}, ${nearestY.toFixed(2)})`})
+        this.board.unsuspendUpdate();
       } else {
         if (previouslyVisible) {
           mouseCoordinates.hideElement();
