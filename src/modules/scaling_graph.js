@@ -11,7 +11,7 @@ const COLORS = [
   'darkviolet',
   'orange',
   'brown',
-  'magenta',
+  'magenta'
 ];
 
 const BOUNDINGBOX = [-9, 104, 113, -6]; // min x, max y, max x, min y
@@ -81,31 +81,31 @@ export default class ScalingGraph extends React.Component {
     this.originalObjects = [...this.board.objectsList];
   }
 
-  componentDidUpdate() {
-    this.board.suspendUpdate();
-
-    // clear board
+  clearBoard() {
     let objectsList = [...this.board.objectsList];
     for (let index = objectsList.length - 1; index >= 0; index -= 1) {
       let object = objectsList[index];
       if (object.elType === "line" || object.elType === "curve" || (object.elType === "text" && object.htmlStr.length > 3) || (object.elType === "point" && object.Xjc !== null) || !this.originalObjects.includes(object))
       this.board.removeObject(object.id);
     }
-    
-    let subjects = Object.keys(this.props.subjects).filter((subjectCode) => {return this.props.subjects[subjectCode] !== undefined});
-    
-    // generate scaling graphs
-    let points = [];
-    for (let [subjectIndex, subjectCode] of subjects.entries()) {
+  }
+
+  plotScalingFunctions() {
+    for (let [subjectIndex, subjectCode] of this.subjects.entries()) {
       // create function
       let a = SCALINGDATA[subjectCode]["a"];
       let b = SCALINGDATA[subjectCode]["b"];
       let c = SCALINGDATA[subjectCode]["c"];
       let subjectFunction = this.board.create('functiongraph', [function(x){
         return (a / (1 + Math.exp(-b * (x - c))));
-      }, 0, 100], {strokeColor: COLORS[subjectIndex]});
+      }, 0, 100], {strokeColor: COLORS[subjectIndex % COLORS.length]});
       subjectFunction.hasPoint = function(x, y) {return false;}; // disable highlighting
+    }
+  }
 
+  plotScorePoints() {
+    this.points = [];
+    for (let [subjectIndex, subjectCode] of this.subjects.entries()) {
       // plot raw score input
       let rawScore = this.props.subjects[subjectCode];
       if (rawScore) {
@@ -114,19 +114,22 @@ export default class ScalingGraph extends React.Component {
         point.label.setAttribute({offset: [10, -4]});
         point.setAttribute({withLabel: false});
         point.hasPoint = function(x, y) {return false;}; // disable highlighting
-        points.push(point);
+        this.points.push(point);
       }
     }
+  }
 
-    function zoomFactorChange(zoomFactor, previousZoomFactor, thresholdZoomFactor) {
-      // tests whether the zoom factor has crossed the threshold (for optimisation purposes so no redundant attribute setting)
-      if (zoomFactor >= thresholdZoomFactor) {
-        return previousZoomFactor < thresholdZoomFactor;
-      } else {
-        return previousZoomFactor > thresholdZoomFactor;
-      }
+  // static method
+  zoomFactorChange(zoomFactor, previousZoomFactor, thresholdZoomFactor) {
+    // tests whether the zoom factor has crossed the threshold (for optimisation purposes so no redundant attribute setting)
+    if (zoomFactor >= thresholdZoomFactor) {
+      return previousZoomFactor < thresholdZoomFactor;
+    } else {
+      return previousZoomFactor > thresholdZoomFactor;
     }
+  }
 
+  addZoomLevelListeners() {
     // show/hide labels and/or legend depending on zoom level
     let previousZoomFactor = 1;
     this.board.on('boundingbox', () => {
@@ -134,43 +137,45 @@ export default class ScalingGraph extends React.Component {
       let zoomFactor = (BOUNDINGBOX[2] - BOUNDINGBOX[0]) / (boundingBox[2] - boundingBox[0]);
       
       // show/hide subject labels
-      if (zoomFactorChange(zoomFactor, previousZoomFactor, SUBJECT_LABELS_ZOOM_THRESHOLD)) {
+      if (this.zoomFactorChange(zoomFactor, previousZoomFactor, SUBJECT_LABELS_ZOOM_THRESHOLD)) {
         let showLabels = zoomFactor >= SUBJECT_LABELS_ZOOM_THRESHOLD;
-        for (let point of points) {
+        for (let point of this.points) {
           point.setAttribute({withLabel: showLabels});
         }
       }
       
       // show/hide legend (only for mobile)
-      if (this.isMobile && zoomFactorChange(zoomFactor, previousZoomFactor, MOBILE_LEGEND_ZOOM_THRESHOLD)) {
+      if (this.isMobile && this.zoomFactorChange(zoomFactor, previousZoomFactor, MOBILE_LEGEND_ZOOM_THRESHOLD)) {
         document.getElementById('jsxlegend').style.display = (zoomFactor >= MOBILE_LEGEND_ZOOM_THRESHOLD) ? 'none' : ''; // none is hidden, blank is shown
       }
 
       previousZoomFactor = zoomFactor;
     }); 
+  }
 
-    // clear legend
+  clearLegend() {
     let legendObjectsList = [...this.legend.objectsList];
     for (let index = legendObjectsList.length - 1; index >= 0; index -= 1) {
       let object = legendObjectsList[index];
       this.legend.removeObject(object.id);
     }
+  }
 
-    // create legend
-    if (subjects.length > 0) {
-      let subjectsNames = subjects.map((subjectCode) => {return SUBJECTS[subjectCode]});
-      let longestSubjectName = subjectsNames.reduce((subject1, subject2) => {return (subject1.length > subject2.length) ? subject1 : subject2});
-      let numLines = Math.ceil(longestSubjectName.length / 12);
-      let rowHeight = numLines * 9 + 10;
-      var legend = this.legend.create('legend', [0, 100], {labels: subjectsNames, colors: COLORS, rowHeight: rowHeight} );
-      let legendHeightOffset = this.isMobile ? 36 : 60;
-      let legendHeight = legend.lines.at(-1).getTextAnchor().scrCoords.at(-1) + legendHeightOffset;
-      document.getElementById('jsxlegend').style.top = `${this.graphHeight - legendHeight}px`;
-      document.getElementById('jsxlegenddummy').style.top = `${this.graphHeight - legendHeight}px`;
-    }
-    
-    // create coordinates at mouse
-    let mouseCoordinates = this.board.create('point', [0, 0], {
+  createLegend() {
+    let subjectsNames = this.subjects.map((subjectCode) => {return SUBJECTS[subjectCode]});
+    let longestSubjectName = subjectsNames.reduce((subject1, subject2) => {return (subject1.length > subject2.length) ? subject1 : subject2});
+    let numLines = Math.ceil(longestSubjectName.length / 12);
+    let rowHeight = numLines * 9 + 10;
+    var legend = this.legend.create('legend', [0, 100], {labels: subjectsNames, colors: COLORS, rowHeight: rowHeight} );
+    let legendHeightOffset = this.isMobile ? 36 : 60;
+    let legendHeight = legend.lines.at(-1).getTextAnchor().scrCoords.at(-1) + legendHeightOffset;
+    document.getElementById('jsxlegend').style.top = `${this.graphHeight - legendHeight}px`;
+    document.getElementById('jsxlegenddummy').style.top = `${this.graphHeight - legendHeight}px`;
+  }
+
+  createMouseCoordinates() {
+     // create coordinates at mouse
+     let mouseCoordinates = this.board.create('point', [0, 0], {
       visible: false,
       fixed: true,
       size: 2, 
@@ -192,7 +197,7 @@ export default class ScalingGraph extends React.Component {
     let previousCoordinates = [0, 0];   // tracks whether there has been a change in coordinates (only update on change for optimisation)
     let previouslyVisible = false;      // tracks whether coordinates were previously shown (for optimisation)
     let updateMouseCoordinates = () => {
-      if (subjects.length < 1) return false;
+      if (this.subjects.length < 1) return false;
 
       let coords = new JXG.Coords(COORDS_BY_SCREEN, this.board.getMousePosition(), this.board).usrCoords.slice(1);
       let nearestX = Math.round(coords[0]);
@@ -203,7 +208,7 @@ export default class ScalingGraph extends React.Component {
         if (nearestX >= 100) nearestX = 100;  
 
         // pick the closest subject to select
-        let closestSubject = subjects.reduce((subjectCode1, subjectCode2) => {  // get the subject with raw score closest to the cursor
+        let closestSubject = this.subjects.reduce((subjectCode1, subjectCode2) => {  // get the subject with raw score closest to the cursor
           return (Math.abs(calculateScaledScore(nearestX, subjectCode1) - coords[1]) < Math.abs(calculateScaledScore(nearestX, subjectCode2) - coords[1])) ? subjectCode1 : subjectCode2;
         })
         let nearestY = calculateScaledScore(nearestX, closestSubject)
@@ -229,8 +234,25 @@ export default class ScalingGraph extends React.Component {
     }
     this.board.on('touchstart', updateMouseCoordinates);
     this.board.on('pointermove', updateMouseCoordinates);
+  }
+
+  componentDidUpdate() {
+    this.board.suspendUpdate();
+    this.legend.suspendUpdate();
+
+    // this is a list, whereas this.props.subjects is an object
+    this.subjects = Object.keys(this.props.subjects).filter((subjectCode) => {return this.props.subjects[subjectCode] !== undefined});
+
+    this.clearBoard();
+    if (this.subjects.length > 0) this.plotScalingFunctions();
+    this.plotScorePoints();
+    this.addZoomLevelListeners();
+    this.clearLegend();
+    if (this.subjects.length > 0) this.createLegend();
+    this.createMouseCoordinates();
 
     this.board.unsuspendUpdate();
+    this.legend.unsuspendUpdate();
 
     console.log(this.board);
   }
