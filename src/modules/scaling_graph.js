@@ -79,6 +79,8 @@ export default class ScalingGraph extends React.Component {
     }); 
 
     this.originalObjects = [...this.board.objectsList];
+    this.points = [];
+    this.subjects = [];
   }
 
   clearBoard() {
@@ -86,7 +88,7 @@ export default class ScalingGraph extends React.Component {
     for (let index = objectsList.length - 1; index >= 0; index -= 1) {
       let object = objectsList[index];
       if (object.elType === "line" || object.elType === "curve" || (object.elType === "text" && object.htmlStr.length > 3) || (object.elType === "point" && object.Xjc !== null) || !this.originalObjects.includes(object))
-      this.board.removeObject(object.id);
+        this.board.removeObject(object.id);
     }
   }
 
@@ -103,8 +105,27 @@ export default class ScalingGraph extends React.Component {
     }
   }
 
-  plotScorePoints() {
-    this.points = [];
+  clearLegend() {
+    let legendObjectsList = [...this.legend.objectsList];
+    for (let index = legendObjectsList.length - 1; index >= 0; index -= 1) {
+      let object = legendObjectsList[index];
+      this.legend.removeObject(object.id);
+    }
+  }
+
+  createLegend() {
+    let subjectsNames = this.subjects.map((subjectCode) => {return SUBJECTS[subjectCode]});
+    let longestSubjectName = subjectsNames.reduce((subject1, subject2) => {return (subject1.length > subject2.length) ? subject1 : subject2});
+    let numLines = Math.ceil(longestSubjectName.length / 12);
+    let rowHeight = numLines * 9 + 10;
+    var legend = this.legend.create('legend', [0, 100], {labels: subjectsNames, colors: COLORS, rowHeight: rowHeight} );
+    let legendHeightOffset = this.isMobile ? 36 : 60;
+    let legendHeight = legend.lines.at(-1).getTextAnchor().scrCoords.at(-1) + legendHeightOffset;
+    document.getElementById('jsxlegend').style.top = `${this.graphHeight - legendHeight}px`;
+    document.getElementById('jsxlegenddummy').style.top = `${this.graphHeight - legendHeight}px`;
+  }
+
+  plotPoints() {
     for (let subjectCode of this.subjects) {
       // plot raw score input
       let rawScore = this.props.subjects[subjectCode];
@@ -151,26 +172,6 @@ export default class ScalingGraph extends React.Component {
 
       previousZoomFactor = zoomFactor;
     }); 
-  }
-
-  clearLegend() {
-    let legendObjectsList = [...this.legend.objectsList];
-    for (let index = legendObjectsList.length - 1; index >= 0; index -= 1) {
-      let object = legendObjectsList[index];
-      this.legend.removeObject(object.id);
-    }
-  }
-
-  createLegend() {
-    let subjectsNames = this.subjects.map((subjectCode) => {return SUBJECTS[subjectCode]});
-    let longestSubjectName = subjectsNames.reduce((subject1, subject2) => {return (subject1.length > subject2.length) ? subject1 : subject2});
-    let numLines = Math.ceil(longestSubjectName.length / 12);
-    let rowHeight = numLines * 9 + 10;
-    var legend = this.legend.create('legend', [0, 100], {labels: subjectsNames, colors: COLORS, rowHeight: rowHeight} );
-    let legendHeightOffset = this.isMobile ? 36 : 60;
-    let legendHeight = legend.lines.at(-1).getTextAnchor().scrCoords.at(-1) + legendHeightOffset;
-    document.getElementById('jsxlegend').style.top = `${this.graphHeight - legendHeight}px`;
-    document.getElementById('jsxlegenddummy').style.top = `${this.graphHeight - legendHeight}px`;
   }
 
   createMouseCoordinates() {
@@ -236,25 +237,40 @@ export default class ScalingGraph extends React.Component {
     this.board.on('pointermove', updateMouseCoordinates);
   }
 
+  clearPoints() {
+    // clear the points which show the raw score inputted but not the graphs. useful if only the raw score changes and not the subjects
+    let objectsList = [...this.board.objectsList];
+    for (let index = objectsList.length - 1; index >= 0; index -= 1) {
+      let object = objectsList[index];
+      if ((object.elType === "point" && object.Xjc !== null))
+        this.board.removeObject(object.id);
+    }
+  }
+
   componentDidUpdate() {
     this.board.suspendUpdate();
     this.legend.suspendUpdate();
 
-    // this is a list, whereas this.props.subjects is an object
-    this.subjects = Object.keys(this.props.subjects).filter((subjectCode) => {return this.props.subjects[subjectCode] !== undefined});
+    let previousSubjects = [...this.subjects];
+    this.subjects = Object.keys(this.props.subjects).filter((subjectCode) => {return this.props.subjects[subjectCode] !== undefined}); // this is a list, whereas this.props.subjects is an object
+    this.subjectsHaveChanged = !(JSON.stringify(previousSubjects) === JSON.stringify(this.subjects));
 
-    this.clearBoard();
-    if (this.subjects.length > 0) this.plotScalingFunctions();
-    this.plotScorePoints();
-    this.addZoomLevelListeners();
-    this.clearLegend();
+    if (this.subjectsHaveChanged) {
+      this.clearBoard();
+      if (this.subjects.length > 0) this.plotScalingFunctions();
+      this.clearLegend();
     if (this.subjects.length > 0) this.createLegend();
+    } else {
+      this.clearPoints();
+    }
+    this.plotPoints();
+    this.addZoomLevelListeners();
     this.createMouseCoordinates();
 
     this.board.unsuspendUpdate();
     this.legend.unsuspendUpdate();
 
-    console.log(this.board);
+    console.log(this.board.objectsList);
   }
 
   render() {
