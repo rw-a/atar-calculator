@@ -78,7 +78,7 @@ export default class ScalingGraph extends React.Component {
       },
     }); 
 
-    this.setState({originalObjects: [...this.board.objectsList]})
+    this.originalObjects = [...this.board.objectsList];
   }
 
   componentDidUpdate() {
@@ -86,7 +86,7 @@ export default class ScalingGraph extends React.Component {
 
     // clear board
     for (let object of [...this.board.objectsList]) {
-      if (object.elType === "line" || object.elType === "curve" || (object.elType === "text" && object.htmlStr.length > 3) || (object.elType === "point" && object.Xjc !== null) || !this.state.originalObjects.includes(object))
+      if (object.elType === "line" || object.elType === "curve" || (object.elType === "text" && object.htmlStr.length > 3) || (object.elType === "point" && object.Xjc !== null) || !this.originalObjects.includes(object))
       this.board.removeObject(object);
     }
     
@@ -227,6 +227,8 @@ export default class ScalingGraph extends React.Component {
     this.board.on('pointermove', updateMouseCoordinates);
 
     this.board.unsuspendUpdate();
+
+    console.log(this.board);
   }
 
   render() {
