@@ -85,9 +85,11 @@ export default class ScalingGraph extends React.Component {
     this.board.suspendUpdate();
 
     // clear board
-    for (let object of [...this.board.objectsList]) {
+    let objectsList = [...this.board.objectsList];
+    for (let index = objectsList.length - 1; index >= 0; index -= 1) {
+      let object = objectsList[index];
       if (object.elType === "line" || object.elType === "curve" || (object.elType === "text" && object.htmlStr.length > 3) || (object.elType === "point" && object.Xjc !== null) || !this.originalObjects.includes(object))
-      this.board.removeObject(object);
+      this.board.removeObject(object.id);
     }
     
     let subjects = Object.keys(this.props.subjects).filter((subjectCode) => {return this.props.subjects[subjectCode] !== undefined});
