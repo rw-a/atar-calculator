@@ -14,7 +14,9 @@ const COLORS = [
   'magenta'
 ];
 
-const BOUNDINGBOX = [-9, 104, 113, -6]; // min x, max y, max x, min y
+const BOUNDING_BOX = [-9, 104, 113, -6]; // min x, max y, max x, min y
+
+const LEGEND_WIDTH = 110;
 
 const SUBJECT_LABELS_ZOOM_THRESHOLD = 1.7;
 const MOBILE_LEGEND_ZOOM_THRESHOLD = 10;
@@ -28,7 +30,7 @@ export default class ScalingGraph extends React.Component {
     this.board = JXG.JSXGraph.initBoard("jsxgraph", { 
       axis: true, 
       maxFrameRate: 30,
-      boundingbox: BOUNDINGBOX, 
+      boundingbox: BOUNDING_BOX, 
       maxboundingbox: [-100, 200, 200, -100],
       showCopyright: false, 
       showInfobox: false,
@@ -125,7 +127,7 @@ export default class ScalingGraph extends React.Component {
     let legendHeightOffset = this.isMobile ? 36 : 60;
     let legendHeight = legend.lines.at(-1).getTextAnchor().scrCoords.at(-1) + legendHeightOffset;
     document.getElementById('jsxlegend').style.top = `${this.graphHeight - legendHeight}px`;
-    document.getElementById('jsxlegenddummy').style.top = `${this.graphHeight - legendHeight}px`;
+    this.legend.resizeContainer(LEGEND_WIDTH, legendHeight, false, true);
   }
 
   plotPoints() {
@@ -158,7 +160,7 @@ export default class ScalingGraph extends React.Component {
     let previousZoomFactor = 1;
     this.board.on('boundingbox', () => {
       let boundingBox = this.board.getBoundingBox();
-      let zoomFactor = (BOUNDINGBOX[2] - BOUNDINGBOX[0]) / (boundingBox[2] - boundingBox[0]);
+      let zoomFactor = (BOUNDING_BOX[2] - BOUNDING_BOX[0]) / (boundingBox[2] - boundingBox[0]);
       
       // show/hide subject labels
       if (this.zoomFactorChange(zoomFactor, previousZoomFactor, SUBJECT_LABELS_ZOOM_THRESHOLD)) {
@@ -275,19 +277,19 @@ export default class ScalingGraph extends React.Component {
   }
 
   render() {
-    let legendWidth = 110;
     this.isMobile = this.maxWidth < 400;
 
     this.maxWidth = Math.min(720, document.querySelector('#root').getBoundingClientRect().width - 40);  // kinda janky, tries to find width after padding
-    this.graphHeight = Math.abs(this.maxWidth * (BOUNDINGBOX[1] - BOUNDINGBOX[3]) / (BOUNDINGBOX[2] - BOUNDINGBOX[0]));  // ensures that 1x1 aspect ratio is maintained
+    this.graphHeight = Math.abs(this.maxWidth * (BOUNDING_BOX[1] - BOUNDING_BOX[3]) / (BOUNDING_BOX[2] - BOUNDING_BOX[0]));  // ensures that 1x1 aspect ratio is maintained
     
     return(
       <div>
         <h2 style={{marginBottom: 0}}>Subject Scaling Graph</h2>
         <div style={{position: "relative"}}>
           <div id="jsxgraph" style={{width: this.maxWidth, height: this.graphHeight}}></div>
-          <div id="jsxlegend" style={{position: "absolute", top: this.graphHeight - 250 /* estimate, will be accurately calculated later */, right: 0, width: legendWidth, height: this.graphHeight}}></div>
-          <div id="jsxlegenddummy" style={{position: "absolute", top: this.graphHeight - 250, right: 0, width: legendWidth, height: this.graphHeight, zIndex: -10 /* same as regular legend except blank and at the back to prevent the screen size from changing as the legend is hidden*/}}></div>
+          <div id="jsxlegend" style={{position: "absolute", top: this.graphHeight - 250 /* estimate, will be accurately calculated later */, right: 0, width: LEGEND_WIDTH, height: this.graphHeight}}></div>
+          <br></br>
+          <br></br>
         </div>
       </div>
     );
