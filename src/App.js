@@ -1,7 +1,7 @@
 import './App.css';
 import React from 'react';
 import SubjectsTable from './modules/subjects';
-import ResultsTable from './modules/results'
+import ResultsTable, { calculateTeaFromSubjects } from './modules/results'
 import ScalingGraph from './modules/scalingGraph';
 import TeaGraph from './modules/teaGraph';
 
@@ -105,7 +105,7 @@ class Calculator extends React.Component {
           subjectRawScores={this.state} 
         />
         <ScalingGraph subjects={this.state}/>
-        <TeaGraph />
+        <TeaGraph tea={calculateTeaFromSubjects(this.state)}/>
         <br/>
       </div>
     );

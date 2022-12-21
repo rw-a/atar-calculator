@@ -5,38 +5,46 @@ import ATARDATA from './../data/2021_atar_data.json'
 export default class TeaGraph extends React.Component {
     render() {
         let width = Math.min(720, document.querySelector('#root').getBoundingClientRect().width - 40);
-        
-        /* alternating text positions
-        let textPositions = [];
-        let markerPositions = [];
-        for (let i = 0; i < Object.keys(ATARDATA).length; i++) {
-            textPositions.push(["top center", "bottom center"][i % 2]);
-            markerPositions.push([0.1, -0.1][i % 2]);
-        } */
 
         return (
             <div>
                 <h2>TEA to ATAR Map</h2>
                 <Plot 
-                    data={[{    // yes you need all three brackets
+                    data={[
+                    {
                         x: Object.keys(ATARDATA),
                         y: Array(Object.keys(ATARDATA).length).fill(0),
-                        // y: markerPositions,
                         text: Object.values(ATARDATA),
                         type: 'scatter',
-                        // textposition: textPositions,
                         textposition: "top center",
                         mode: 'markers+text',
+                        hoverinfo: 'x',
+                        hovertemplate: 'TEA: %{x:.2f} <extra></extra>',
                         marker: { 
                             symbol: "line-ns",
                             size: 10,
                             line: {
                                 width: 1
                             }}
-                    }]}
+                    },
+                    {
+                        x: [this.props.tea],
+                        y: [0],
+                        text: ["You"],
+                        type: 'scatter',
+                        textposition: "bottom center",
+                        mode: 'markers+text',
+                        hoverinfo: 'x',
+                        hovertemplate: '%{x:.2f} <extra></extra>',
+                        marker: {
+                            size: 10,
+                            color: "#2684ff",
+                        }
+                    }
+                    ]}
                     layout={{
                         title: {
-                            // text: "ATAR",
+                            // text: "TITLE"
                             font: {
                                 size: 17
                             }
@@ -44,8 +52,12 @@ export default class TeaGraph extends React.Component {
                         width: width, 
                         height: 150, 
                         dragmode: 'pan',
+                        showlegend: false,
                         font: {
                             family: `-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif`
+                        },
+                        hoverlabel: {
+                            bgcolor: "2684ff"
                         },
                         margin: {
                             b: 50,
