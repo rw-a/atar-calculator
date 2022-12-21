@@ -106,6 +106,7 @@ class Calculator extends React.Component {
         />
         <ScalingGraph subjects={this.state}/>
         <TeaGraph />
+        <br/>
       </div>
     );
   }

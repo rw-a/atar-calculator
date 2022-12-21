@@ -11,16 +11,46 @@ export default class TeaGraph extends React.Component {
                 <h2>TEA to ATAR Map</h2>
                 <Plot 
                     data={[{    // yes you need all three brackets
-                        x: [1, 2, 3],
-                        y: [2, 6, 3],
+                        x: Object.keys(ATARDATA),
+                        y: new Array(Object.keys(ATARDATA).length).fill(0),
+                        text: Object.values(ATARDATA),
                         type: 'scatter',
-                        mode: 'lines+markers',
-                        marker: {color: 'red'},
+                        textposition: 'top center',
+                        mode: 'markers+text',
+                        marker: { 
+                            symbol: "line-ns",
+                            size: 10,
+                            line: {
+                                width: 1
+                            }},
                     }]}
                     layout={{
                         width: width, 
                         height: 240, 
-                        title: 'A Fancy Plot'
+                        font: {
+                            family: `-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif`
+                        },
+                        margin: {
+                            b: 0,
+                            l: 0,
+                            r: 0,
+                            t: 0
+                        },
+                        xaxis: {
+                            domain: [0, 500],
+                            // range: [1, 500],
+                            // showgrid: false,
+                            // gridcolor: "#000000",
+                            ticks: "outside",
+                            ticklen: 10
+                        },
+                        yaxis: {
+                            range: [-1, 1],
+                            showgrid: false,
+                            zeroline: true,
+                            showticklabels: false,
+                            fixedrange: true
+                        }
                     }}
                     config={{
                         scrollZoom: true
