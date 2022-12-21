@@ -298,8 +298,6 @@ export default class ScalingGraph extends React.Component {
         <div style={{position: "relative"}}>
           <div id="jsxgraph" style={{width: this.maxWidth, height: this.graphHeight}}></div>
           <div id="jsxlegend" style={{position: "absolute", top: this.graphHeight - 250 /* estimate, will be accurately calculated later */, right: 0, width: LEGEND_WIDTH, height: this.graphHeight, zIndex: -1}}></div>
-          <br></br>
-          <br></br>
         </div>
       </div>
     );
