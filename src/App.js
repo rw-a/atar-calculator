@@ -2,7 +2,7 @@ import './App.css';
 import React from 'react';
 import SubjectsTable from './modules/subjects';
 import ResultsTable from './modules/results'
-import ScalingGraph from './modules/scaling_graph';
+import ScalingGraph from './modules/scalingGraph';
 
 
 function setCookie(cname, cvalue, exdays) {
