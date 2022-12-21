@@ -12,6 +12,7 @@
     "plotly.js-dist": "^2.16.5",
     "react": "^18.1.0",
     "react-dom": "^18.1.0",
+    "react-plotly.js": "^2.6.0",
     "react-scripts": "5.0.1",
     "react-select": "^5.3.2",
     "web-vitals": "^2.1.4"
