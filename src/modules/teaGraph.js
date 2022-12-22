@@ -1,6 +1,9 @@
 import React from 'react';
-import Plot from 'react-plotly.js'
+import Plotly from 'plotly.js/dist/plotly-tiny.js'
+import createPlotlyComponent from 'react-plotly.js/factory'
 import ATARDATA from './../data/2021_atar_data.json'
+
+const Plot = createPlotlyComponent(Plotly);
 
 export default class TeaGraph extends React.Component {
     render() {
