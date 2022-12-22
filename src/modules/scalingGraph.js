@@ -1,8 +1,8 @@
 import React from 'react';
 import JXG, { COORDS_BY_SCREEN } from 'jsxgraph';
 import { calculateScaledScore } from './results';
-import SUBJECTS from './../data/2021_subjects.json';
-import SCALINGDATA from './../data/2021_scaling_data.json';
+import SUBJECTS from '../data/2021_subjects.json';
+import SCALINGDATA from '../data/2021_scaling_data.json';
   
 const COLORS = [
   'steelblue',
@@ -298,8 +298,6 @@ export default class ScalingGraph extends React.Component {
         <div style={{position: "relative"}}>
           <div id="jsxgraph" style={{width: this.maxWidth, height: this.graphHeight}}></div>
           <div id="jsxlegend" style={{position: "absolute", top: this.graphHeight - 250 /* estimate, will be accurately calculated later */, right: 0, width: LEGEND_WIDTH, height: this.graphHeight, zIndex: -1}}></div>
-          <br></br>
-          <br></br>
         </div>
       </div>
     );

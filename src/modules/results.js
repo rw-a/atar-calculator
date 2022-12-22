@@ -65,22 +65,34 @@ export function calculateScaledScore(rawScore, subjectCode) {
 	let c = Number(SCALINGDATA[subjectCode]["c"]);
 	return a / (1 + Math.exp(-b * (rawScore - c)));
 }
+
+function mapRawToScaledScores(subjectRawScores) {
+	// creates an object with keys being subjectCode and value being scaledScore
+	let subjectScaledScores = {};
+	let subjectCodes = Object.keys(subjectRawScores).filter((subjectCode) => {return (subjectRawScores[subjectCode] !== undefined)});
+	for (let subjectCode of subjectCodes) {
+		let rawScore = subjectRawScores[subjectCode];
+		if (rawScore.length > 0) { // only scale if there is an actual input. otherwise be blank
+			subjectScaledScores[subjectCode] = calculateScaledScore(rawScore, subjectCode);
+		} else {
+			subjectScaledScores[subjectCode] = "";
+		}
+	}
+	return subjectScaledScores;
+}
+
+export function calculateTeaFromSubjects(subjectRawScores) {
+	let subjectScaledScores = mapRawToScaledScores(subjectRawScores);
+	let scaledScores = Object.values(subjectScaledScores);
+	let tea = calculateTeaFromScaledScores(scaledScores);
+	return tea;
+}
   
 export default class ResultsTable extends React.Component {
 	render() {
 		let subjectRawScores = this.props.subjectRawScores;
 		let subjectCodes = Object.keys(subjectRawScores).filter((subjectCode) => {return (subjectRawScores[subjectCode] !== undefined)});
-
-		// calculate the scaled scores
-		let subjectScaledScores = {};
-		for (let subjectCode of subjectCodes) {
-			let rawScore = subjectRawScores[subjectCode];
-			if (rawScore.length > 0) { // only scale if there is an actual input. otherwise be blank
-				subjectScaledScores[subjectCode] = calculateScaledScore(rawScore, subjectCode);
-			} else {
-				subjectScaledScores[subjectCode] = "";
-			}
-		}
+		let subjectScaledScores = mapRawToScaledScores(subjectRawScores);
 
 		// sort the subjects
 		subjectCodes.sort((a, b) => {
@@ -130,7 +142,7 @@ export default class ResultsTable extends React.Component {
 		// do the math
 		let scaledScores = Object.values(subjectScaledScores);    // only the values, don't care about which subject
 		let tea = calculateTeaFromScaledScores(scaledScores);
-		let calculatedATAR = calculateAtarFromTea(tea);
+		let atar = calculateAtarFromTea(tea);
 		
 		return (
 			<div className='section'>
@@ -143,7 +155,7 @@ export default class ResultsTable extends React.Component {
 					</div>
 					<div className='results'>
 						<p className='heading'>Estimated ATAR</p>
-						<p className='resultNumber'>{calculatedATAR}</p>
+						<p className='resultNumber'>{atar}</p>
 						<p className='note'>No data for ATARs below 97.60</p>
 					</div>
 				</div>

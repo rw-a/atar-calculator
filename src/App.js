@@ -1,8 +1,9 @@
 import './App.css';
 import React from 'react';
 import SubjectsTable from './modules/subjects';
-import ResultsTable from './modules/results'
-import ScalingGraph from './modules/scaling_graph';
+import ResultsTable, { calculateTeaFromSubjects } from './modules/results'
+import ScalingGraph from './modules/scalingGraph';
+import TeaGraph from './modules/teaGraph';
 
 
 function setCookie(cname, cvalue, exdays) {
@@ -103,8 +104,9 @@ class Calculator extends React.Component {
           id="results-table"
           subjectRawScores={this.state} 
         />
-        <br/>
         <ScalingGraph subjects={this.state}/>
+        <TeaGraph tea={calculateTeaFromSubjects(this.state)}/>
+        <br/>
       </div>
     );
   }
