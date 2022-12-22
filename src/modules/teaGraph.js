@@ -115,14 +115,31 @@ export default class TeaGraph extends React.Component {
                             showgrid: false,
                             zeroline: true,
                             showticklabels: false,
-                            fixedrange: true
+                            fixedrange: true,
+                            linewidth: 0,
+                            linecolor: '#ffffff'
                         }
                     }}
                     config={{
                         scrollZoom: true,
                         displaylogo: false,
+                        doubleClick: 'reset',
                         // displayModeBar: false,
-                        modeBarButtonsToRemove: ["select2d", "lasso2d"]
+                        modeBarButtons: [[
+                            'toImage',
+                        ], [
+                            'zoomIn2d',
+                            'zoomOut2d',
+                        ], [
+                            {
+                                name: 'myResetScale2d',
+                                title: 'Reset axes',
+                                icon: Plotly.Icons.home,
+                                click: (gd) => {
+                                    Plotly.relayout(gd, 'xaxis.range', [this.props.tea - 1.5, this.props.tea + 1.5])
+                                }
+                            }
+                        ]]
                     }}
                 />
             </div>
