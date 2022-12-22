@@ -6,42 +6,68 @@ export default class TeaGraph extends React.Component {
     render() {
         let width = Math.min(720, document.querySelector('#root').getBoundingClientRect().width - 40);
 
+        let data = [
+            {
+                x: Object.keys(ATARDATA),
+                y: Array(Object.keys(ATARDATA).length).fill(0),
+                text: Object.values(ATARDATA),
+                type: 'scatter',
+                textposition: "top center",
+                mode: 'markers+text',
+                hoverinfo: 'x',
+                hovertemplate: 'TEA: %{x:.2f} <extra></extra>', // extra with blank innerText removes the trace name
+                marker: { 
+                    symbol: "line-ns",
+                    size: 10,
+                    line: {
+                        width: 1
+                    }
+                },
+            },
+            {
+                x: [this.props.tea],
+                y: [0],
+                text: ["You"],
+                type: 'scatter',
+                textposition: "bottom center",
+                mode: 'markers+text',
+                hoverinfo: 'x',
+                hovertemplate: 'TEA: %{x:.2f} <extra></extra>',
+                marker: {
+                    size: 10,
+                    color: "#2684ff",
+                }
+            }
+        ];
+
+        // // if two teas of an atar is known, fill the region between them green (confirmed ATARs)
+        let atars = Object.values(ATARDATA);
+        let teas = Object.keys(ATARDATA);
+        for (let i = 0; i < atars.length - 1; i++) {
+            if (atars[i] === atars[i + 1]) {    // if two datapoints exist for an atar
+                data.push(
+                    {
+                        x: [teas[i], teas[i + 1], teas[i + 1], teas[i]],
+                        y: [0.1, 0.1, -0.1, -0.1],
+                        type: 'scatter',
+                        mode: 'markers',
+                        hoverinfo: 'skip',
+                        fill: 'tozeroy',
+                        fillcolor: 'rgba(44, 160, 44, 0.3)',
+                        marker: {
+                            opacity: 0  // hide markers
+                        }
+                    }
+                );
+                i += 1;     // skip the next one because already tested
+            }
+        }
+
         return (
             <div>
                 <h2>TEA to ATAR Map</h2>
                 <Plot 
-                    data={[
-                    {
-                        x: Object.keys(ATARDATA),
-                        y: Array(Object.keys(ATARDATA).length).fill(0),
-                        text: Object.values(ATARDATA),
-                        type: 'scatter',
-                        textposition: "top center",
-                        mode: 'markers+text',
-                        hoverinfo: 'x',
-                        hovertemplate: 'TEA: %{x:.2f} <extra></extra>',
-                        marker: { 
-                            symbol: "line-ns",
-                            size: 10,
-                            line: {
-                                width: 1
-                            }}
-                    },
-                    {
-                        x: [this.props.tea],
-                        y: [0],
-                        text: ["You"],
-                        type: 'scatter',
-                        textposition: "bottom center",
-                        mode: 'markers+text',
-                        hoverinfo: 'x',
-                        hovertemplate: '%{x:.2f} <extra></extra>',
-                        marker: {
-                            size: 10,
-                            color: "#2684ff",
-                        }
-                    }
-                    ]}
+                    data={data}
                     layout={{
                         title: {
                             // text: "TITLE"
@@ -74,7 +100,7 @@ export default class TeaGraph extends React.Component {
                             },
                             dtick: 1,           // does nothing?
                             domain: [0, 500],
-                            range: [486, 490],      // starting zoom, should update based on predicted ATAR
+                            range: [this.props.tea - 1.5, this.props.tea + 1.5],      // starting zoom, should update based on predicted ATAR
                             // showgrid: false,
                             // gridcolor: "#000000",
                             ticks: "outside",
