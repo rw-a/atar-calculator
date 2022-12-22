@@ -14,11 +14,13 @@
     "react-plotly.js": "^2.6.0",
     "react-scripts": "5.0.1",
     "react-select": "^5.3.2",
+    "source-map-explorer": "^2.5.3",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
     "predeploy": "npm run build",
     "deploy": "gh-pages -d build",
+    "analyze": "source-map-explorer 'build/static/js/*.js'",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
