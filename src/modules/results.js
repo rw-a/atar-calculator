@@ -142,7 +142,7 @@ export default class ResultsTable extends React.Component {
 		// do the math
 		let scaledScores = Object.values(subjectScaledScores);    // only the values, don't care about which subject
 		let tea = calculateTeaFromScaledScores(scaledScores);
-		let atar = calculateAtarFromTea(this.tea);
+		let atar = calculateAtarFromTea(tea);
 		
 		return (
 			<div className='section'>
