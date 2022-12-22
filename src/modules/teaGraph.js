@@ -51,7 +51,7 @@ export default class TeaGraph extends React.Component {
                         y: [0.1, 0.1, -0.1, -0.1],
                         type: 'scatter',
                         mode: 'markers',
-                        hoverinfo: 'skip',
+                        hoverinfo: 'none',
                         fill: 'tozeroy',
                         fillcolor: 'rgba(44, 160, 44, 0.3)',
                         marker: {
@@ -66,6 +66,7 @@ export default class TeaGraph extends React.Component {
         return (
             <div>
                 <h2>TEA to ATAR Map</h2>
+                <p className='note'>Shows how your TEA (bottom numbers) translates into an ATAR (top numbers). If your point is in a green region, your exact ATAR is known (if you had been in the 2021 cohort). If your point is not in a green region, your ATAR is ambiguous and a range is given.</p>
                 <Plot 
                     data={data}
                     layout={{
