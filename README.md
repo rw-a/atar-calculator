@@ -22,7 +22,7 @@ Visit the calculator website here: **https://rw-a.github.io/atar-calculator/**
 - Designed only for the QCE system.
 - Website built using [React](https://reactjs.org/).
 
-## Compiling
+## Dependencies
 This uses a custom bundle of Plotly.js. Once all regular npm packages are installed, run:
 ```
 cd node_modules/plotly.js
