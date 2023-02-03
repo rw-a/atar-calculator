@@ -199,7 +199,7 @@ export default class SubjectsTable extends React.Component {
 		return (
 			<div>
 				<SaveButton onClick={this.handleSubjectsSave} saved={this.props.saved}/>
-				<ul className='section'>
+				<ul>
 					{rows}
 					<li key="0">
 						<SubjectSelector 

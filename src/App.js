@@ -53,9 +53,9 @@ class YearSelector extends React.Component {
 	render() {
 		return (
 			<ToggleButtonGroup type="radio" name="year" defaultValue={2022} onChange={this.handleYearSelect}>
-				<ToggleButton className="mb-auto" id="year-2020" value={2020}>2020</ToggleButton>
-				<ToggleButton className="mb-auto" id="year-2021" value={2021}>2021</ToggleButton>
-				<ToggleButton className="mb-auto" id="year-2022" value={2022}>2022</ToggleButton>
+				<ToggleButton variant="outline-primary" className="mb-auto py-1 px-2 text-small" id="year-2020" value={2020}>2020</ToggleButton>
+				<ToggleButton variant="outline-primary" className="mb-auto py-1 px-2 text-small" id="year-2021" value={2021}>2021</ToggleButton>
+				<ToggleButton variant="outline-primary" className="mb-auto py-1 px-2 text-small" id="year-2022" value={2022}>2022</ToggleButton>
 			</ToggleButtonGroup>
 		);
 	}
@@ -111,7 +111,9 @@ class Section extends React.Component {
 						<Nav.Link eventKey="results">Results</Nav.Link>
 					</Nav.Item>
 				</Nav>
-				{tabs[this.state.tab]}
+				<div className="pt-1">
+					{tabs[this.state.tab]}
+				</div>
 			</div>
 		);
 	}
@@ -184,7 +186,7 @@ class Calculator extends React.Component {
       <Container className="my-3">
         <h2>QLD/QCE ATAR Calculator</h2>
         <div className="d-md-flex justify-content-between">
-          <p className='text-small fst-italic mb-1 me-1'>Quite accurate ATAR calculator for Queensland (QCE system). Neither QTAC nor QCAA endorse or are affiliated with this website. Based on 2021 data. Scaling changes every year, so use at your own risk!</p>
+          <p className='text-small fst-italic me-1'>Quite accurate ATAR calculator for Queensland (QCE system). Neither QTAC nor QCAA endorse or are affiliated with this website. Based on 2021 data. Scaling changes every year, so use at your own risk!</p>
 					<YearSelector onYearSelect={this.handleYearSelect}></YearSelector>
         </div>
 				<Row>
