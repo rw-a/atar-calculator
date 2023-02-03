@@ -89,7 +89,7 @@ class Section extends React.Component {
 
 		let tab_titles = {
 			subjects: "Subjects",
-			scaling: "Scaling Graph",
+			scaling: "Scaling",
 			tea: "TEA Map",
 			results: "Results"
 		};
@@ -102,10 +102,10 @@ class Section extends React.Component {
 						<Nav.Link eventKey="subjects">Subjects</Nav.Link>
 					</Nav.Item>
 					<Nav.Item>
-						<Nav.Link eventKey="scaling">Scaling Graph</Nav.Link>
+						<Nav.Link eventKey="scaling">Scaling</Nav.Link>
 					</Nav.Item>
 					<Nav.Item>
-						<Nav.Link eventKey="tea">TEA Map</Nav.Link>
+						<Nav.Link eventKey="tea">TEA</Nav.Link>
 					</Nav.Item>
 					<Nav.Item>
 						<Nav.Link eventKey="results">Results</Nav.Link>
