@@ -61,7 +61,8 @@ class YearSelector extends React.Component {
 class Section extends React.Component {
 	constructor(props) {
 		super(props);
-		this.state = {'tab': 'subjects'};
+		this.state = {tab: this.props.defaultTab};
+		this.handleTabChange = this.handleTabChange.bind(this);
 	}
 
 	handleTabChange(tabCode) {
@@ -85,7 +86,7 @@ class Section extends React.Component {
 
 		return (
 			<div>
-				<Nav variant="tabs" className="justify-content-end" defaultActiveKey="subjects" onSelect={this.handleTabChange}>
+				<Nav variant="tabs" className="justify-content-end" defaultActiveKey={this.props.defaultTab} onSelect={this.handleTabChange}>
 					<h4 className="section-title">Scaling Graph</h4>
 					<Nav.Item>
 						<Nav.Link eventKey="subjects">Subjects</Nav.Link>
@@ -179,6 +180,7 @@ class Calculator extends React.Component {
 				<Row>
 					<Col lg={6}>
 						<Section 
+							defaultTab={"subjects"}
 							subjects={this.state.subjects}
 							saved={saved}
 							onScoreChange={this.handleScoreChange}
@@ -189,6 +191,7 @@ class Calculator extends React.Component {
 					</Col>
 					<Col lg={6}>
 						<Section 
+							defaultTab={"results"}
 							subjects={this.state.subjects}
 							saved={saved}
 							onScoreChange={this.handleScoreChange}
