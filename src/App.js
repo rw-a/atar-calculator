@@ -62,32 +62,10 @@ class Section extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {'tab': 'subjects'};
-		this.handleTabChange = this.handleTabChange.bind(this);
-		this.handleScoreChange = this.handleScoreChange.bind(this);
-		this.handleSubjectAdd = this.handleSubjectAdd.bind(this);
-		this.handleSubjectDelete = this.handleSubjectDelete.bind(this);
-		this.handleSubjectsSave = this.handleSubjectsSave.bind(this);
 	}
 
 	handleTabChange(tabCode) {
-		console.log(tabCode);
 		this.setState({tab: tabCode});
-	}
-
-	handleScoreChange(subjectCode, score) {
-		this.props.onScoreChange(subjectCode, score);
-	}
-
-	handleSubjectAdd(selectedOption) {
-		this.props.onSubjectAdd(selectedOption);
-	}
-
-	handleSubjectDelete(subjectCode) {
-		this.props.onSubjectDelete(subjectCode);
-	}
-
-	handleSubjectsSave() {
-		this.props.onSubjectsSave();
 	}
 
 	render() {
@@ -95,10 +73,10 @@ class Section extends React.Component {
 			subjects: <SubjectsTable 
 				subjects={this.props.subjects} 
 				saved={this.props.saved}
-				onScoreChange={this.handleScoreChange}
-				onSubjectAdd={this.handleSubjectAdd}
-				onSubjectDelete={this.handleSubjectDelete}
-				onSubjectsSave={this.handleSubjectsSave}
+				onScoreChange={this.props.onScoreChange}
+				onSubjectAdd={this.props.onSubjectAdd}
+				onSubjectDelete={this.props.onSubjectDelete}
+				onSubjectsSave={this.props.onSubjectsSave}
 			/>,
 			scaling: <ScalingGraph subjects={this.props.subjects}/>,
 			tea: <TeaGraph tea={calculateTeaFromSubjects(this.props.subjects)}/>,
