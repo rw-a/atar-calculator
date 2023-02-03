@@ -1,0 +1,61 @@
+table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+th, td {
+    border: 1px solid;
+    padding: 4px;
+}
+
+td:empty::after{
+    content: "\00a0";
+}
+
+img.help-icon {
+    height: 13px;
+    width: 13px;
+    opacity: 0.7;
+    vertical-align: top;
+}
+
+.help-icon:hover {
+    opacity: 1;
+}
+
+.help-tooltip {
+    visibility: hidden;
+
+    width: 100px;
+    padding: 5px;
+    border-radius: 2px;
+
+    color: #222222;
+    background-color: #fafafa;
+
+    text-align: center;
+    font-size: small;
+    font-weight: normal;
+    
+    /* Position the tooltip */
+    position: absolute;
+    z-index: 1;
+    bottom: 100%;
+    left: 50%;
+    margin-left: -50px;
+    margin-bottom: 5px;
+}
+
+#tea-potential-help {
+    display: inline;
+    position: relative;
+}
+
+#tea-potential-help:hover .help-tooltip {
+    visibility: visible;
+}
+
+#results {
+    display: flex;
+    justify-content: space-around;
+}

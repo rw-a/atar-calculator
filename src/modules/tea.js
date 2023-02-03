@@ -1,7 +1,7 @@
 import React from 'react';
 import Plotly from 'plotly.js/dist/plotly-tiny.js'
 import createPlotlyComponent from 'react-plotly.js/factory'
-import ATARDATA from './../data/2021_atar_data.json'
+import ATARDATA from '../data/2021_atar_data.json'
 
 const Plot = createPlotlyComponent(Plotly);
 

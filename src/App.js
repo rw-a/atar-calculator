@@ -10,8 +10,11 @@ import Nav from 'react-bootstrap/Nav';
 
 import SubjectsTable from './modules/subjects';
 import ResultsTable, { calculateTeaFromSubjects } from './modules/results';
-import ScalingGraph from './modules/scalingGraph';
-import TeaGraph from './modules/teaGraph';
+import ScalingGraph from './modules/scaling';
+import TeaGraph from './modules/tea';
+
+import './modules/subjects.css';
+import './modules/results.css';
 
 
 function setCookie(cname, cvalue, exdays) {

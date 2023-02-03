@@ -8,9 +8,9 @@ class ResultsRow extends React.Component {
 		return(
 			<tr>
 				<td>{SUBJECTS[this.props.code]}</td>
-				<td className='score'>{this.props.rawScore}</td>
-				<td className='score'>{this.props.scaledScore}</td>
-				<td className='score'>{this.props.teaPotential}</td>
+				<td className='text-center'>{this.props.rawScore}</td>
+				<td className='text-center'>{this.props.scaledScore}</td>
+				<td className='text-center'>{this.props.teaPotential}</td>
 			</tr>
 		);
 	}
@@ -147,20 +147,20 @@ export default class ResultsTable extends React.Component {
 		return (
 			<div className='section'>
 				<div id="results">
-					<div className='results'>
-						<p className='heading'>Estimated TEA</p>
-						<p className='resultNumber'>{tea.toFixed(2)}</p>
-						<p className='note'>Your top 5 scaled scores</p>
+					<div className='text-center'>
+						<p className='fs-5'>Estimated TEA</p>
+						<p className='fs-4'>{tea.toFixed(2)}</p>
+						<p className='small-text fst-italic'>Your top 5 scaled scores</p>
 					</div>
-					<div className='results'>
-						<p className='heading'>Estimated ATAR</p>
-						<p className='resultNumber'>{atar}</p>
-						<p className='note'>No data for ATARs below 97.60</p>
+					<div className='text-center'>
+						<p className='fs-5'>Estimated ATAR</p>
+						<p className='fs-4'>{atar}</p>
+						<p className='small-text fst-italic'>No data for ATARs below 97.60</p>
 					</div>
 				</div>
 				<table>
 					<thead>
-						<tr>
+						<tr className='text-center'>
 							<th>Subject</th>
 							<th>Raw Score</th>
 							<th>Scaled Score</th>
