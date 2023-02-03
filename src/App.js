@@ -59,23 +59,71 @@ class YearSelector extends React.Component {
 }
 
 class Section extends React.Component {
+	constructor(props) {
+		super(props);
+		this.state = {'tab': 'subjects'};
+		this.handleTabChange = this.handleTabChange.bind(this);
+		this.handleScoreChange = this.handleScoreChange.bind(this);
+		this.handleSubjectAdd = this.handleSubjectAdd.bind(this);
+		this.handleSubjectDelete = this.handleSubjectDelete.bind(this);
+		this.handleSubjectsSave = this.handleSubjectsSave.bind(this);
+	}
+
+	handleTabChange(tabCode) {
+		console.log(tabCode);
+		this.setState({tab: tabCode});
+	}
+
+	handleScoreChange(subjectCode, score) {
+		this.props.onScoreChange(subjectCode, score);
+	}
+
+	handleSubjectAdd(selectedOption) {
+		this.props.onSubjectAdd(selectedOption);
+	}
+
+	handleSubjectDelete(subjectCode) {
+		this.props.onSubjectDelete(subjectCode);
+	}
+
+	handleSubjectsSave() {
+		this.props.onSubjectsSave();
+	}
+
 	render() {
+		let tabs = {
+			subjects: <SubjectsTable 
+				subjects={this.props.subjects} 
+				saved={this.props.saved}
+				onScoreChange={this.handleScoreChange}
+				onSubjectAdd={this.handleSubjectAdd}
+				onSubjectDelete={this.handleSubjectDelete}
+				onSubjectsSave={this.handleSubjectsSave}
+			/>,
+			scaling: <ScalingGraph subjects={this.props.subjects}/>,
+			tea: <TeaGraph tea={calculateTeaFromSubjects(this.props.subjects)}/>,
+			results: <ResultsTable subjectRawScores={this.props.subjects}/>
+		};
+
 		return (
-			<Nav variant="tabs" className="justify-content-end" defaultActiveKey="subjects">
-				<h4 className="section-title">Scaling Graph</h4>
-				<Nav.Item>
-					<Nav.Link eventKey="subjects">Subjects</Nav.Link>
-				</Nav.Item>
-				<Nav.Item>
-					<Nav.Link eventKey="scaling">Scaling Graph</Nav.Link>
-				</Nav.Item>
-				<Nav.Item>
-					<Nav.Link eventKey="tea">TEA Map</Nav.Link>
-				</Nav.Item>
-				<Nav.Item>
-					<Nav.Link eventKey="results">Results</Nav.Link>
-				</Nav.Item>
-			</Nav>
+			<div>
+				<Nav variant="tabs" className="justify-content-end" defaultActiveKey="subjects" onSelect={this.handleTabChange}>
+					<h4 className="section-title">Scaling Graph</h4>
+					<Nav.Item>
+						<Nav.Link eventKey="subjects">Subjects</Nav.Link>
+					</Nav.Item>
+					<Nav.Item>
+						<Nav.Link eventKey="scaling">Scaling Graph</Nav.Link>
+					</Nav.Item>
+					<Nav.Item>
+						<Nav.Link eventKey="tea">TEA Map</Nav.Link>
+					</Nav.Item>
+					<Nav.Item>
+						<Nav.Link eventKey="results">Results</Nav.Link>
+					</Nav.Item>
+				</Nav>
+				{ tabs[this.state.tab] }
+			</div>
 		);
 	}
 }
@@ -152,28 +200,26 @@ class Calculator extends React.Component {
         </div>
 				<Row>
 					<Col lg={6}>
-						<Section></Section>
+						<Section 
+							subjects={this.state.subjects}
+							saved={saved}
+							onScoreChange={this.handleScoreChange}
+							onSubjectAdd={this.handleSubjectAdd}
+							onSubjectDelete={this.handleSubjectDelete}
+							onSubjectsSave={this.handleSubjectsSave}
+						/>
 					</Col>
 					<Col lg={6}>
-						<Section></Section>
+						<Section 
+							subjects={this.state.subjects}
+							saved={saved}
+							onScoreChange={this.handleScoreChange}
+							onSubjectAdd={this.handleSubjectAdd}
+							onSubjectDelete={this.handleSubjectDelete}
+							onSubjectsSave={this.handleSubjectsSave}
+						/>
 					</Col>
 				</Row>
-        <SubjectsTable 
-          id="subjects-table"
-          subjects={this.state.subjects} 
-          saved={saved}
-          onScoreChange={this.handleScoreChange}
-          onSubjectAdd={this.handleSubjectAdd}
-          onSubjectDelete={this.handleSubjectDelete}
-          onSubjectsSave={this.handleSubjectsSave}
-        />
-        <ResultsTable 
-          id="results-table"
-          subjectRawScores={this.state.subjects} 
-        />
-        <ScalingGraph subjects={this.state.subjects}/>
-        <TeaGraph tea={calculateTeaFromSubjects(this.state.subjects)}/>
-        <br/>
       </Container>
     );
   }
