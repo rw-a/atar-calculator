@@ -1,3 +1,29 @@
+.nav-item {
+    font-size: 0.80rem;
+}
+
+.text-small {
+    font-size: 0.85rem;
+}
+.section-title {
+    margin-right: auto;
+    margin-bottom: 0rem;
+}
+
+@media (max-width: 576px) {
+    .text-small {
+        font-size: 0.80rem;
+    }
+    .nav-link {
+        padding: 0.35rem;
+    }
+    .section-title {
+        font-size: 1.25rem;
+        align-self: end;
+        padding-bottom: 0.25rem;
+    }
+}
+
 ul {
     list-style-type: none;
     padding: 0px;
@@ -26,17 +52,6 @@ input {
     border-radius: 3px;
     padding: 4px;
     font-size: 15px;
-}
-
-p {
-    margin-top: 0px;
-    margin-bottom: 10px;
-}
-
-h1, h2 {
-    margin: 0px;
-    margin-bottom: 5px;
-    margin-top: 15px;
 }
 
 .SubjectRow {
@@ -116,11 +131,6 @@ p.heading {
 
 p.resultNumber {
     font-size: x-large;
-}
-
-p.note {
-    font-size: small;
-    font-style: italic;
 }
 
 td.score {

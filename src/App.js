@@ -1,7 +1,13 @@
 import './App.css';
 import React from 'react';
+
+import Container from 'react-bootstrap/Container';
+import ToggleButton from 'react-bootstrap/ToggleButton';
+import ToggleButtonGroup from 'react-bootstrap/ToggleButtonGroup';
+import Nav from 'react-bootstrap/Nav';
+
 import SubjectsTable from './modules/subjects';
-import ResultsTable, { calculateTeaFromSubjects } from './modules/results'
+import ResultsTable, { calculateTeaFromSubjects } from './modules/results';
 import ScalingGraph from './modules/scalingGraph';
 import TeaGraph from './modules/teaGraph';
 
@@ -27,6 +33,18 @@ function getCookie(cname) {
     }
   }
   return "";
+}
+
+class YearSelector extends React.Component {
+	render() {
+		return (
+			<ToggleButtonGroup type="radio" name="year" defaultValue={2022}>
+				<ToggleButton className="mb-auto" id="year-2020" value={2020}>2020</ToggleButton>
+				<ToggleButton className="mb-auto" id="year-2021" value={2021}>2021</ToggleButton>
+				<ToggleButton className="mb-auto" id="year-2022" value={2022}>2022</ToggleButton>
+			</ToggleButtonGroup>
+		);
+	}
 }
 
 
@@ -88,9 +106,12 @@ class Calculator extends React.Component {
     }
 
     return (
-      <div id="content">
-        <h1>QLD/QCE ATAR Calculator</h1>
-        <p className='note'>Quite accurate ATAR calculator for Queensland (QCE system). Neither QTAC nor QCAA endorse or are affiliated with this website. Based on 2021 data. Scaling changes every year, so use at your own risk!</p>
+      <Container className="my-3">
+        <h2>QLD/QCE ATAR Calculator</h2>
+        <div className="d-md-flex justify-content-between">
+          <p className='text-small fst-italic mb-1 me-1'>Quite accurate ATAR calculator for Queensland (QCE system). Neither QTAC nor QCAA endorse or are affiliated with this website. Based on 2021 data. Scaling changes every year, so use at your own risk!</p>
+					<YearSelector></YearSelector>
+        </div>
         <SubjectsTable 
           id="subjects-table"
           subjects={this.state} 
@@ -107,7 +128,7 @@ class Calculator extends React.Component {
         <ScalingGraph subjects={this.state}/>
         <TeaGraph tea={calculateTeaFromSubjects(this.state)}/>
         <br/>
-      </div>
+      </Container>
     );
   }
 }
