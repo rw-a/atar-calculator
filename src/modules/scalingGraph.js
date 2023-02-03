@@ -293,12 +293,9 @@ export default class ScalingGraph extends React.Component {
     this.graphHeight = Math.abs(this.maxWidth * (BOUNDING_BOX[1] - BOUNDING_BOX[3]) / (BOUNDING_BOX[2] - BOUNDING_BOX[0]));  // ensures that 1x1 aspect ratio is maintained
     
     return(
-      <div>
-        <h2 style={{marginBottom: 0}}>Subject Scaling Graph</h2>
-        <div style={{position: "relative"}}>
-          <div id="jsxgraph" style={{width: this.maxWidth, height: this.graphHeight}}></div>
-          <div id="jsxlegend" style={{position: "absolute", top: this.graphHeight - 250 /* estimate, will be accurately calculated later */, right: 0, width: LEGEND_WIDTH, height: this.graphHeight, zIndex: -1}}></div>
-        </div>
+      <div style={{position: "relative"}}>
+        <div id="jsxgraph" style={{width: this.maxWidth, height: this.graphHeight}}></div>
+        <div id="jsxlegend" style={{position: "absolute", top: this.graphHeight - 250 /* estimate, will be accurately calculated later */, right: 0, width: LEGEND_WIDTH, height: this.graphHeight, zIndex: -1}}></div>
       </div>
     );
   }

@@ -146,7 +146,6 @@ export default class ResultsTable extends React.Component {
 		
 		return (
 			<div className='section'>
-				<h2>Results</h2>
 				<div id="results">
 					<div className='results'>
 						<p className='heading'>Estimated TEA</p>

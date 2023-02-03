@@ -84,10 +84,17 @@ class Section extends React.Component {
 			results: <ResultsTable subjectRawScores={this.props.subjects}/>
 		};
 
+		let tab_titles = {
+			subjects: "Subjects",
+			scaling: "Scaling Graph",
+			tea: "TEA Map",
+			results: "Results"
+		};
+
 		return (
 			<div>
 				<Nav variant="tabs" className="justify-content-end" defaultActiveKey={this.props.defaultTab} onSelect={this.handleTabChange}>
-					<h4 className="section-title">Scaling Graph</h4>
+					<h4 className="section-title">{tab_titles[this.state.tab]}</h4>
 					<Nav.Item>
 						<Nav.Link eventKey="subjects">Subjects</Nav.Link>
 					</Nav.Item>
@@ -101,7 +108,7 @@ class Section extends React.Component {
 						<Nav.Link eventKey="results">Results</Nav.Link>
 					</Nav.Item>
 				</Nav>
-				{ tabs[this.state.tab] }
+				{tabs[this.state.tab]}
 			</div>
 		);
 	}
