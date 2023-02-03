@@ -2,6 +2,8 @@ import './App.css';
 import React from 'react';
 
 import Container from 'react-bootstrap/Container';
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
 import ToggleButton from 'react-bootstrap/ToggleButton';
 import ToggleButtonGroup from 'react-bootstrap/ToggleButtonGroup';
 import Nav from 'react-bootstrap/Nav';
@@ -43,6 +45,28 @@ class YearSelector extends React.Component {
 				<ToggleButton className="mb-auto" id="year-2021" value={2021}>2021</ToggleButton>
 				<ToggleButton className="mb-auto" id="year-2022" value={2022}>2022</ToggleButton>
 			</ToggleButtonGroup>
+		);
+	}
+}
+
+class Section extends React.Component {
+	render() {
+		return (
+			<Nav variant="tabs" className="justify-content-end" defaultActiveKey="subjects">
+				<h4 className="section-title">Scaling Graph</h4>
+				<Nav.Item>
+					<Nav.Link eventKey="subjects">Subjects</Nav.Link>
+				</Nav.Item>
+				<Nav.Item>
+					<Nav.Link eventKey="scaling">Scaling Graph</Nav.Link>
+				</Nav.Item>
+				<Nav.Item>
+					<Nav.Link eventKey="tea">TEA Map</Nav.Link>
+				</Nav.Item>
+				<Nav.Item>
+					<Nav.Link eventKey="results">Results</Nav.Link>
+				</Nav.Item>
+			</Nav>
 		);
 	}
 }
@@ -112,6 +136,14 @@ class Calculator extends React.Component {
           <p className='text-small fst-italic mb-1 me-1'>Quite accurate ATAR calculator for Queensland (QCE system). Neither QTAC nor QCAA endorse or are affiliated with this website. Based on 2021 data. Scaling changes every year, so use at your own risk!</p>
 					<YearSelector></YearSelector>
         </div>
+				<Row>
+					<Col lg={6}>
+						<Section></Section>
+					</Col>
+					<Col lg={6}>
+						<Section></Section>
+					</Col>
+				</Row>
         <SubjectsTable 
           id="subjects-table"
           subjects={this.state} 
