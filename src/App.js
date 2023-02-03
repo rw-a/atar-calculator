@@ -38,9 +38,18 @@ function getCookie(cname) {
 }
 
 class YearSelector extends React.Component {
+	constructor(props) {
+		super(props);
+		this.handleYearSelect = this.handleYearSelect.bind(this);
+	}
+
+	handleYearSelect(selectedYear) {
+		this.props.onYearSelect(selectedYear);
+	}
+
 	render() {
 		return (
-			<ToggleButtonGroup type="radio" name="year" defaultValue={2022}>
+			<ToggleButtonGroup type="radio" name="year" defaultValue={2022} onChange={this.handleYearSelect}>
 				<ToggleButton className="mb-auto" id="year-2020" value={2020}>2020</ToggleButton>
 				<ToggleButton className="mb-auto" id="year-2021" value={2021}>2021</ToggleButton>
 				<ToggleButton className="mb-auto" id="year-2022" value={2022}>2022</ToggleButton>
@@ -75,55 +84,60 @@ class Section extends React.Component {
 class Calculator extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {};
+    this.state = {'subjects': {}};
     this.handleScoreChange = this.handleScoreChange.bind(this);
     this.handleSubjectAdd = this.handleSubjectAdd.bind(this);
     this.handleSubjectDelete = this.handleSubjectDelete.bind(this);
     this.handleSubjectsSave = this.handleSubjectsSave.bind(this);
+		this.handleYearSelect = this.handleYearSelect.bind(this);
   }
 
   handleScoreChange(subjectCode, score) {
-    let selectedSubjects = {};
-    selectedSubjects[subjectCode] = score;
-    this.setState(selectedSubjects);
+    let subjects = this.state.subjects;
+    subjects[subjectCode] = score;
+    this.setState({subjects: subjects});
   }
 
   handleSubjectAdd(selectedOption) {
-    let selectedSubjects = {};
-    selectedSubjects[selectedOption['value']] = "";
-    this.setState(selectedSubjects);
+    let subjects = this.state.subjects;
+    subjects[selectedOption['value']] = "";
+    this.setState({'subjects': subjects});
   }
 
   handleSubjectDelete(subjectCode) {
     // delete a subject by making its score undefined
     // IMPORTANT if anything iterates through the state, it must ignore undefined values
-    let selectedSubjects = {};
-    selectedSubjects[subjectCode] = undefined;
-    this.setState(selectedSubjects);
+    let subjects = this.state.subjects;
+    subjects[subjectCode] = undefined;
+    this.setState({'subjects': subjects});
   }
 
   handleSubjectsSave() {
-    setCookie("subjects", JSON.stringify(this.state), 180);
+    setCookie("subjects", JSON.stringify(this.state.subjects), 180);
     this.forceUpdate();
   }
+
+	handleYearSelect(selectedYear) {
+		this.setState({year: selectedYear});
+	}
 
   componentDidMount() {
     // Load previously saved state
     let state = getCookie("subjects");
     if (state !== "") {
       state = JSON.parse(state);
-      let selectedSubjects = {};
+      let subjects = {};
       for (let subjectCode of Object.keys(state)) {
-        selectedSubjects[subjectCode] = state[subjectCode];
+        subjects[subjectCode] = state[subjectCode];
       }
-      this.setState(selectedSubjects);
+      this.setState({subjects: subjects});
     }
   }
 
   render() {
     // check if saved state matches current state
     let saved_state = getCookie("subjects");
-    if (saved_state === JSON.stringify(this.state)) {
+    if (saved_state === JSON.stringify(this.state.subjects)) {
       var saved = true;
     } else {
       saved = false;
@@ -134,7 +148,7 @@ class Calculator extends React.Component {
         <h2>QLD/QCE ATAR Calculator</h2>
         <div className="d-md-flex justify-content-between">
           <p className='text-small fst-italic mb-1 me-1'>Quite accurate ATAR calculator for Queensland (QCE system). Neither QTAC nor QCAA endorse or are affiliated with this website. Based on 2021 data. Scaling changes every year, so use at your own risk!</p>
-					<YearSelector></YearSelector>
+					<YearSelector onYearSelect={this.handleYearSelect}></YearSelector>
         </div>
 				<Row>
 					<Col lg={6}>
@@ -146,7 +160,7 @@ class Calculator extends React.Component {
 				</Row>
         <SubjectsTable 
           id="subjects-table"
-          subjects={this.state} 
+          subjects={this.state.subjects} 
           saved={saved}
           onScoreChange={this.handleScoreChange}
           onSubjectAdd={this.handleSubjectAdd}
@@ -155,10 +169,10 @@ class Calculator extends React.Component {
         />
         <ResultsTable 
           id="results-table"
-          subjectRawScores={this.state} 
+          subjectRawScores={this.state.subjects} 
         />
-        <ScalingGraph subjects={this.state}/>
-        <TeaGraph tea={calculateTeaFromSubjects(this.state)}/>
+        <ScalingGraph subjects={this.state.subjects}/>
+        <TeaGraph tea={calculateTeaFromSubjects(this.state.subjects)}/>
         <br/>
       </Container>
     );
