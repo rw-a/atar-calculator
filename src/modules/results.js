@@ -1,4 +1,4 @@
-import './results.css';
+import './../css/results.css';
 import React from 'react';
 
 import Stack from 'react-bootstrap/Stack';

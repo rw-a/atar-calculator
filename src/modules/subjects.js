@@ -1,4 +1,4 @@
-import './subjects.css';
+import './../css/subjects.css';
 import React from 'react';
 import Select from 'react-select';
 import Button from 'react-bootstrap/Button';
