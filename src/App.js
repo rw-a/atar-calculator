@@ -1,5 +1,5 @@
 import './App.css';
-import React from 'react';
+import React, {Suspense} from 'react';
 
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
@@ -10,8 +10,9 @@ import Nav from 'react-bootstrap/Nav';
 
 import SubjectsTable from './modules/subjects';
 import ResultsTable, { calculateTeaFromSubjects } from './modules/results';
-import ScalingGraph from './modules/scaling';
-import TeaGraph from './modules/tea';
+
+const ScalingGraph = React.lazy(() => import('./modules/scaling'));
+const TeaGraph = React.lazy(() => import('./modules/tea'));
 
 
 function setCookie(cname, cvalue, exdays) {
@@ -63,6 +64,13 @@ class Section extends React.Component {
 		super(props);
 		this.state = {tab: this.props.defaultTab};
 		this.handleTabChange = this.handleTabChange.bind(this);
+
+		this.tab_titles = {
+			subjects: "Subjects",
+			scaling: "Scaling",
+			tea: "TEA Map",
+			results: "Results"
+		};
 	}
 
 	handleTabChange(tabCode) {
@@ -71,30 +79,30 @@ class Section extends React.Component {
 
 	render() {
 		let tabs = {
-			subjects: <SubjectsTable 
-				subjects={this.props.subjects} 
-				saved={this.props.saved}
-				onScoreChange={this.props.onScoreChange}
-				onSubjectAdd={this.props.onSubjectAdd}
-				onSubjectDelete={this.props.onSubjectDelete}
-				onSubjectsSave={this.props.onSubjectsSave}
-			/>,
-			scaling: <ScalingGraph subjects={this.props.subjects}/>,
-			tea: <TeaGraph tea={calculateTeaFromSubjects(this.props.subjects)}/>,
+			subjects: 
+				<SubjectsTable 
+					subjects={this.props.subjects} 
+					saved={this.props.saved}
+					onScoreChange={this.props.onScoreChange}
+					onSubjectAdd={this.props.onSubjectAdd}
+					onSubjectDelete={this.props.onSubjectDelete}
+					onSubjectsSave={this.props.onSubjectsSave}
+				/>,
+			scaling: 
+				<Suspense fallback={<div>Loading...</div>}>
+					<ScalingGraph subjects={this.props.subjects}/>
+				</Suspense>,
+			tea: 
+				<Suspense fallback={<div>Loading...</div>}>
+					<TeaGraph tea={calculateTeaFromSubjects(this.props.subjects)}/>
+				</Suspense>,
 			results: <ResultsTable subjectRawScores={this.props.subjects}/>
-		};
-
-		let tab_titles = {
-			subjects: "Subjects",
-			scaling: "Scaling",
-			tea: "TEA Map",
-			results: "Results"
-		};
+		};	
 
 		return (
 			<div className="section-inner">
 				<Nav variant="tabs" className="justify-content-end" defaultActiveKey={this.props.defaultTab} onSelect={this.handleTabChange}>
-					<h4 className="section-title">{tab_titles[this.state.tab]}</h4>
+					<h4 className="section-title">{this.tab_titles[this.state.tab]}</h4>
 					<Nav.Item>
 						<Nav.Link eventKey="subjects">Subjects</Nav.Link>
 					</Nav.Item>
