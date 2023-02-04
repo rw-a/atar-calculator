@@ -121,66 +121,66 @@ class Section extends React.Component {
 
 
 class Calculator extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {'subjects': {}};
-    this.handleScoreChange = this.handleScoreChange.bind(this);
-    this.handleSubjectAdd = this.handleSubjectAdd.bind(this);
-    this.handleSubjectDelete = this.handleSubjectDelete.bind(this);
-    this.handleSubjectsSave = this.handleSubjectsSave.bind(this);
-	this.handleYearSelect = this.handleYearSelect.bind(this);
-  }
+	constructor(props) {
+		super(props);
+		this.state = {'subjects': {}};
+		this.handleScoreChange = this.handleScoreChange.bind(this);
+		this.handleSubjectAdd = this.handleSubjectAdd.bind(this);
+		this.handleSubjectDelete = this.handleSubjectDelete.bind(this);
+		this.handleSubjectsSave = this.handleSubjectsSave.bind(this);
+		this.handleYearSelect = this.handleYearSelect.bind(this);
+	}
 
-  handleScoreChange(subjectCode, score) {
-    let subjects = this.state.subjects;
-    subjects[subjectCode] = score;
-    this.setState({subjects: subjects});
-  }
+	handleScoreChange(subjectCode, score) {
+		let subjects = this.state.subjects;
+		subjects[subjectCode] = score;
+		this.setState({subjects: subjects});
+	}
 
-  handleSubjectAdd(selectedOption) {
-    let subjects = this.state.subjects;
-    subjects[selectedOption['value']] = "";
-    this.setState({'subjects': subjects});
-  }
+	handleSubjectAdd(selectedOption) {
+		let subjects = this.state.subjects;
+		subjects[selectedOption['value']] = "";
+		this.setState({'subjects': subjects});
+	}
 
-  handleSubjectDelete(subjectCode) {
-    // delete a subject by making its score undefined
-    // IMPORTANT if anything iterates through the state, it must ignore undefined values
-    let subjects = this.state.subjects;
-    subjects[subjectCode] = undefined;
-    this.setState({'subjects': subjects});
-  }
+	handleSubjectDelete(subjectCode) {
+		// delete a subject by making its score undefined
+		// IMPORTANT if anything iterates through the state, it must ignore undefined values
+		let subjects = this.state.subjects;
+		subjects[subjectCode] = undefined;
+		this.setState({'subjects': subjects});
+	}
 
-  handleSubjectsSave() {
-    setCookie("subjects", JSON.stringify(this.state.subjects), 180);
-    this.forceUpdate();
-  }
+	handleSubjectsSave() {
+		setCookie("subjects", JSON.stringify(this.state.subjects), 180);
+		this.forceUpdate();
+	}
 
 	handleYearSelect(selectedYear) {
 		this.setState({year: selectedYear});
 	}
 
-  componentDidMount() {
-    // Load previously saved state
-    let state = getCookie("subjects");
-    if (state !== "") {
-      state = JSON.parse(state);
-      let subjects = {};
-      for (let subjectCode of Object.keys(state)) {
-        subjects[subjectCode] = state[subjectCode];
-      }
-      this.setState({subjects: subjects});
-    }
-  }
+	componentDidMount() {
+		// Load previously saved state
+		let state = getCookie("subjects");
+		if (state !== "") {
+			state = JSON.parse(state);
+			let subjects = {};
+			for (let subjectCode of Object.keys(state)) {
+			subjects[subjectCode] = state[subjectCode];
+			}
+			this.setState({subjects: subjects});
+		}
+	}
 
-  render() {
-    // check if saved state matches current state
-    let saved_state = getCookie("subjects");
-    if (saved_state === JSON.stringify(this.state.subjects)) {
-      var saved = true;
-    } else {
-      saved = false;
-    }
+	render() {
+		// check if saved state matches current state
+		let saved_state = getCookie("subjects");
+		if (saved_state === JSON.stringify(this.state.subjects)) {
+			var saved = true;
+		} else {
+			saved = false;
+	}
 
     return (
       <Container className="my-3">
