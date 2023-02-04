@@ -289,7 +289,7 @@ export default class ScalingGraph extends React.Component {
   render() {
     this.isMobile = this.maxWidth < 400;
 
-    this.maxWidth = Math.min(720, document.querySelector('#root').getBoundingClientRect().width - 40);  // kinda janky, tries to find width after padding
+    this.maxWidth = document.querySelector('.section-inner').getBoundingClientRect().width;
     this.graphHeight = Math.abs(this.maxWidth * (BOUNDING_BOX[1] - BOUNDING_BOX[3]) / (BOUNDING_BOX[2] - BOUNDING_BOX[0]));  // ensures that 1x1 aspect ratio is maintained
     
     return(

@@ -7,7 +7,7 @@ const Plot = createPlotlyComponent(Plotly);
 
 export default class TeaGraph extends React.Component {
     render() {
-        let width = Math.min(720, document.querySelector('#root').getBoundingClientRect().width - 40);
+        let width = document.querySelector('.section-inner').getBoundingClientRect().width;
 
         let data = [
             {
