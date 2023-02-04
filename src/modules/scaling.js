@@ -37,6 +37,7 @@ export default class ScalingGraph extends React.Component {
       maxboundingbox: [-100, 200, 200, -100],
       showCopyright: false, 
       showInfobox: false,
+      showNavigation: false,
       zoom: {
         factorX: 1.25,  // horizontal zoom factor (multiplied to JXG.Board#zoomX)
         factorY: 1.25,  // vertical zoom factor (multiplied to JXG.Board#zoomY)
@@ -58,7 +59,7 @@ export default class ScalingGraph extends React.Component {
     });
     
     this.legend = JXG.JSXGraph.initBoard("jsxlegend", { 
-      boundingbox: [0, 104, 20, -6], // min x, max y, max x, min y
+      boundingbox: [0, 110, 20, 0], // min x, max y, max x, min y
       maxFrameRate: 1,
       registerEvents: false,
       showCopyright: false, 
@@ -89,6 +90,8 @@ export default class ScalingGraph extends React.Component {
     this.originalObjects = [...this.board.objectsList]; // this needs to be after the mouse coordinates is created so it is preserved
     this.points = [];
     this.subjects = [];
+
+    this.componentDidUpdate();
   }
 
   clearBoard() {
@@ -127,7 +130,7 @@ export default class ScalingGraph extends React.Component {
     let numLines = Math.ceil(longestSubjectName.length / 12);
     let rowHeight = numLines * 9 + 10;
     var legend = this.legend.create('legend', [0, 100], {labels: subjectsNames, colors: COLORS, rowHeight: rowHeight} );
-    let legendHeightOffset = this.isMobile ? 36 : 60;
+    let legendHeightOffset = rowHeight + 15;
     let legendHeight = legend.lines.at(-1).getTextAnchor().scrCoords.at(-1) + legendHeightOffset;
     document.getElementById('jsxlegend').style.top = `${this.graphHeight - legendHeight}px`;
     this.legend.resizeContainer(LEGEND_WIDTH, legendHeight, false, true);
