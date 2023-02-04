@@ -1,4 +1,6 @@
 import React from 'react';
+
+import Stack from 'react-bootstrap/Stack';
 import Table from 'react-bootstrap/Table';
 import Image from 'react-bootstrap/Image';
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
@@ -151,7 +153,7 @@ export default class ResultsTable extends React.Component {
 		
 		return (
 			<div>
-				<div id="results">
+				<Stack direction="horizontal" className="justify-content-around">
 					<div className='text-center'>
 						<p className='fs-18px'>Estimated TEA</p>
 						<p className='fs-4'>{tea.toFixed(2)}</p>
@@ -162,7 +164,7 @@ export default class ResultsTable extends React.Component {
 						<p className='fs-4'>{atar}</p>
 						<p className='text-small fst-italic'>No data for ATARs below 97.60</p>
 					</div>
-				</div>
+				</Stack>
 				<Table bordered size="sm" className="border-dark">
 					<thead>
 						<tr className='text-center'>

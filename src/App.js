@@ -52,7 +52,7 @@ class YearSelector extends React.Component {
 
 	render() {
 		return (
-			<ToggleButtonGroup type="radio" name="year" defaultValue={2022} onChange={this.handleYearSelect}>
+			<ToggleButtonGroup type="radio" name="year" defaultValue={2022} onChange={this.handleYearSelect} {...this.props}>
 				<ToggleButton variant="outline-primary" className="mb-auto button-small" id="year-2020" value={2020}>2020</ToggleButton>
 				<ToggleButton variant="outline-primary" className="mb-auto button-small" id="year-2021" value={2021}>2021</ToggleButton>
 				<ToggleButton variant="outline-primary" className="mb-auto button-small" id="year-2022" value={2022}>2022</ToggleButton>
@@ -95,7 +95,7 @@ class Section extends React.Component {
 		};
 
 		return (
-			<div className="section-inner">
+			<div className="section-inner" {...this.props}>
 				<Nav variant="tabs" className="justify-content-end" defaultActiveKey={this.props.defaultTab} onSelect={this.handleTabChange}>
 					<h4 className="section-title">{tab_titles[this.state.tab]}</h4>
 					<Nav.Item>
@@ -128,7 +128,7 @@ class Calculator extends React.Component {
     this.handleSubjectAdd = this.handleSubjectAdd.bind(this);
     this.handleSubjectDelete = this.handleSubjectDelete.bind(this);
     this.handleSubjectsSave = this.handleSubjectsSave.bind(this);
-		this.handleYearSelect = this.handleYearSelect.bind(this);
+	this.handleYearSelect = this.handleYearSelect.bind(this);
   }
 
   handleScoreChange(subjectCode, score) {
@@ -185,34 +185,34 @@ class Calculator extends React.Component {
     return (
       <Container className="my-3">
         <h2>QLD/QCE ATAR Calculator</h2>
-        <div className="d-md-flex justify-content-between">
-          <p className='text-small fst-italic me-1'>Quite accurate ATAR calculator for Queensland (QCE system). Neither QTAC nor QCAA endorse or are affiliated with this website. Based on 2021 data. Scaling changes every year, so use at your own risk!</p>
-					<YearSelector onYearSelect={this.handleYearSelect}></YearSelector>
+        <div className="d-flex flex-column flex-md-row justify-content-between my-2">
+          	<p className='text-small fst-italic me-1 mb-2 mb-md-1'>Quite accurate ATAR calculator for Queensland (QCE system). Neither QTAC nor QCAA endorse or are affiliated with this website. Based on 2021 data. Scaling changes every year, so use at your own risk!</p>
+			<YearSelector onYearSelect={this.handleYearSelect} className="align-self-end align-self-md-start"></YearSelector>
         </div>
-				<Row>
-					<Col lg={6}>
-						<Section 
-							defaultTab={"subjects"}
-							subjects={this.state.subjects}
-							saved={saved}
-							onScoreChange={this.handleScoreChange}
-							onSubjectAdd={this.handleSubjectAdd}
-							onSubjectDelete={this.handleSubjectDelete}
-							onSubjectsSave={this.handleSubjectsSave}
-						/>
-					</Col>
-					<Col lg={6}>
-						<Section 
-							defaultTab={"results"}
-							subjects={this.state.subjects}
-							saved={saved}
-							onScoreChange={this.handleScoreChange}
-							onSubjectAdd={this.handleSubjectAdd}
-							onSubjectDelete={this.handleSubjectDelete}
-							onSubjectsSave={this.handleSubjectsSave}
-						/>
-					</Col>
-				</Row>
+		<Row className="gy-3">
+			<Col lg={6}>
+				<Section 
+					defaultTab={"subjects"}
+					subjects={this.state.subjects}
+					saved={saved}
+					onScoreChange={this.handleScoreChange}
+					onSubjectAdd={this.handleSubjectAdd}
+					onSubjectDelete={this.handleSubjectDelete}
+					onSubjectsSave={this.handleSubjectsSave}
+				/>
+			</Col>
+			<Col lg={6}>
+				<Section 
+					defaultTab={"results"}
+					subjects={this.state.subjects}
+					saved={saved}
+					onScoreChange={this.handleScoreChange}
+					onSubjectAdd={this.handleSubjectAdd}
+					onSubjectDelete={this.handleSubjectDelete}
+					onSubjectsSave={this.handleSubjectsSave}
+				/>
+			</Col>
+		</Row>
       </Container>
     );
   }

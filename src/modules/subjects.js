@@ -194,7 +194,7 @@ export default class SubjectsTable extends React.Component {
 
 		return (
 			<div>
-				<ul>
+				<ul className="mb-1">
 					{rows}
 					<li key="0">
 						<SubjectSelector 
