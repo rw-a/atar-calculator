@@ -94,7 +94,7 @@ class Section extends React.Component {
 				</Suspense>,
 			tea: 
 				<Suspense fallback={<div>Loading...</div>}>
-					<TeaGraph tea={calculateTeaFromSubjects(this.props.subjects)}/>
+					<TeaGraph tea={calculateTeaFromSubjects(this.props.subjects)} year={this.props.year}/>
 				</Suspense>,
 			results: <ResultsTable subjectRawScores={this.props.subjects}/>
 		};	
@@ -191,9 +191,9 @@ class Calculator extends React.Component {
       <Container className="my-3">
         <h2>QLD/QCE ATAR Calculator</h2>
         <div className="d-flex flex-column flex-md-row justify-content-between my-2">
-          	<p className='text-small fst-italic me-1 mb-2 mb-md-1'>Quite accurate ATAR calculator for Queensland (QCE system). Neither QTAC nor QCAA endorse or are affiliated with this website. Based on 2021 data. Scaling changes every year, so use at your own risk!</p>
+          	<p className='text-small fst-italic me-1 mb-2 mb-md-1'>Quite accurate ATAR calculator for Queensland (QCE system). Neither QTAC nor QCAA endorse or are affiliated with this website. Scaling changes every year, so use at your own risk!</p>
 			<YearSelector onYearSelect={this.handleYearSelect} className="align-self-end align-self-md-start"></YearSelector>
-			<p style={(this.state.year === "2020") ? {} : { display: 'none' }}>Limited Data</p>
+			<p style={(this.state.year === 2020) ? {} : { display: 'none' }}>Limited Data</p>
         </div>
 		<Row className="gy-3">
 			<Col lg={6}>
@@ -201,6 +201,7 @@ class Calculator extends React.Component {
 					defaultTab={"subjects"}
 					subjects={this.state.subjects}
 					saved={saved}
+					year={this.state.year}
 					onScoreChange={this.handleScoreChange}
 					onSubjectAdd={this.handleSubjectAdd}
 					onSubjectDelete={this.handleSubjectDelete}
@@ -212,6 +213,7 @@ class Calculator extends React.Component {
 					defaultTab={"results"}
 					subjects={this.state.subjects}
 					saved={saved}
+					year={this.state.year}
 					onScoreChange={this.handleScoreChange}
 					onSubjectAdd={this.handleSubjectAdd}
 					onSubjectDelete={this.handleSubjectDelete}
