@@ -26,11 +26,12 @@ p {
 .section-title {
     margin-right: auto;
     margin-bottom: 0rem;
+    align-self: end;
 }
 
 @media (max-width: 576px) {
-    .text-small {
-        font-size: 0.80rem;
+    html {
+        font-size: 14px;
     }
 
     .nav-link {

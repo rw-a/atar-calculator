@@ -10,9 +10,9 @@ li {
 
 input {
     border: 1px solid #cccccc;
-    border-radius: 3px;
-    padding: 4px;
-    font-size: 15px;
+    border-radius: 0.25rem;
+    padding: 0.25rem;
+    font-size: 0.9rem;
 }
 
 .SubjectRow {
@@ -24,11 +24,11 @@ input {
 .DeleteSubject {
     background: none;
     background-image: url("../assets/delete.svg");
-    background-size: 20px 20px;
+    background-size: 1.25rem 1.25rem;
 
-    height: 20px;
-    width: 20px;
-    min-width: 20px;
+    height: 1.25rem;
+    width: 1.25rem;
+    min-width: 1.25rem;
     
     border: none;
     padding: 0px;
