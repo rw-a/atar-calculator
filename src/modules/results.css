@@ -1,17 +1,3 @@
-table {
-    border-collapse: collapse;
-    width: 100%;
-}
-
-th, td {
-    border: 1px solid;
-    padding: 4px;
-}
-
-td:empty::after{
-    content: "\00a0";
-}
-
 .fs-18px {
     font-size: 1.125rem;
 }

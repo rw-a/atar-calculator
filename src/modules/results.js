@@ -1,4 +1,6 @@
 import React from 'react';
+import Table from 'react-bootstrap/Table';
+
 import SUBJECTS from './../data/2021_subjects.json';
 import SCALINGDATA from './../data/2021_scaling_data.json';
 import ATARDATA from './../data/2021_atar_data.json'
@@ -158,7 +160,7 @@ export default class ResultsTable extends React.Component {
 						<p className='text-small fst-italic'>No data for ATARs below 97.60</p>
 					</div>
 				</div>
-				<table>
+				<Table bordered size="sm" className="border-dark">
 					<thead>
 						<tr className='text-center'>
 							<th>Subject</th>
@@ -175,7 +177,7 @@ export default class ResultsTable extends React.Component {
 					<tbody>
 						{rows}
 					</tbody>
-				</table>
+				</Table>
 			</div>
 		);
 	}
