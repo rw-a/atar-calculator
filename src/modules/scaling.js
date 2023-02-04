@@ -129,9 +129,10 @@ export default class ScalingGraph extends React.Component {
     let longestSubjectName = subjectsNames.reduce((subject1, subject2) => {return (subject1.length > subject2.length) ? subject1 : subject2});
     let numLines = Math.ceil(longestSubjectName.length / 12);
     let rowHeight = numLines * 9 + 10;
-    var legend = this.legend.create('legend', [0, 100], {labels: subjectsNames, colors: COLORS, rowHeight: rowHeight} );
-    let legendHeightOffset = rowHeight + 15;
-    let legendHeight = legend.lines.at(-1).getTextAnchor().scrCoords.at(-1) + legendHeightOffset;
+
+    let legend = this.legend.create('legend', [0, 100], {labels: subjectsNames, colors: COLORS, rowHeight: rowHeight} );
+    
+    let legendHeight = legend.lines.at(-1).getTextAnchor().scrCoords.at(-1) + rowHeight + this.maxWidth / 30;
     document.getElementById('jsxlegend').style.top = `${this.graphHeight - legendHeight}px`;
     this.legend.resizeContainer(LEGEND_WIDTH, legendHeight, false, true);
   }
