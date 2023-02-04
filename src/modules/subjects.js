@@ -147,36 +147,12 @@ class SaveButton extends React.Component {
 
 	render() {
 		return (
-			<Button variant={(this.props.saved) ? "outline-primary" : "outline-secondary"} onClick={this.handleClick} className="float-end button-small">{(this.props.saved) ? "Saved" : "Save"}</Button>
+			<Button variant={(this.props.saved) ? "secondary" : "outline-secondary"} onClick={this.handleClick} className="float-end button-small">{(this.props.saved) ? "Saved" : "Save"}</Button>
 		);
 	}
 }
 
 export default class SubjectsTable extends React.Component {
-	constructor(props) {
-		super(props);
-		this.handleScoreChange = this.handleScoreChange.bind(this);
-		this.handleSubjectAdd = this.handleSubjectAdd.bind(this);
-		this.handleSubjectDelete = this.handleSubjectDelete.bind(this);
-		this.handleSubjectsSave = this.handleSubjectsSave.bind(this);
-	}
-
-	handleScoreChange(subjectCode, score) {
-		this.props.onScoreChange(subjectCode, score);
-	}
-
-	handleSubjectAdd(selectedOption) {
-		this.props.onSubjectAdd(selectedOption);
-	}
-
-	handleSubjectDelete(subjectCode) {
-		this.props.onSubjectDelete(subjectCode);
-	}
-
-	handleSubjectsSave() {
-		this.props.onSubjectsSave();
-	}
-
 	render() {
 		// generate a row for each subject
 		let rows = [];
@@ -187,8 +163,8 @@ export default class SubjectsTable extends React.Component {
 						key={subjectCode} 
 						code={subjectCode} 
 						score={this.props.subjects[subjectCode]} 
-						onScoreChange={this.handleScoreChange} 
-						onSubjectDelete={this.handleSubjectDelete} 
+						onScoreChange={this.props.onScoreChange} 
+						onSubjectDelete={this.props.onSubjectDelete} 
 					/>
 				);
 			}
@@ -200,12 +176,12 @@ export default class SubjectsTable extends React.Component {
 					{rows}
 					<li key="0">
 						<SubjectSelector 
-							onSubjectAdd={this.handleSubjectAdd} 
+							onSubjectAdd={this.props.onSubjectAdd} 
 							subjects={this.props.subjects}
 						/>
 					</li>
 				</ul>
-				<SaveButton onClick={this.handleSubjectsSave} saved={this.props.saved}/>
+				<SaveButton onClick={this.props.onSubjectSave} saved={this.props.saved}/>
 			</div>
 		);
 	}
