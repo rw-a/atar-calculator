@@ -50,11 +50,14 @@ class YearSelector extends React.Component {
 
 	render() {
 		return (
-			<ToggleButtonGroup type="radio" name="year" defaultValue={2022} onChange={this.handleYearSelect}>
-				<ToggleButton variant="outline-primary" className="mb-auto button-small" id="year-2020" value={2020}>2020</ToggleButton>
-				<ToggleButton variant="outline-primary" className="mb-auto button-small" id="year-2021" value={2021}>2021</ToggleButton>
-				<ToggleButton variant="outline-primary" className="mb-auto button-small" id="year-2022" value={2022}>2022</ToggleButton>
-			</ToggleButtonGroup>
+			<div className="d-flex flex-row flex-md-column">
+				<ToggleButtonGroup type="radio" name="year" defaultValue={2022} onChange={this.handleYearSelect}>
+					<ToggleButton variant="outline-primary" className="mb-auto button-small" id="year-2020" value={2020}>2020</ToggleButton>
+					<ToggleButton variant="outline-primary" className="mb-auto button-small" id="year-2021" value={2021}>2021</ToggleButton>
+					<ToggleButton variant="outline-primary" className="mb-auto button-small" id="year-2022" value={2022}>2022</ToggleButton>
+				</ToggleButtonGroup>
+				<p className="text-small fst-italic text-danger text-center" style={(this.props.year === 2020) ? {} : { display: 'none' }}>Warning: Limited Data</p>
+			</div>
 		);
 	}
 }
@@ -192,8 +195,7 @@ class Calculator extends React.Component {
         <h2>QLD/QCE ATAR Calculator</h2>
         <div className="d-flex flex-column flex-md-row justify-content-between my-2">
           	<p className='text-small fst-italic me-1 mb-2 mb-md-1'>Quite accurate ATAR calculator for Queensland (QCE system). Neither QTAC nor QCAA endorse or are affiliated with this website. Scaling changes every year, so use at your own risk!</p>
-			<YearSelector onYearSelect={this.handleYearSelect} className="align-self-end align-self-md-start"></YearSelector>
-			<p style={(this.state.year === 2020) ? {} : { display: 'none' }}>Limited Data</p>
+			<YearSelector onYearSelect={this.handleYearSelect} year={this.state.year} className="align-self-end align-self-md-start"></YearSelector>
         </div>
 		<Row className="gy-3">
 			<Col lg={6}>
