@@ -15,24 +15,24 @@ const ScalingGraph = React.lazy(() => import('./modules/scaling'));
 const TeaGraph = React.lazy(() => import('./modules/tea'));
 
 
-function setCookie(cname, cvalue, exdays) {
-  const d = new Date();
-  d.setTime(d.getTime() + (exdays*24*60*60*1000));
-  let expires = "expires="+ d.toUTCString();
-  document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+function setCookie(cookieName, cookieValue, expiryDays) {
+  const date = new Date();
+  date.setTime(date.getTime() + (expiryDays*24*60*60*1000));
+  let expires = "expires="+ date.toUTCString();
+  document.cookie = cookieName + "=" + cookieValue + ";" + expires + ";path=/";
 }
 
-function getCookie(cname) {
-	let name = cname + "=";
+function getCookie(cookieName) {
+	let name = cookieName + "=";
 	let decodedCookie = decodeURIComponent(document.cookie);
-	let ca = decodedCookie.split(';');
-	for(let i = 0; i <ca.length; i++) {
-		let c = ca[i];
-		while (c.charAt(0) === ' ') {
-			c = c.substring(1);
+	let cookieArray = decodedCookie.split(';');
+	for(let i = 0; i < cookieArray.length; i++) {
+		let cookie = cookieArray[i];
+		while (cookie.charAt(0) === ' ') {
+			cookie = cookie.substring(1);
 		}
-		if (c.indexOf(name) === 0) {
-			return c.substring(name.length, c.length);
+		if (cookie.indexOf(name) === 0) {
+			return cookie.substring(name.length, cookie.length);
 		}
 	}
 	return "";
@@ -56,7 +56,7 @@ class YearSelector extends React.Component {
 					<ToggleButton variant="outline-primary" className="mb-auto button-small" id="year-2021" value={2021}>2021</ToggleButton>
 					<ToggleButton variant="outline-primary" className="mb-auto button-small" id="year-2022" value={2022}>2022</ToggleButton>
 				</ToggleButtonGroup>
-				<p className="text-small fst-italic text-danger text-center" style={(this.props.year === 2020) ? {} : { display: 'none' }}>Warning: Limited Data</p>
+				<p className="text-small fst-italic text-danger text-center my-auto ms-1 ms-md-0" style={(this.props.year === 2020) ? {} : { display: 'none' }}>Warning: Limited Data</p>
 			</div>
 		);
 	}
