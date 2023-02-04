@@ -39,3 +39,8 @@ input {
 .DeleteSubject:hover {
     background-image: url("../assets/delete_filled.svg");
 }
+
+.subject-selector__input-container {
+    flex: 0!important;
+    margin: 0px!important;
+}

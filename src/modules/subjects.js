@@ -122,14 +122,56 @@ class SubjectSelector extends React.Component {
 	}
 
 	render() {
+		const customStyles = {
+			control: (provided, state) => ({
+				...provided,
+				// background: '#fff',
+				minHeight: '2.2rem',
+				height: '2.2rem',
+				alignContent: 'center',
+			}),
+			valueContainer: (provided, state) => ({
+			  	...provided,
+			  	height: '2.2rem',
+				display: 'flex',
+				flexDirection: 'row-reverse',
+				justifyContent: 'flex-end',
+				alignContent: 'center',
+			  	padding: '0rem 0.5rem'
+			}),
+			input: (provided, state) => ({
+			  	...provided,
+				width: '1px',
+			}),
+			placeholder: (provided, state) => ({
+				...provided,
+				fontSize: '1rem',
+				marginLeft: '0px',
+			}),
+			/* indicatorSeparator: (provided, state) => ({
+				...provided,
+			  	display: 'none',
+			}), */
+			indicatorsContainer: (provided, state) => ({
+			  	...provided,
+			  	height: '2.2rem',
+			}),
+			option: (provided, state) => ({
+				...provided,
+				padding: '0.35rem 0.75rem',
+		  	}),
+		  };
+
 		return (
 			<Select 
-				className='SubjectSelector'
+				className='subject-selector'
+				classNamePrefix='subject-selector'
 				options={this.options} 
 				onChange={this.handleSubjectAdd}
 				filterOption={this.filterOptions}
 				placeholder="Add a subject..."
-				value={null} 
+				value={null}
+				styles={customStyles}
 			/>
 		);
 	}
