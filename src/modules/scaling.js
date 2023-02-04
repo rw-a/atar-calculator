@@ -1,6 +1,9 @@
+import './scaling.css';
 import React from 'react';
 import JXG, { COORDS_BY_SCREEN } from 'jsxgraph';
+
 import { calculateScaledScore } from './results';
+
 import SUBJECTS from '../data/2021_subjects.json';
 import SCALINGDATA from '../data/2021_scaling_data.json';
   

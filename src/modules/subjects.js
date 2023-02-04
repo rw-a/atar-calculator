@@ -1,6 +1,8 @@
+import './subjects.css';
 import React from 'react';
 import Select from 'react-select';
 import Button from 'react-bootstrap/Button';
+
 import SUBJECTS from './../data/2021_subjects.json';
 
 class SubjectName extends React.Component {

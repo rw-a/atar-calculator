@@ -13,9 +13,6 @@ import ResultsTable, { calculateTeaFromSubjects } from './modules/results';
 import ScalingGraph from './modules/scaling';
 import TeaGraph from './modules/tea';
 
-import './modules/subjects.css';
-import './modules/results.css';
-
 
 function setCookie(cname, cvalue, exdays) {
   const d = new Date();
@@ -25,19 +22,19 @@ function setCookie(cname, cvalue, exdays) {
 }
 
 function getCookie(cname) {
-  let name = cname + "=";
-  let decodedCookie = decodeURIComponent(document.cookie);
-  let ca = decodedCookie.split(';');
-  for(let i = 0; i <ca.length; i++) {
-    let c = ca[i];
-    while (c.charAt(0) === ' ') {
-      c = c.substring(1);
-    }
-    if (c.indexOf(name) === 0) {
-      return c.substring(name.length, c.length);
-    }
-  }
-  return "";
+	let name = cname + "=";
+	let decodedCookie = decodeURIComponent(document.cookie);
+	let ca = decodedCookie.split(';');
+	for(let i = 0; i <ca.length; i++) {
+		let c = ca[i];
+		while (c.charAt(0) === ' ') {
+			c = c.substring(1);
+		}
+		if (c.indexOf(name) === 0) {
+			return c.substring(name.length, c.length);
+		}
+	}
+	return "";
 }
 
 class YearSelector extends React.Component {
@@ -52,7 +49,7 @@ class YearSelector extends React.Component {
 
 	render() {
 		return (
-			<ToggleButtonGroup type="radio" name="year" defaultValue={2022} onChange={this.handleYearSelect} {...this.props}>
+			<ToggleButtonGroup type="radio" name="year" defaultValue={2022} onChange={this.handleYearSelect}>
 				<ToggleButton variant="outline-primary" className="mb-auto button-small" id="year-2020" value={2020}>2020</ToggleButton>
 				<ToggleButton variant="outline-primary" className="mb-auto button-small" id="year-2021" value={2021}>2021</ToggleButton>
 				<ToggleButton variant="outline-primary" className="mb-auto button-small" id="year-2022" value={2022}>2022</ToggleButton>
@@ -95,7 +92,7 @@ class Section extends React.Component {
 		};
 
 		return (
-			<div className="section-inner" {...this.props}>
+			<div className="section-inner">
 				<Nav variant="tabs" className="justify-content-end" defaultActiveKey={this.props.defaultTab} onSelect={this.handleTabChange}>
 					<h4 className="section-title">{tab_titles[this.state.tab]}</h4>
 					<Nav.Item>
@@ -123,7 +120,7 @@ class Section extends React.Component {
 class Calculator extends React.Component {
 	constructor(props) {
 		super(props);
-		this.state = {'subjects': {}};
+		this.state = {subjects: {}, year: '2022'};
 		this.handleScoreChange = this.handleScoreChange.bind(this);
 		this.handleSubjectAdd = this.handleSubjectAdd.bind(this);
 		this.handleSubjectDelete = this.handleSubjectDelete.bind(this);
@@ -140,7 +137,7 @@ class Calculator extends React.Component {
 	handleSubjectAdd(selectedOption) {
 		let subjects = this.state.subjects;
 		subjects[selectedOption['value']] = "";
-		this.setState({'subjects': subjects});
+		this.setState({subjects: subjects});
 	}
 
 	handleSubjectDelete(subjectCode) {
@@ -148,7 +145,7 @@ class Calculator extends React.Component {
 		// IMPORTANT if anything iterates through the state, it must ignore undefined values
 		let subjects = this.state.subjects;
 		subjects[subjectCode] = undefined;
-		this.setState({'subjects': subjects});
+		this.setState({subjects: subjects});
 	}
 
 	handleSubjectsSave() {
@@ -188,6 +185,7 @@ class Calculator extends React.Component {
         <div className="d-flex flex-column flex-md-row justify-content-between my-2">
           	<p className='text-small fst-italic me-1 mb-2 mb-md-1'>Quite accurate ATAR calculator for Queensland (QCE system). Neither QTAC nor QCAA endorse or are affiliated with this website. Based on 2021 data. Scaling changes every year, so use at your own risk!</p>
 			<YearSelector onYearSelect={this.handleYearSelect} className="align-self-end align-self-md-start"></YearSelector>
+			<p style={(this.state.year === "2020") ? {} : { display: 'none' }}>Limited Data</p>
         </div>
 		<Row className="gy-3">
 			<Col lg={6}>
