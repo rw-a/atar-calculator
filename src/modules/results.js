@@ -1,5 +1,8 @@
 import React from 'react';
 import Table from 'react-bootstrap/Table';
+import Image from 'react-bootstrap/Image';
+import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
+import Tooltip from 'react-bootstrap/Tooltip';
 
 import SUBJECTS from './../data/2021_subjects.json';
 import SCALINGDATA from './../data/2021_scaling_data.json';
@@ -167,10 +170,9 @@ export default class ResultsTable extends React.Component {
 							<th>Raw Score</th>
 							<th>Scaled Score</th>
 							<th>TEA Potential 
-								<div id="tea-potential-help">
-									<img className='help-icon' alt="What is TEA Potential?" src={require('./../assets/help.svg').default}></img>
-									<span className='help-tooltip'>How much your TEA would increase if the raw score increased by 1.</span>
-								</div>
+								<OverlayTrigger placement="top" overlay={<Tooltip>How much your TEA would increase if the raw score increased by 1.</Tooltip>}>
+									<Image className='help-icon' src={require('./../assets/help.svg').default}/>
+								</OverlayTrigger>
 							</th>
 						</tr>
 					</thead>

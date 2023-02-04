@@ -2,7 +2,7 @@
     font-size: 1.125rem;
 }
 
-img.help-icon {
+.help-icon {
     height: 13px;
     width: 13px;
     opacity: 0.7;
@@ -11,38 +11,6 @@ img.help-icon {
 
 .help-icon:hover {
     opacity: 1;
-}
-
-.help-tooltip {
-    visibility: hidden;
-
-    width: 100px;
-    padding: 5px;
-    border-radius: 2px;
-
-    color: #222222;
-    background-color: #fafafa;
-
-    text-align: center;
-    font-size: small;
-    font-weight: normal;
-    
-    /* Position the tooltip */
-    position: absolute;
-    z-index: 1;
-    bottom: 100%;
-    left: 50%;
-    margin-left: -50px;
-    margin-bottom: 5px;
-}
-
-#tea-potential-help {
-    display: inline;
-    position: relative;
-}
-
-#tea-potential-help:hover .help-tooltip {
-    visibility: visible;
 }
 
 #results {
