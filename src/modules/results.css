@@ -17,3 +17,7 @@
     display: flex;
     justify-content: space-around;
 }
+
+.table-sm>:not(caption)>*>* {
+    padding: 0.15rem 0.25rem;
+}
