@@ -21,10 +21,6 @@ input {
     align-items: center;
 }
 
-.SubjectName {
-    margin-right: auto;
-}
-
 .DeleteSubject {
     background: none;
     background-image: url("../assets/delete.svg");
@@ -42,15 +38,4 @@ input {
 
 .DeleteSubject:hover {
     background-image: url("../assets/delete_filled.svg");
-}
-
-#save_img {
-    height: 28px;
-    width: 28px;
-    float: right;
-    opacity: 30%;
-}
-
-#save_img:hover {
-    opacity: 60%;;
 }

@@ -1,3 +1,7 @@
+:root {
+    --text-small: 0.85rem;
+}
+
 p {
     margin-bottom: 0.25rem;
 }
@@ -7,8 +11,18 @@ p {
 }
 
 .text-small {
-    font-size: 0.85rem;
+    font-size: var(--text-small);
 }
+
+.button-small {
+    font-size: var(--text-small);
+    padding-top: 0.25rem;
+    padding-bottom: 0.25rem;
+    padding-right: 0.5rem;
+    padding-left: 0.5rem;
+
+}
+
 .section-title {
     margin-right: auto;
     margin-bottom: 0rem;
@@ -18,9 +32,11 @@ p {
     .text-small {
         font-size: 0.80rem;
     }
+
     .nav-link {
         padding: 0.35rem;
     }
+
     .section-title {
         font-size: 1.25rem;
         align-self: end;

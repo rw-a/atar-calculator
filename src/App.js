@@ -53,9 +53,9 @@ class YearSelector extends React.Component {
 	render() {
 		return (
 			<ToggleButtonGroup type="radio" name="year" defaultValue={2022} onChange={this.handleYearSelect}>
-				<ToggleButton variant="outline-primary" className="mb-auto py-1 px-2 text-small" id="year-2020" value={2020}>2020</ToggleButton>
-				<ToggleButton variant="outline-primary" className="mb-auto py-1 px-2 text-small" id="year-2021" value={2021}>2021</ToggleButton>
-				<ToggleButton variant="outline-primary" className="mb-auto py-1 px-2 text-small" id="year-2022" value={2022}>2022</ToggleButton>
+				<ToggleButton variant="outline-primary" className="mb-auto button-small" id="year-2020" value={2020}>2020</ToggleButton>
+				<ToggleButton variant="outline-primary" className="mb-auto button-small" id="year-2021" value={2021}>2021</ToggleButton>
+				<ToggleButton variant="outline-primary" className="mb-auto button-small" id="year-2022" value={2022}>2022</ToggleButton>
 			</ToggleButtonGroup>
 		);
 	}
@@ -95,7 +95,7 @@ class Section extends React.Component {
 		};
 
 		return (
-			<div>
+			<div className="section-inner">
 				<Nav variant="tabs" className="justify-content-end" defaultActiveKey={this.props.defaultTab} onSelect={this.handleTabChange}>
 					<h4 className="section-title">{tab_titles[this.state.tab]}</h4>
 					<Nav.Item>

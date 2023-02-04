@@ -1,11 +1,12 @@
 import React from 'react';
 import Select from 'react-select';
+import Button from 'react-bootstrap/Button';
 import SUBJECTS from './../data/2021_subjects.json';
 
 class SubjectName extends React.Component {
     render() {
       return (
-        <span className="SubjectName">{this.props.name}</span>
+        <span className="me-auto">{this.props.name}</span>
       );
     }
   }
@@ -143,13 +144,8 @@ class SaveButton extends React.Component {
 	}
 
 	render() {
-		if (this.props.saved) {
-			var img_src = require("./../assets/save_filled.svg").default;
-		} else {
-			img_src = require("./../assets/save.svg").default;
-		}
 		return (
-			<img src={img_src} id="save_img" title="Save Subjects" alt="Save Subjects" onClick={this.handleClick}></img>
+			<Button variant={(this.props.saved) ? "outline-primary" : "outline-secondary"} onClick={this.handleClick} className="float-end button-small">{(this.props.saved) ? "Saved" : "Save"}</Button>
 		);
 	}
 }
@@ -198,7 +194,6 @@ export default class SubjectsTable extends React.Component {
 
 		return (
 			<div>
-				<SaveButton onClick={this.handleSubjectsSave} saved={this.props.saved}/>
 				<ul>
 					{rows}
 					<li key="0">
@@ -208,6 +203,7 @@ export default class SubjectsTable extends React.Component {
 						/>
 					</li>
 				</ul>
+				<SaveButton onClick={this.handleSubjectsSave} saved={this.props.saved}/>
 			</div>
 		);
 	}
