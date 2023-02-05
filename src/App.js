@@ -57,7 +57,7 @@ class YearSelector extends React.Component {
 					<ToggleButton variant="outline-primary" className="mb-auto button-small" id="year-2021" value={2021}>2021</ToggleButton>
 					<ToggleButton variant="outline-primary" className="mb-auto button-small" id="year-2022" value={2022}>2022</ToggleButton>
 				</ToggleButtonGroup>
-				<p className="text-small fst-italic text-danger text-center my-auto ms-1 ms-md-0" style={(this.props.year === 2020) ? {} : { display: 'none' }}>Warning: Limited Data</p>
+				<p className="text-tiny fst-italic text-danger text-center my-auto ms-1 ms-md-0" style={(this.props.year === 2020) ? {} : { opacity: '0%' }}>Warning: Limited Data</p>
 			</div>
 		);
 	}

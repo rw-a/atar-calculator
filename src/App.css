@@ -1,17 +1,22 @@
 :root {
     --text-small: 0.85rem;
+    --text-tiny: 0.70rem;
 }
 
-p {
-    margin-bottom: 0.25rem;
+.text-small {
+    font-size: var(--text-small);
+}
+
+.text-tiny {
+    font-size: var(--text-tiny);
 }
 
 .nav-item {
     font-size: 0.80rem;
 }
 
-.text-small {
-    font-size: var(--text-small);
+p {
+    margin-bottom: 0.25rem;
 }
 
 .button-small {
@@ -32,6 +37,10 @@ p {
 @media (max-width: 576px) {
     html {
         font-size: 14px;
+    }
+
+    .text-tiny {
+        font-size: var(--text-small);
     }
 
     .nav-link {
