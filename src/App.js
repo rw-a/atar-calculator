@@ -159,7 +159,9 @@ class Calculator extends React.Component {
 		// IMPORTANT if anything iterates through the state, it must ignore undefined values
 		let subjects = this.state.subjects;
 		subjects[subjectCode] = undefined;
-		this.setState({subjects: subjects});
+		let allSubjects = this.state.allSubjects;
+		allSubjects[subjectCode] = undefined;
+		this.setState({subjects: subjects, allSubjects: allSubjects});
 	}
 
 	handleSubjectsSave() {

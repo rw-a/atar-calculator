@@ -148,7 +148,7 @@ export default class ScalingGraph extends React.Component {
       // plot raw score input
       let rawScore = this.props.subjects[subjectCode];
       if (rawScore) {
-        let scaledScore = calculateScaledScore(rawScore, subjectCode);
+        let scaledScore = calculateScaledScore(rawScore, subjectCode, this.props.year);
         let point = this.board.create('point', [rawScore, scaledScore], {face: "cross", name: SUBJECTS[subjectCode], withLabel: true});
         point.label.setAttribute({offset: [10, -4]});
         if (!showLabels) point.setAttribute({withLabel: false});
@@ -230,9 +230,9 @@ export default class ScalingGraph extends React.Component {
 
         // pick the closest subject to select
         let closestSubject = this.subjects.reduce((subjectCode1, subjectCode2) => {  // get the subject with raw score closest to the cursor
-          return (Math.abs(calculateScaledScore(nearestX, subjectCode1) - coords[1]) < Math.abs(calculateScaledScore(nearestX, subjectCode2) - coords[1])) ? subjectCode1 : subjectCode2;
+          return (Math.abs(calculateScaledScore(nearestX, subjectCode1, this.props.year) - coords[1]) < Math.abs(calculateScaledScore(nearestX, subjectCode2, this.props.year) - coords[1])) ? subjectCode1 : subjectCode2;
         })
-        let nearestY = calculateScaledScore(nearestX, closestSubject)
+        let nearestY = calculateScaledScore(nearestX, closestSubject, this.props.year);
 
         // show coordinates if previously hidden
         if (!previouslyVisible) {
