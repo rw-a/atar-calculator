@@ -198,14 +198,9 @@ class Calculator extends React.Component {
 	componentDidMount() {
 		// Load previously saved state
 		let state = getCookie("subjects");
-		if (state !== "") {
-			state = JSON.parse(state);
-			let subjects = {};
-			for (let subjectCode of Object.keys(state)) {
-				subjects[subjectCode] = state[subjectCode];
-			}
-			this.setState({subjects: subjects});
-		}
+		if (state === "") return;
+		state = JSON.parse(state);
+		this.setState({subjects: state});
 	}
 
 	render() {
