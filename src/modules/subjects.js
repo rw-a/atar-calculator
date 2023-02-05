@@ -96,11 +96,6 @@ class SubjectSelector extends React.Component {
 		super(props);
 		this.handleSubjectAdd = this.handleSubjectAdd.bind(this);
 
-		this.options = [];
-		for (let subjectCode of Object.keys(getSubjects(this.props.year))) {
-			this.options.push({value: subjectCode, label: SUBJECTS[subjectCode]});
-		}
-
 		this.filterOptions = (candidate, input) => {
 			// remove an option if it has already been added
 			if (Object.keys(this.props.subjects).includes(candidate.value) && this.props.subjects[candidate.value] !== undefined) {
@@ -123,6 +118,11 @@ class SubjectSelector extends React.Component {
 	}
 
 	render() {
+		let options = [];
+		for (let subjectCode of Object.keys(getSubjects(this.props.year))) {
+			options.push({value: subjectCode, label: SUBJECTS[subjectCode]});
+		}
+
 		const customStyles = {
 			control: (provided, state) => ({
 				...provided,
@@ -167,7 +167,7 @@ class SubjectSelector extends React.Component {
 			<Select 
 				className='subject-selector'
 				classNamePrefix='subject-selector'
-				options={this.options} 
+				options={options} 
 				onChange={this.handleSubjectAdd}
 				filterOption={this.filterOptions}
 				placeholder="Add a subject..."
