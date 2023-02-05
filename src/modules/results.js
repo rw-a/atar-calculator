@@ -173,12 +173,10 @@ export default class ResultsTable extends React.Component {
 					<div className='text-center'>
 						<p className='fs-18px'>Estimated TEA</p>
 						<p className='fs-4'>{tea.toFixed(2)}</p>
-						<p className='text-small fst-italic'>Your top 5 scaled scores</p>
 					</div>
 					<div className='text-center'>
 						<p className='fs-18px'>Estimated ATAR</p>
 						<p className='fs-4'>{atar}</p>
-						<p className='text-small fst-italic'>No data for ATARs below 97.60</p>
 					</div>
 				</Stack>
 				<Table bordered size="sm" className="border-dark">
