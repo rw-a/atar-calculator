@@ -202,7 +202,7 @@ class Calculator extends React.Component {
 			state = JSON.parse(state);
 			let subjects = {};
 			for (let subjectCode of Object.keys(state)) {
-			subjects[subjectCode] = state[subjectCode];
+				subjects[subjectCode] = state[subjectCode];
 			}
 			this.setState({subjects: subjects});
 		}
@@ -215,44 +215,44 @@ class Calculator extends React.Component {
 			var saved = true;
 		} else {
 			saved = false;
-	}
+		}
 
-    return (
-		<Container className="my-3">
-			<h2>QLD/QCE ATAR Calculator</h2>
-			<div className="d-flex flex-column flex-md-row justify-content-between my-2">
-				<p className='text-small fst-italic me-1 mb-2 mb-md-1'>Quite accurate ATAR calculator for Queensland (QCE system). Neither QTAC nor QCAA endorse or are affiliated with this website. Scaling changes every year, so use at your own risk!</p>
-				<YearSelector onYearSelect={this.handleYearSelect} year={this.state.year} className="align-self-end align-self-md-start"></YearSelector>
-			</div>
-			<Row className="gy-3">
-				<Col xs={12} xl={6}>
-					<Section 
-						defaultTab={"subjects"}
-						subjects={this.state.subjects}
-						saved={saved}
-						year={this.state.year}
-						onScoreChange={this.handleScoreChange}
-						onSubjectAdd={this.handleSubjectAdd}
-						onSubjectDelete={this.handleSubjectDelete}
-						onSubjectsSave={this.handleSubjectsSave}
-					/>
-				</Col>
-				<Col xs={12} xl={6}>
-					<Section 
-						defaultTab={"results"}
-						subjects={this.state.subjects}
-						saved={saved}
-						year={this.state.year}
-						onScoreChange={this.handleScoreChange}
-						onSubjectAdd={this.handleSubjectAdd}
-						onSubjectDelete={this.handleSubjectDelete}
-						onSubjectsSave={this.handleSubjectsSave}
-					/>
-				</Col>
-			</Row>
-		</Container>
-    );
-  }
+		return (
+			<Container className="my-3">
+				<h2>QLD/QCE ATAR Calculator</h2>
+				<div className="d-flex flex-column flex-md-row justify-content-between my-2">
+					<p className='text-small fst-italic me-1 mb-2 mb-md-1'>Quite accurate ATAR calculator for Queensland (QCE system). Neither QTAC nor QCAA endorse or are affiliated with this website. Scaling changes every year, so use at your own risk!</p>
+					<YearSelector onYearSelect={this.handleYearSelect} year={this.state.year} className="align-self-end align-self-md-start"></YearSelector>
+				</div>
+				<Row className="gy-3">
+					<Col xs={12} xl={6}>
+						<Section 
+							defaultTab={"subjects"}
+							subjects={this.state.subjects}
+							saved={saved}
+							year={this.state.year}
+							onScoreChange={this.handleScoreChange}
+							onSubjectAdd={this.handleSubjectAdd}
+							onSubjectDelete={this.handleSubjectDelete}
+							onSubjectsSave={this.handleSubjectsSave}
+						/>
+					</Col>
+					<Col xs={12} xl={6}>
+						<Section 
+							defaultTab={"results"}
+							subjects={this.state.subjects}
+							saved={saved}
+							year={this.state.year}
+							onScoreChange={this.handleScoreChange}
+							onSubjectAdd={this.handleSubjectAdd}
+							onSubjectDelete={this.handleSubjectDelete}
+							onSubjectsSave={this.handleSubjectsSave}
+						/>
+					</Col>
+				</Row>
+			</Container>
+		);
+	}
 }
 
 export default Calculator;
