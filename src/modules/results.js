@@ -7,7 +7,7 @@ import Image from 'react-bootstrap/Image';
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Tooltip from 'react-bootstrap/Tooltip';
 
-import { getAtarData, getScalingData } from './data';
+import { getAtarData, getScalingData, estimateAtarModel } from './data';
 import SUBJECTS from './../data/all_subjects.json';
 
 
@@ -49,16 +49,29 @@ function calculateAtarFromTea(tea, year) {
 		let currentTEA = Number(teaList[i]);
 		if (tea < currentTEA) {
 			let maxATAR = atarData[currentTEA].toFixed(2);
+			// console.log((Math.round(estimateAtarModel(tea, year) * 20) / 20).toFixed(2));
 
 			if (i === 0) {
 				// if TEA is below the lowest available datapoint
-				return `<${maxATAR}`;
+				let estimatedAtar = (Math.round(estimateAtarModel(tea, year) * 20) / 20).toFixed(2);
+				if (estimatedAtar < maxATAR) {
+					return `~${estimatedAtar}`;
+				} else {
+					return `<${maxATAR}`;
+				}
 			} else {
 				let previousTEA = Number(teaList[i - 1]);
 				let minATAR = atarData[previousTEA].toFixed(2);
 				if (minATAR === maxATAR || minATAR === "99.95") {
 					return minATAR;
 				} else {
+					// if the conservative method is not precise enough, try using the estimated atar to give a more precise answer
+					if (maxATAR - minATAR > 0.5) {
+						let estimatedAtar = (Math.round(estimateAtarModel(tea, year) * 20) / 20).toFixed(2);
+						if (estimatedAtar >= minATAR && estimatedAtar <= maxATAR) {
+							return `~${estimatedAtar}`;
+						}
+					}
 					return `${minATAR}-${maxATAR}`;
 				}
 			}

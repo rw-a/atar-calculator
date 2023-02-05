@@ -52,14 +52,15 @@ export function getAtarData(year) {
 
 
 /* Fallback models if there is no data near the given raw score. */
-export function predictAtarModel2020(tea) {
-    return -0.000154594 * (tea ** 2) + 0.279766 * tea - 0.0000199988;
-}
-
-export function preditAtarModel2021(tea) {
-    return -0.000124505 * (tea ** 2) + 0.265103 * tea - 0.000190829;
-}
-
-export function predictAtarModel2022(tea) {
-    return -0.0000862361 * (tea ** 2) + 0.246812 * tea + 0.00832645;
+export function estimateAtarModel(tea, year) {
+    let yearStr = String(year);
+    if (yearStr === "2020") {
+        return -0.000154594 * (tea ** 2) + 0.279766 * tea - 0.0000199988;
+    } else if (yearStr === "2021") {
+        return -0.000124505 * (tea ** 2) + 0.265103 * tea - 0.000190829;
+    } else if (yearStr === "2022") {
+        return -0.0000862361 * (tea ** 2) + 0.246812 * tea + 0.00832645;
+    } else {
+        console.error(`Invalid year at predictAtarModel(). Year=${year}`);
+    }
 }

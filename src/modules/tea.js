@@ -69,7 +69,7 @@ export default class TeaGraph extends React.Component {
 
         return (
             <div>
-                <p className='text-small fst-italic'>Shows how your TEA (bottom numbers) translates into an ATAR (top numbers). If your point is in a green region, your exact ATAR is known (if you had been in the {this.props.year} cohort). If your point is not in a green region, your ATAR is ambiguous and a range is given.</p>
+                <p className='text-small fst-italic'>Shows how your TEA (bottom numbers) translates into an ATAR (top numbers). If your point is in a green region, your exact ATAR is known (if you had been in the {this.props.year} cohort). If your point is not in a green region, your ATAR is ambiguous and a range or approximation is given.</p>
                 <Plot 
                     data={data}
                     layout={{
