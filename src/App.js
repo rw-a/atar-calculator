@@ -211,11 +211,7 @@ class Calculator extends React.Component {
 	render() {
 		// check if saved state matches current state
 		let saved_state = getCookie("subjects");
-		if (saved_state === JSON.stringify(this.state.subjects)) {
-			var saved = true;
-		} else {
-			saved = false;
-		}
+		let saved = (saved_state === JSON.stringify(this.state.subjects));
 
 		return (
 			<Container className="my-3">
