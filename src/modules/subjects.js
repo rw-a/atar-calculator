@@ -3,7 +3,8 @@ import React from 'react';
 import Select from 'react-select';
 import Button from 'react-bootstrap/Button';
 
-import SUBJECTS from './../data/2021_subjects.json';
+import { getSubjects } from './data';
+import SUBJECTS from './../data/all_subjects.json';
 
 class SubjectName extends React.Component {
     render() {
@@ -96,7 +97,7 @@ class SubjectSelector extends React.Component {
 		this.handleSubjectAdd = this.handleSubjectAdd.bind(this);
 
 		this.options = [];
-		for (let subjectCode of Object.keys(SUBJECTS)) {
+		for (let subjectCode of Object.keys(getSubjects(this.props.year))) {
 			this.options.push({value: subjectCode, label: SUBJECTS[subjectCode]});
 		}
 
@@ -220,6 +221,7 @@ export default class SubjectsTable extends React.Component {
 						<SubjectSelector 
 							onSubjectAdd={this.props.onSubjectAdd} 
 							subjects={this.props.subjects}
+							year={this.props.year}
 						/>
 					</li>
 				</ul>

@@ -4,8 +4,8 @@ import JXG, { COORDS_BY_SCREEN } from 'jsxgraph';
 
 import { calculateScaledScore } from './results';
 
-import SUBJECTS from '../data/2021_subjects.json';
-import SCALINGDATA from '../data/2021_scaling_data.json';
+import SUBJECTS from '../data/all_subjects.json';
+import { getScalingData } from './data';
   
 const COLORS = [
   'steelblue',
@@ -106,9 +106,10 @@ export default class ScalingGraph extends React.Component {
   plotScalingFunctions() {
     for (let [subjectIndex, subjectCode] of this.subjects.entries()) {
       // create function
-      let a = SCALINGDATA[subjectCode]["a"];
-      let b = SCALINGDATA[subjectCode]["b"];
-      let c = SCALINGDATA[subjectCode]["c"];
+      const scalingData = getScalingData(this.props.year);
+      let a = scalingData[subjectCode]["a"];
+      let b = scalingData[subjectCode]["b"];
+      let c = scalingData[subjectCode]["c"];
       let subjectFunction = this.board.create('functiongraph', [function(x){
         return (a / (1 + Math.exp(-b * (x - c))));
       }, 0, 100], {strokeColor: COLORS[subjectIndex % COLORS.length]});   // modulus ensures colours repeat if exhausted

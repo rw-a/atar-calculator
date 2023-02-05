@@ -8,6 +8,7 @@ import ToggleButton from 'react-bootstrap/ToggleButton';
 import ToggleButtonGroup from 'react-bootstrap/ToggleButtonGroup';
 import Nav from 'react-bootstrap/Nav';
 
+import { getSubjects } from './modules/data';
 import SubjectsTable from './modules/subjects';
 import ResultsTable, { calculateTeaFromSubjects } from './modules/results';
 
@@ -90,16 +91,17 @@ class Section extends React.Component {
 					onSubjectAdd={this.props.onSubjectAdd}
 					onSubjectDelete={this.props.onSubjectDelete}
 					onSubjectsSave={this.props.onSubjectsSave}
+					year={this.props.year}
 				/>,
 			scaling: 
 				<Suspense fallback={<div>Loading...</div>}>
-					<ScalingGraph subjects={this.props.subjects}/>
+					<ScalingGraph subjects={this.props.subjects} year={this.props.year}/>
 				</Suspense>,
 			tea: 
 				<Suspense fallback={<div>Loading...</div>}>
-					<TeaGraph tea={calculateTeaFromSubjects(this.props.subjects)} year={this.props.year}/>
+					<TeaGraph tea={calculateTeaFromSubjects(this.props.subjects, this.props.year)} year={this.props.year}/>
 				</Suspense>,
-			results: <ResultsTable subjectRawScores={this.props.subjects}/>
+			results: <ResultsTable subjectRawScores={this.props.subjects} year={this.props.year}/>
 		};	
 
 		return (
@@ -127,11 +129,12 @@ class Section extends React.Component {
 	}
 }
 
-
 class Calculator extends React.Component {
 	constructor(props) {
 		super(props);
-		this.state = {subjects: {}, year: '2022'};
+		// subjects contains only the subjects with data in the selected year, whereas allSubjects has all the subjects, including ones with no data in the selected year 
+		this.state = {subjects: {}, year: '2022', allSubjects: {}};
+
 		this.handleScoreChange = this.handleScoreChange.bind(this);
 		this.handleSubjectAdd = this.handleSubjectAdd.bind(this);
 		this.handleSubjectDelete = this.handleSubjectDelete.bind(this);
@@ -165,7 +168,29 @@ class Calculator extends React.Component {
 	}
 
 	handleYearSelect(selectedYear) {
-		this.setState({year: selectedYear});
+		// copy subjects to allSubjects
+		let currentSubjects = this.state.subjects;
+		let allSubjects = this.state.allSubjects;
+		for (let subjectCode of Object.keys(currentSubjects)) {
+			if (currentSubjects[subjectCode] === undefined) continue;
+			allSubjects[subjectCode] = currentSubjects[subjectCode];
+		}
+
+		// clear subjects
+		for (let subjectCode of Object.keys(currentSubjects)) {
+			currentSubjects[subjectCode] = undefined;
+		}
+
+		// copy valid subjects from allSubjects to subjects
+		const subjectsInYear = getSubjects(selectedYear);
+		for (let subjectCode of Object.keys(allSubjects)) {
+			if (allSubjects[subjectCode] === undefined) continue;
+			if (Object.keys(subjectsInYear).includes(subjectCode)) {
+				currentSubjects[subjectCode] = allSubjects[subjectCode];
+			}
+		}
+
+		this.setState({year: selectedYear, subjects: currentSubjects, allSubjects: allSubjects});
 	}
 
 	componentDidMount() {

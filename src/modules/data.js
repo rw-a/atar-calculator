@@ -1,5 +1,3 @@
-import SUBJECTS from './../data/all_subjects.json';
-
 import SUBJECTS_2020 from './../data/2020_subjects.json';
 import SCALINGDATA_2020 from './../data/2020_scaling_data.json';
 import ATARDATA_2020 from './../data/2020_atar_data.json'
@@ -54,14 +52,14 @@ export function getAtarData(year) {
 
 
 /* Fallback models if there is no data near the given raw score. */
-export function approximateScaledScore2020(rawScore) {
-    return 7.6042 * rawScore - 270.25;
+export function predictAtarModel2020(tea) {
+    return -0.000154594 * (tea ** 2) + 0.279766 * tea - 0.0000199988;
 }
 
-export function approximateScaledScore2021(rawScore) {
-    return 6.7612 * rawScore - 186.27;
+export function preditAtarModel2021(tea) {
+    return -0.000124505 * (tea ** 2) + 0.265103 * tea - 0.000190829;
 }
 
-export function approximateScaledScore2022(rawScore) {
-    return 5.8013 * rawScore - 91.954;
+export function predictAtarModel2022(tea) {
+    return -0.0000862361 * (tea ** 2) + 0.246812 * tea + 0.00832645;
 }
