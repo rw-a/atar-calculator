@@ -169,9 +169,13 @@ export default class ResultsTable extends React.Component {
 		
 		return (
 			<div>
-				<Stack direction="horizontal" className="justify-content-around">
+				<Stack direction="horizontal" className="justify-content-around mt-1">
 					<div className='text-center'>
-						<p className='fs-18px'>Estimated TEA</p>
+						<p className='fs-18px'>Estimated TEA
+							<OverlayTrigger placement="top" overlay={<Tooltip>The sum of your top 5 scaled scores.</Tooltip>}>
+								<Image className='help-icon' src={require('./../assets/help.svg').default}/>
+							</OverlayTrigger>
+						</p>
 						<p className='fs-4'>{tea.toFixed(2)}</p>
 					</div>
 					<div className='text-center'>
