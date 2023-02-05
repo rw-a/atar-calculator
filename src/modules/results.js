@@ -145,7 +145,7 @@ export default class ResultsTable extends React.Component {
 		// if no subjects added, add blank boxes as placeholders
 		if (rows.length < 1) {
 			rows.push(
-				<ResultsRow key="0" code={""} rawScore={""} scaledScore={""} teaPotential={""}/>
+				<ResultsRow key="0" code={""} rawScore={"‎"} scaledScore={""} teaPotential={""}/>
 			);
 		}
 
