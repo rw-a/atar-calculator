@@ -225,7 +225,7 @@ export default class SubjectsTable extends React.Component {
 						/>
 					</li>
 				</ul>
-				<SaveButton onClick={this.props.onSubjectSave} saved={this.props.saved}/>
+				<SaveButton onClick={this.props.onSubjectsSave} saved={this.props.saved}/>
 			</div>
 		);
 	}
