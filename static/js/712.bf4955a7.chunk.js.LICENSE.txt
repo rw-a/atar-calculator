@@ -1,0 +1,10 @@
+/*!Type.exists(el.rendNode.getTotalLength) && */
+
+/*!Type.exists(el.rendNode.getTotalLength) &&*/
+
+/*!this.visProp.frozen &&*/
+
+/**
+   * @license almond 0.3.3 Copyright jQuery Foundation and other contributors.
+   * Released under MIT license, http://github.com/requirejs/almond/LICENSE
+   */
