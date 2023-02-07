@@ -169,7 +169,7 @@ export default class ResultsTable extends React.Component {
 		
 		return (
 			<div>
-				<Stack direction="horizontal" className="justify-content-around mt-1">
+				<Stack direction="horizontal" className="justify-content-around">
 					<div className='text-center'>
 						<p className='fs-18px'>Estimated TEA
 							<OverlayTrigger placement="top" overlay={<Tooltip>The sum of your top 5 scaled scores.</Tooltip>}>
