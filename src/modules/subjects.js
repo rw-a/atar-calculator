@@ -1,12 +1,27 @@
+import './../css/subjects.css';
 import React from 'react';
 import Select from 'react-select';
-import SUBJECTS from './../data/2021_subjects.json';
+
+import Image from 'react-bootstrap/Image';
+import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
+import Tooltip from 'react-bootstrap/Tooltip';
+
+import { getSubjects } from './data';
+import SUBJECTS from './../data/all_subjects.json';
 
 class SubjectName extends React.Component {
     render() {
-      return (
-        <span className="SubjectName">{this.props.name}</span>
-      );
+		return (
+			<span className="me-auto">
+				{this.props.name}
+				{
+					(this.props.name.endsWith("[Accelerated]")) ? 
+						<OverlayTrigger placement="top" overlay={<Tooltip>If you completed the subject a year early. Uses the scaling of the previous year (i.e. {this.props.year - 1})</Tooltip>}>
+							<Image className='help-icon' src={require('./../assets/help.svg').default}/>
+						</OverlayTrigger> : ""
+				}
+			</span>
+		);
     }
   }
   
@@ -80,7 +95,7 @@ class SubjectRow extends React.Component {
 		return (
 			<li className="SubjectRow">
 				<DeleteSubject onClick={this.handleSubjectDelete} />
-				<SubjectName name={SUBJECTS[this.props.code]} />
+				<SubjectName name={SUBJECTS[this.props.code]} year={this.props.year}/>
 				<SubjectRawScore score={this.props.score} onScoreChange={this.handleScoreChange} />
 			</li>
 		);
@@ -91,11 +106,6 @@ class SubjectSelector extends React.Component {
 	constructor(props) {
 		super(props);
 		this.handleSubjectAdd = this.handleSubjectAdd.bind(this);
-
-		this.options = [];
-		for (let subjectCode of Object.keys(SUBJECTS)) {
-			this.options.push({value: subjectCode, label: SUBJECTS[subjectCode]});
-		}
 
 		this.filterOptions = (candidate, input) => {
 			// remove an option if it has already been added
@@ -119,14 +129,61 @@ class SubjectSelector extends React.Component {
 	}
 
 	render() {
+		let options = [];
+		for (let subjectCode of Object.keys(getSubjects(this.props.year))) {
+			options.push({value: subjectCode, label: SUBJECTS[subjectCode]});
+		}
+
+		const customStyles = {
+			control: (provided, state) => ({
+				...provided,
+				// background: '#fff',
+				minHeight: '2.3rem',
+				height: '2.3rem',
+				alignContent: 'center',
+			}),
+			valueContainer: (provided, state) => ({
+			  	...provided,
+			  	height: '2.3rem',
+				display: 'flex',
+				flexDirection: 'row-reverse',
+				justifyContent: 'flex-end',
+				alignContent: 'center',
+			  	padding: '0rem 0.5rem'
+			}),
+			input: (provided, state) => ({
+			  	...provided,
+				width: '1px',
+			}),
+			placeholder: (provided, state) => ({
+				...provided,
+				fontSize: '1rem',
+				marginLeft: '0px',
+			}),
+			/* indicatorSeparator: (provided, state) => ({
+				...provided,
+			  	display: 'none',
+			}), */
+			indicatorsContainer: (provided, state) => ({
+			  	...provided,
+			  	height: '2.2rem',
+			}),
+			option: (provided, state) => ({
+				...provided,
+				padding: '0.35rem 0.75rem',
+		  	}),
+		  };
+
 		return (
 			<Select 
-				className='SubjectSelector'
-				options={this.options} 
+				className='subject-selector'
+				classNamePrefix='subject-selector'
+				options={options} 
 				onChange={this.handleSubjectAdd}
 				filterOption={this.filterOptions}
 				placeholder="Add a subject..."
-				value={null} 
+				value={null}
+				styles={customStyles}
 			/>
 		);
 	}
@@ -149,36 +206,12 @@ class SaveButton extends React.Component {
 			img_src = require("./../assets/save.svg").default;
 		}
 		return (
-			<img src={img_src} id="save_img" title="Save Subjects" alt="Save Subjects" onClick={this.handleClick}></img>
+			<img src={img_src} id="save_img" title="Save Subjects" alt="Save Subjects" onClick={this.handleClick} className={this.props.className}></img>
 		);
 	}
 }
 
 export default class SubjectsTable extends React.Component {
-	constructor(props) {
-		super(props);
-		this.handleScoreChange = this.handleScoreChange.bind(this);
-		this.handleSubjectAdd = this.handleSubjectAdd.bind(this);
-		this.handleSubjectDelete = this.handleSubjectDelete.bind(this);
-		this.handleSubjectsSave = this.handleSubjectsSave.bind(this);
-	}
-
-	handleScoreChange(subjectCode, score) {
-		this.props.onScoreChange(subjectCode, score);
-	}
-
-	handleSubjectAdd(selectedOption) {
-		this.props.onSubjectAdd(selectedOption);
-	}
-
-	handleSubjectDelete(subjectCode) {
-		this.props.onSubjectDelete(subjectCode);
-	}
-
-	handleSubjectsSave() {
-		this.props.onSubjectsSave();
-	}
-
 	render() {
 		// generate a row for each subject
 		let rows = [];
@@ -189,8 +222,9 @@ export default class SubjectsTable extends React.Component {
 						key={subjectCode} 
 						code={subjectCode} 
 						score={this.props.subjects[subjectCode]} 
-						onScoreChange={this.handleScoreChange} 
-						onSubjectDelete={this.handleSubjectDelete} 
+						onScoreChange={this.props.onScoreChange} 
+						onSubjectDelete={this.props.onSubjectDelete}
+						year={this.props.year}
 					/>
 				);
 			}
@@ -198,14 +232,15 @@ export default class SubjectsTable extends React.Component {
 
 		return (
 			<div>
-				<SaveButton onClick={this.handleSubjectsSave} saved={this.props.saved}/>
-				<ul className='section'>
-					<h2>Subjects</h2>
+				<SaveButton onClick={this.props.onSubjectsSave} saved={this.props.saved} className="float-end"/>
+				<h4>Subjects</h4>
+				<ul className="mb-1">
 					{rows}
 					<li key="0">
 						<SubjectSelector 
-							onSubjectAdd={this.handleSubjectAdd} 
+							onSubjectAdd={this.props.onSubjectAdd} 
 							subjects={this.props.subjects}
+							year={this.props.year}
 						/>
 					</li>
 				</ul>

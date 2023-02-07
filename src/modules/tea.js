@@ -1,19 +1,20 @@
 import React from 'react';
 import Plotly from 'plotly.js/dist/plotly-tiny.js'
 import createPlotlyComponent from 'react-plotly.js/factory'
-import ATARDATA from './../data/2021_atar_data.json'
+import { getAtarData } from './data';
 
 const Plot = createPlotlyComponent(Plotly);
 
 export default class TeaGraph extends React.Component {
     render() {
-        let width = Math.min(720, document.querySelector('#root').getBoundingClientRect().width - 40);
+        const atarData = getAtarData(this.props.year);
+        let width = document.querySelector('.section-inner').getBoundingClientRect().width;
 
         let data = [
             {
-                x: Object.keys(ATARDATA),
-                y: Array(Object.keys(ATARDATA).length).fill(0),
-                text: Object.values(ATARDATA),
+                x: Object.keys(atarData),
+                y: Array(Object.keys(atarData).length).fill(0),
+                text: Object.values(atarData),
                 type: 'scatter',
                 textposition: "top center",
                 mode: 'markers+text',
@@ -44,8 +45,8 @@ export default class TeaGraph extends React.Component {
         ];
 
         // // if two teas of an atar is known, fill the region between them green (confirmed ATARs)
-        let atars = Object.values(ATARDATA);
-        let teas = Object.keys(ATARDATA);
+        let atars = Object.values(atarData);
+        let teas = Object.keys(atarData);
         for (let i = 0; i < atars.length - 1; i++) {
             if (atars[i] === atars[i + 1]) {    // if two datapoints exist for an atar
                 data.push(
@@ -68,8 +69,7 @@ export default class TeaGraph extends React.Component {
 
         return (
             <div>
-                <h2>TEA to ATAR Map</h2>
-                <p className='note'>Shows how your TEA (bottom numbers) translates into an ATAR (top numbers). If your point is in a green region, your exact ATAR is known (if you had been in the 2021 cohort). If your point is not in a green region, your ATAR is ambiguous and a range is given.</p>
+                <p className='text-small fst-italic'>Shows how your TEA (bottom numbers) translates into an ATAR (top numbers). If your point is in a green region, your exact ATAR is known (if you had been in the {this.props.year} cohort). If your point is not in a green region, your ATAR is ambiguous and a range or approximation is given.</p>
                 <Plot 
                     data={data}
                     layout={{

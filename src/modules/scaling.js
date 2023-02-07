@@ -1,8 +1,11 @@
+import './../css/scaling.css';
 import React from 'react';
 import JXG, { COORDS_BY_SCREEN } from 'jsxgraph';
+
 import { calculateScaledScore } from './results';
-import SUBJECTS from '../data/2021_subjects.json';
-import SCALINGDATA from '../data/2021_scaling_data.json';
+
+import SUBJECTS from '../data/all_subjects.json';
+import { getScalingData } from './data';
   
 const COLORS = [
   'steelblue',
@@ -14,7 +17,7 @@ const COLORS = [
   'magenta'
 ];
 
-const BOUNDING_BOX = [-9, 104, 113, -6]; // min x, max y, max x, min y
+const BOUNDING_BOX = [-9, 103, 113, -6]; // min x, max y, max x, min y
 
 const LEGEND_WIDTH = 110;
 
@@ -34,6 +37,7 @@ export default class ScalingGraph extends React.Component {
       maxboundingbox: [-100, 200, 200, -100],
       showCopyright: false, 
       showInfobox: false,
+      showNavigation: false,
       zoom: {
         factorX: 1.25,  // horizontal zoom factor (multiplied to JXG.Board#zoomX)
         factorY: 1.25,  // vertical zoom factor (multiplied to JXG.Board#zoomY)
@@ -55,7 +59,7 @@ export default class ScalingGraph extends React.Component {
     });
     
     this.legend = JXG.JSXGraph.initBoard("jsxlegend", { 
-      boundingbox: [0, 104, 20, -6], // min x, max y, max x, min y
+      boundingbox: [0, 110, 20, 0], // min x, max y, max x, min y
       maxFrameRate: 1,
       registerEvents: false,
       showCopyright: false, 
@@ -86,6 +90,8 @@ export default class ScalingGraph extends React.Component {
     this.originalObjects = [...this.board.objectsList]; // this needs to be after the mouse coordinates is created so it is preserved
     this.points = [];
     this.subjects = [];
+
+    this.componentDidUpdate();
   }
 
   clearBoard() {
@@ -100,9 +106,10 @@ export default class ScalingGraph extends React.Component {
   plotScalingFunctions() {
     for (let [subjectIndex, subjectCode] of this.subjects.entries()) {
       // create function
-      let a = SCALINGDATA[subjectCode]["a"];
-      let b = SCALINGDATA[subjectCode]["b"];
-      let c = SCALINGDATA[subjectCode]["c"];
+      const scalingData = getScalingData(this.props.year);
+      let a = scalingData[subjectCode]["a"];
+      let b = scalingData[subjectCode]["b"];
+      let c = scalingData[subjectCode]["c"];
       let subjectFunction = this.board.create('functiongraph', [function(x){
         return (a / (1 + Math.exp(-b * (x - c))));
       }, 0, 100], {strokeColor: COLORS[subjectIndex % COLORS.length]});   // modulus ensures colours repeat if exhausted
@@ -123,9 +130,10 @@ export default class ScalingGraph extends React.Component {
     let longestSubjectName = subjectsNames.reduce((subject1, subject2) => {return (subject1.length > subject2.length) ? subject1 : subject2});
     let numLines = Math.ceil(longestSubjectName.length / 12);
     let rowHeight = numLines * 9 + 10;
-    var legend = this.legend.create('legend', [0, 100], {labels: subjectsNames, colors: COLORS, rowHeight: rowHeight} );
-    let legendHeightOffset = this.isMobile ? 36 : 60;
-    let legendHeight = legend.lines.at(-1).getTextAnchor().scrCoords.at(-1) + legendHeightOffset;
+
+    let legend = this.legend.create('legend', [0, 100], {labels: subjectsNames, colors: COLORS, rowHeight: rowHeight} );
+
+    let legendHeight = legend.lines.at(-1).getTextAnchor().scrCoords.at(-1) + rowHeight + this.maxWidth / 30;
     document.getElementById('jsxlegend').style.top = `${this.graphHeight - legendHeight}px`;
     this.legend.resizeContainer(LEGEND_WIDTH, legendHeight, false, true);
   }
@@ -140,7 +148,7 @@ export default class ScalingGraph extends React.Component {
       // plot raw score input
       let rawScore = this.props.subjects[subjectCode];
       if (rawScore) {
-        let scaledScore = calculateScaledScore(rawScore, subjectCode);
+        let scaledScore = calculateScaledScore(rawScore, subjectCode, this.props.year);
         let point = this.board.create('point', [rawScore, scaledScore], {face: "cross", name: SUBJECTS[subjectCode], withLabel: true});
         point.label.setAttribute({offset: [10, -4]});
         if (!showLabels) point.setAttribute({withLabel: false});
@@ -222,9 +230,9 @@ export default class ScalingGraph extends React.Component {
 
         // pick the closest subject to select
         let closestSubject = this.subjects.reduce((subjectCode1, subjectCode2) => {  // get the subject with raw score closest to the cursor
-          return (Math.abs(calculateScaledScore(nearestX, subjectCode1) - coords[1]) < Math.abs(calculateScaledScore(nearestX, subjectCode2) - coords[1])) ? subjectCode1 : subjectCode2;
+          return (Math.abs(calculateScaledScore(nearestX, subjectCode1, this.props.year) - coords[1]) < Math.abs(calculateScaledScore(nearestX, subjectCode2, this.props.year) - coords[1])) ? subjectCode1 : subjectCode2;
         })
-        let nearestY = calculateScaledScore(nearestX, closestSubject)
+        let nearestY = calculateScaledScore(nearestX, closestSubject, this.props.year);
 
         // show coordinates if previously hidden
         if (!previouslyVisible) {
@@ -289,16 +297,13 @@ export default class ScalingGraph extends React.Component {
   render() {
     this.isMobile = this.maxWidth < 400;
 
-    this.maxWidth = Math.min(720, document.querySelector('#root').getBoundingClientRect().width - 40);  // kinda janky, tries to find width after padding
+    this.maxWidth = document.querySelector('.section-inner').getBoundingClientRect().width;
     this.graphHeight = Math.abs(this.maxWidth * (BOUNDING_BOX[1] - BOUNDING_BOX[3]) / (BOUNDING_BOX[2] - BOUNDING_BOX[0]));  // ensures that 1x1 aspect ratio is maintained
     
     return(
-      <div>
-        <h2 style={{marginBottom: 0}}>Subject Scaling Graph</h2>
-        <div style={{position: "relative"}}>
-          <div id="jsxgraph" style={{width: this.maxWidth, height: this.graphHeight}}></div>
-          <div id="jsxlegend" style={{position: "absolute", top: this.graphHeight - 250 /* estimate, will be accurately calculated later */, right: 0, width: LEGEND_WIDTH, height: this.graphHeight, zIndex: -1}}></div>
-        </div>
+      <div style={{position: "relative"}}>
+        <div id="jsxgraph" style={{width: this.maxWidth, height: this.graphHeight}}></div>
+        <div id="jsxlegend" style={{position: "absolute", top: this.graphHeight - 250 /* estimate, will be accurately calculated later */, right: 0, width: LEGEND_WIDTH, height: this.graphHeight, zIndex: -1}}></div>
       </div>
     );
   }

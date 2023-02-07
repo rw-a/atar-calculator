@@ -1,0 +1,56 @@
+ul {
+    list-style-type: none;
+    padding: 0px;
+}
+
+li {
+    margin-top: 0.3rem;
+    margin-bottom: 0.3rem;
+}
+
+input {
+    border: 1px solid #cccccc;
+    border-radius: 0.25rem;
+    padding: 0.25rem;
+    font-size: 0.9rem;
+}
+
+.SubjectRow {
+    display: flex; 
+    justify-content: space-between;
+    align-items: center;
+}
+
+.DeleteSubject {
+    background: none;
+    background-image: url("../assets/delete.svg");
+    background-size: 1.25rem 1.25rem;
+
+    height: 1.25rem;
+    width: 1.25rem;
+    min-width: 1.25rem;
+    
+    border: none;
+    padding: 0px;
+    margin-left: 1px;
+    margin-right: 1px;
+}
+
+.DeleteSubject:hover {
+    background-image: url("../assets/delete_filled.svg");
+}
+
+.subject-selector__input-container {
+    flex: 0!important;
+    margin: 0px!important;
+}
+
+#save_img {
+    height: 1.75rem;
+    width: 1.75rem;
+    opacity: 26%;
+}
+
+#save_img:hover {
+    opacity: 54%;;
+}

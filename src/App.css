@@ -1,76 +1,33 @@
-ul {
-    list-style-type: none;
-    padding: 0px;
+:root {
+    --text-small: 0.85rem;
+    --text-tiny: 0.70rem;
 }
 
-li {
-    margin-top: 10px;
-}
-
-table {
-    border-collapse: collapse;
-    width: 100%;
-}
-
-th, td {
-    border: 1px solid;
-    padding: 4px;
-}
-
-td:empty::after{
-    content: "\00a0";
-}
-
-input {
-    border: 1px solid #cccccc;
-    border-radius: 3px;
-    padding: 4px;
-    font-size: 15px;
+#content {
+    max-width: 720px;
+    margin: auto;
+    padding: 0.75rem;
 }
 
 p {
-    margin-top: 0px;
-    margin-bottom: 10px;
+    margin-bottom: 0.25rem;
 }
 
-h1, h2 {
-    margin: 0px;
-    margin-bottom: 5px;
-    margin-top: 15px;
+.text-small {
+    font-size: var(--text-small);
 }
 
-.SubjectRow {
-    display: flex; 
-    justify-content: space-between;
-    align-items: center;
+.button-small {
+    font-size: var(--text-small);
+    padding-top: 0.25rem;
+    padding-bottom: 0.25rem;
+    padding-right: 0.5rem;
+    padding-left: 0.5rem;
 }
 
-.SubjectName {
-    margin-right: auto;
-}
-
-.DeleteSubject {
-    background: none;
-    background-image: url("./assets/delete.svg");
-    background-size: 20px 20px;
-
-    height: 20px;
-    width: 20px;
-    min-width: 20px;
-    
-    border: none;
-    padding: 0px;
-    margin-left: 1px;
-    margin-right: 1px;
-}
-
-.DeleteSubject:hover {
-    background-image: url("./assets/delete_filled.svg");
-}
-
-img.help-icon {
-    height: 13px;
-    width: 13px;
+.help-icon {
+    height: 0.8125rem;
+    width: 0.8125rem;
     opacity: 0.7;
     vertical-align: top;
 }
@@ -79,77 +36,7 @@ img.help-icon {
     opacity: 1;
 }
 
-.help-tooltip {
-    visibility: hidden;
-
-    width: 100px;
-    padding: 5px;
-    border-radius: 2px;
-
-    color: #222222;
-    background-color: #fafafa;
-
-    text-align: center;
-    font-size: small;
-    font-weight: normal;
-    
-    /* Position the tooltip */
-    position: absolute;
-    z-index: 1;
-    bottom: 100%;
-    left: 50%;
-    margin-left: -50px;
-    margin-bottom: 5px;
-}
-
-#tea-potential-help:hover .help-tooltip {
-    visibility: visible;
-}
-
-div.results {
-    text-align: center;
-}
-
-p.heading {
-    font-size: large;
-}
-
-p.resultNumber {
-    font-size: x-large;
-}
-
-p.note {
-    font-size: small;
-    font-style: italic;
-}
-
-td.score {
-    text-align: center;
-}
-
-#content {
-    max-width: 720px;
-    margin: auto;
-    padding: 20px;
-}
-
-#results {
-    display: flex;
-    justify-content: space-around;
-}
-
-#save_img {
-    height: 28px;
-    width: 28px;
-    float: right;
-    opacity: 30%;
-}
-
-#save_img:hover {
-    opacity: 60%;;
-}
-
-#tea-potential-help {
-    display: inline;
-    position: relative;
+#section-dropdown {
+    padding: 0rem;
+    color: var(--bs-body-color, #212529);
 }
