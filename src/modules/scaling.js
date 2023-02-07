@@ -71,7 +71,7 @@ export default class ScalingGraph extends React.Component {
     });
     
     this.legend = JXG.JSXGraph.initBoard("jsxlegend", { 
-      boundingbox: [0, 110, 20, 0], // min x, max y, max x, min y
+      boundingbox: [0, 120, 20, 0], // min x, max y, max x, min y
       maxFrameRate: 1,
       registerEvents: false,
       showCopyright: false, 
@@ -111,13 +111,12 @@ export default class ScalingGraph extends React.Component {
     let objectsList = [...this.board.objectsList];
     for (let index = objectsList.length - 1; index >= 0; index -= 1) {
       let object = objectsList[index];
-      if (object.elType === "line" || object.elType === "curve" || (object.elType === "text" && object.htmlStr.length > 3) || (object.elType === "point" && object.Xjc !== null) || !this.originalObjects.includes(object))
+      if (object.elType === "line" || object.elType === "curve" || (object.elType === "text" && object.visProp.cssclass !== "mouseCoordinates") || (object.elType === "point" && object.Xjc !== null) || !this.originalObjects.includes(object))
         this.board.removeObject(object.id);
     }
   }
 
   plotScalingFunctions() {
-    console.log(this.subjects);
     for (let [subjectIndex, subjectCode] of this.subjects.entries()) {  // entries on a list does enumerate
       // create function
       const scalingData = getScalingData(this.props.year);
@@ -227,6 +226,7 @@ export default class ScalingGraph extends React.Component {
       }
     });
     mouseCoordinates.label.setAttribute({offset: [7, 13]}); // set offset of coordinates at mouse
+    mouseCoordinates.label.setAttribute({cssClass: "mouseCoordinates"});
 
     // update position of mouse coordinates
     let previousCoordinates = [0, 0];   // tracks whether there has been a change in coordinates (only update on change for optimisation)
@@ -292,7 +292,6 @@ export default class ScalingGraph extends React.Component {
 
     let previousSubjects = [...this.subjects];
     this.subjects = Object.keys(this.props.subjects).filter((subjectCode) => {return this.props.subjects[subjectCode] !== undefined}); // this is a list, whereas this.props.subjects is an object
-    console.log(this.subjects);
     this.subjectsHaveChanged = !(JSON.stringify(previousSubjects) === JSON.stringify(this.subjects));
     
     if (this.subjectsHaveChanged || this.year !== this.props.year) {
