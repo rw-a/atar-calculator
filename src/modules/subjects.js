@@ -139,13 +139,13 @@ class SubjectSelector extends React.Component {
 			control: (provided, state) => ({
 				...provided,
 				// background: '#fff',
-				minHeight: '2.2rem',
-				height: '2.2rem',
+				minHeight: '2.3rem',
+				height: '2.3rem',
 				alignContent: 'center',
 			}),
 			valueContainer: (provided, state) => ({
 			  	...provided,
-			  	height: '2.2rem',
+			  	height: '2.3rem',
 				display: 'flex',
 				flexDirection: 'row-reverse',
 				justifyContent: 'flex-end',
