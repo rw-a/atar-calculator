@@ -1,9 +1,9 @@
 {
   "files": {
     "main.css": "/atar-calculator/static/css/main.b2fac473.css",
-    "main.js": "/atar-calculator/static/js/main.bf1ee17a.js",
+    "main.js": "/atar-calculator/static/js/main.6d4404e7.js",
     "static/css/834.979cd3f2.chunk.css": "/atar-calculator/static/css/834.979cd3f2.chunk.css",
-    "static/js/834.22872bb0.chunk.js": "/atar-calculator/static/js/834.22872bb0.chunk.js",
+    "static/js/834.e2ebc3b1.chunk.js": "/atar-calculator/static/js/834.e2ebc3b1.chunk.js",
     "static/js/787.04fedbe1.chunk.js": "/atar-calculator/static/js/787.04fedbe1.chunk.js",
     "static/js/712.bf4955a7.chunk.js": "/atar-calculator/static/js/712.bf4955a7.chunk.js",
     "index.html": "/atar-calculator/index.html",
@@ -13,14 +13,14 @@
     "static/media/delete.svg": "/atar-calculator/static/media/delete.45d41f106637a0ec920a.svg",
     "static/media/delete_filled.svg": "/atar-calculator/static/media/delete_filled.762bf58cf42fbafef635.svg",
     "main.b2fac473.css.map": "/atar-calculator/static/css/main.b2fac473.css.map",
-    "main.bf1ee17a.js.map": "/atar-calculator/static/js/main.bf1ee17a.js.map",
+    "main.6d4404e7.js.map": "/atar-calculator/static/js/main.6d4404e7.js.map",
     "834.979cd3f2.chunk.css.map": "/atar-calculator/static/css/834.979cd3f2.chunk.css.map",
-    "834.22872bb0.chunk.js.map": "/atar-calculator/static/js/834.22872bb0.chunk.js.map",
+    "834.e2ebc3b1.chunk.js.map": "/atar-calculator/static/js/834.e2ebc3b1.chunk.js.map",
     "787.04fedbe1.chunk.js.map": "/atar-calculator/static/js/787.04fedbe1.chunk.js.map",
     "712.bf4955a7.chunk.js.map": "/atar-calculator/static/js/712.bf4955a7.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.b2fac473.css",
-    "static/js/main.bf1ee17a.js"
+    "static/js/main.6d4404e7.js"
   ]
 }
