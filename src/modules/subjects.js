@@ -1,16 +1,28 @@
 import './../css/subjects.css';
 import React from 'react';
 import Select from 'react-select';
+
 import Button from 'react-bootstrap/Button';
+import Image from 'react-bootstrap/Image';
+import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
+import Tooltip from 'react-bootstrap/Tooltip';
 
 import { getSubjects } from './data';
 import SUBJECTS from './../data/all_subjects.json';
 
 class SubjectName extends React.Component {
     render() {
-      return (
-        <span className="me-auto">{this.props.name}</span>
-      );
+		return (
+			<span className="me-auto">
+				{this.props.name}
+				{
+					(this.props.name.endsWith("[Accelerated]")) ? 
+						<OverlayTrigger placement="top" overlay={<Tooltip>If you completed the subject a year early. Uses the scaling of the previous year (i.e. {this.props.year - 1})</Tooltip>}>
+							<Image className='help-icon' src={require('./../assets/help.svg').default}/>
+						</OverlayTrigger> : ""
+				}
+			</span>
+		);
     }
   }
   
@@ -84,7 +96,7 @@ class SubjectRow extends React.Component {
 		return (
 			<li className="SubjectRow">
 				<DeleteSubject onClick={this.handleSubjectDelete} />
-				<SubjectName name={SUBJECTS[this.props.code]} />
+				<SubjectName name={SUBJECTS[this.props.code]} year={this.props.year}/>
 				<SubjectRawScore score={this.props.score} onScoreChange={this.handleScoreChange} />
 			</li>
 		);
@@ -207,7 +219,8 @@ export default class SubjectsTable extends React.Component {
 						code={subjectCode} 
 						score={this.props.subjects[subjectCode]} 
 						onScoreChange={this.props.onScoreChange} 
-						onSubjectDelete={this.props.onSubjectDelete} 
+						onSubjectDelete={this.props.onSubjectDelete}
+						year={this.props.year}
 					/>
 				);
 			}

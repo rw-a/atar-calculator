@@ -3,22 +3,6 @@
     margin-bottom: 0rem;
 }
 
-.help-icon {
-    height: 0.8125rem;
-    width: 0.8125rem;
-    opacity: 0.7;
-    vertical-align: top;
-}
-
-.help-icon:hover {
-    opacity: 1;
-}
-
-#results {
-    display: flex;
-    justify-content: space-around;
-}
-
 .table-sm>:not(caption)>*>* {
     padding: 0.15rem 0.25rem;
 }
