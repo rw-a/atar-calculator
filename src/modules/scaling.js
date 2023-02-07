@@ -17,7 +17,7 @@ const COLORS = [
   'magenta'
 ];
 
-const BOUNDING_BOX = [-9, 104, 113, -6]; // min x, max y, max x, min y
+const BOUNDING_BOX = [-9, 103, 113, -6]; // min x, max y, max x, min y
 
 const LEGEND_WIDTH = 110;
 
