@@ -25,7 +25,7 @@ const SUBJECT_LABELS_ZOOM_THRESHOLD = 1.7;
 const MOBILE_LEGEND_ZOOM_THRESHOLD = 10;
 
 // replace default font
-JXG.Options.text.cssDefaultStyle = '';
+JXG.Options.text.cssDefaultStyle = 'z-index: 0';
 JXG.Options.text.highlightCssDefaultStyle = '';
 
 export default class ScalingGraph extends React.Component {
