@@ -90,6 +90,7 @@ export default class ScalingGraph extends React.Component {
     this.originalObjects = [...this.board.objectsList]; // this needs to be after the mouse coordinates is created so it is preserved
     this.points = [];
     this.subjects = [];
+    this.year = 2022;
 
     this.componentDidUpdate();
   }
@@ -280,9 +281,12 @@ export default class ScalingGraph extends React.Component {
     this.subjects = Object.keys(this.props.subjects).filter((subjectCode) => {return this.props.subjects[subjectCode] !== undefined}); // this is a list, whereas this.props.subjects is an object
     this.subjectsHaveChanged = !(JSON.stringify(previousSubjects) === JSON.stringify(this.subjects));
     
-    if (this.subjectsHaveChanged) {
+    if (this.subjectsHaveChanged || this.year !== this.props.year) {
+      this.year = this.props.year;
       this.clearBoard();
       if (this.subjects.length > 0) this.plotScalingFunctions();
+    }
+    if (this.subjectsHaveChanged) {
       this.clearLegend();
       if (this.subjects.length > 0) this.createLegend();
     } else {
