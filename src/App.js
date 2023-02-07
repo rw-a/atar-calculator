@@ -1,19 +1,16 @@
 import './App.css';
 import React, {Suspense} from 'react';
 
-import Container from 'react-bootstrap/Container';
-import Row from 'react-bootstrap/Row';
-import Col from 'react-bootstrap/Col';
 import ToggleButton from 'react-bootstrap/ToggleButton';
 import ToggleButtonGroup from 'react-bootstrap/ToggleButtonGroup';
 import Nav from 'react-bootstrap/Nav';
+import NavDropdown from 'react-bootstrap/NavDropdown';
 
 import { getSubjects } from './modules/data';
 import SubjectsTable from './modules/subjects';
-import ResultsTable, { calculateTeaFromSubjects } from './modules/results';
+import ResultsTable from './modules/results';
 
 const ScalingGraph = React.lazy(() => import('./modules/scaling'));
-const TeaGraph = React.lazy(() => import('./modules/tea'));
 
 
 function setCookie(cookieName, cookieValue, expiryDays) {
@@ -67,9 +64,7 @@ class Section extends React.Component {
 		this.handleTabChange = this.handleTabChange.bind(this);
 
 		this.tab_titles = {
-			subjects: "Subjects",
 			scaling: "Scaling",
-			tea: "TEA Map",
 			results: "Results"
 		};
 	}
@@ -80,47 +75,30 @@ class Section extends React.Component {
 
 	render() {
 		let tabs = {
-			subjects: 
-				<SubjectsTable 
-					subjects={this.props.subjects} 
-					saved={this.props.saved}
-					onScoreChange={this.props.onScoreChange}
-					onSubjectAdd={this.props.onSubjectAdd}
-					onSubjectDelete={this.props.onSubjectDelete}
-					onSubjectsSave={this.props.onSubjectsSave}
-					year={this.props.year}
-				/>,
 			scaling: 
 				<Suspense fallback={<div>Loading...</div>}>
 					<ScalingGraph subjects={this.props.subjects} year={this.props.year}/>
-				</Suspense>,
-			tea: 
-				<Suspense fallback={<div>Loading...</div>}>
-					<TeaGraph tea={calculateTeaFromSubjects(this.props.subjects, this.props.year)} year={this.props.year}/>
 				</Suspense>,
 			results: <ResultsTable subjectRawScores={this.props.subjects} year={this.props.year}/>
 		};	
 
 		return (
 			<div className="section-inner">
-				<Nav variant="tabs" className="justify-content-end" defaultActiveKey={this.props.defaultTab} onSelect={this.handleTabChange}>
-					<h4 className="section-title">{this.tab_titles[this.state.tab]}</h4>
-					<Nav.Item>
-						<Nav.Link eventKey="subjects">Subjects</Nav.Link>
-					</Nav.Item>
-					<Nav.Item>
-						<Nav.Link eventKey="scaling">Scaling</Nav.Link>
-					</Nav.Item>
-					<Nav.Item>
-						<Nav.Link eventKey="tea">TEA</Nav.Link>
-					</Nav.Item>
-					<Nav.Item>
-						<Nav.Link eventKey="results">Results</Nav.Link>
-					</Nav.Item>
+				<Nav activeKey="1" onSelect={this.handleTabChange}>
+					<NavDropdown title={this.tab_titles[this.state.tab]} id="section-dropdown" as="h4">
+						<NavDropdown.Item eventKey="scaling">
+							<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-bar-chart-fill" viewBox="0 0 16 16">
+								<path d="M1 11a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1v-3zm5-4a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v7a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V7zm5-5a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1h-2a1 1 0 0 1-1-1V2z"/>
+							</svg> Scaling Graph
+						</NavDropdown.Item>
+						<NavDropdown.Item eventKey="results">
+							<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-calculator-fill" viewBox="0 0 16 16">
+								<path d="M2 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2zm2 .5v2a.5.5 0 0 0 .5.5h7a.5.5 0 0 0 .5-.5v-2a.5.5 0 0 0-.5-.5h-7a.5.5 0 0 0-.5.5zm0 4v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5zM4.5 9a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5h-1zM4 12.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5zM7.5 6a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5h-1zM7 9.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5zm.5 2.5a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5h-1zM10 6.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5zm.5 2.5a.5.5 0 0 0-.5.5v4a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-4a.5.5 0 0 0-.5-.5h-1z"/>
+							</svg> Results
+						</NavDropdown.Item>
+					</NavDropdown>
 				</Nav>
-				<div className="pt-1">
-					{tabs[this.state.tab]}
-				</div>
+				{tabs[this.state.tab]}
 			</div>
 		);
 	}
@@ -206,39 +184,32 @@ class Calculator extends React.Component {
 		let saved = (saved_state === JSON.stringify(this.state.subjects));
 
 		return (
-			<Container className="my-3">
+			<div id="content">
 				<h2>QLD/QCE ATAR Calculator</h2>
 				<div className="d-flex flex-column flex-md-row justify-content-between my-2">
 					<p className='text-small fst-italic me-1 mb-2 mb-md-1'>Quite accurate ATAR calculator for Queensland (QCE system). Neither QTAC nor QCAA endorse or are affiliated with this website. Scaling changes every year, so use at your own risk!</p>
 					<YearSelector onYearSelect={this.handleYearSelect} className="align-self-end align-self-md-start"></YearSelector>
-				</div>
-				<Row className="gy-3">
-					<Col xs={12} xl={6}>
-						<Section 
-							defaultTab={"subjects"}
-							subjects={this.state.subjects}
-							saved={saved}
-							year={this.state.year}
-							onScoreChange={this.handleScoreChange}
-							onSubjectAdd={this.handleSubjectAdd}
-							onSubjectDelete={this.handleSubjectDelete}
-							onSubjectsSave={this.handleSubjectsSave}
-						/>
-					</Col>
-					<Col xs={12} xl={6}>
-						<Section 
-							defaultTab={"results"}
-							subjects={this.state.subjects}
-							saved={saved}
-							year={this.state.year}
-							onScoreChange={this.handleScoreChange}
-							onSubjectAdd={this.handleSubjectAdd}
-							onSubjectDelete={this.handleSubjectDelete}
-							onSubjectsSave={this.handleSubjectsSave}
-						/>
-					</Col>
-				</Row>
-			</Container>
+				</div>	
+					<SubjectsTable 
+						subjects={this.state.subjects} 
+						saved={saved}
+						onScoreChange={this.handleScoreChange}
+						onSubjectAdd={this.handleSubjectAdd}
+						onSubjectDelete={this.handleSubjectDelete}
+						onSubjectsSave={this.handleSubjectsSave}
+						year={this.state.year}
+					/>
+					<Section 
+						defaultTab={"results"}
+						subjects={this.state.subjects}
+						saved={saved}
+						year={this.state.year}
+						onScoreChange={this.handleScoreChange}
+						onSubjectAdd={this.handleSubjectAdd}
+						onSubjectDelete={this.handleSubjectDelete}
+						onSubjectsSave={this.handleSubjectsSave}
+					/>
+			</div>
 		);
 	}
 }

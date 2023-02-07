@@ -2,7 +2,6 @@ import './../css/subjects.css';
 import React from 'react';
 import Select from 'react-select';
 
-import Button from 'react-bootstrap/Button';
 import Image from 'react-bootstrap/Image';
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Tooltip from 'react-bootstrap/Tooltip';
@@ -201,8 +200,13 @@ class SaveButton extends React.Component {
 	}
 
 	render() {
+		if (this.props.saved) {
+			var img_src = require("./../assets/save_filled.svg").default;
+		} else {
+			img_src = require("./../assets/save.svg").default;
+		}
 		return (
-			<Button variant={(this.props.saved) ? "secondary" : "outline-secondary"} onClick={this.handleClick} className="float-end button-small">{(this.props.saved) ? "Saved" : "Save"}</Button>
+			<img src={img_src} id="save_img" title="Save Subjects" alt="Save Subjects" onClick={this.handleClick} className={this.props.className}></img>
 		);
 	}
 }
@@ -228,6 +232,8 @@ export default class SubjectsTable extends React.Component {
 
 		return (
 			<div>
+				<SaveButton onClick={this.props.onSubjectsSave} saved={this.props.saved} className="float-end"/>
+				<h4>Subjects</h4>
 				<ul className="mb-1">
 					{rows}
 					<li key="0">
@@ -238,7 +244,6 @@ export default class SubjectsTable extends React.Component {
 						/>
 					</li>
 				</ul>
-				<SaveButton onClick={this.props.onSubjectsSave} saved={this.props.saved}/>
 			</div>
 		);
 	}

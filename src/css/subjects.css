@@ -44,3 +44,13 @@ input {
     flex: 0!important;
     margin: 0px!important;
 }
+
+#save_img {
+    height: 1.75rem;
+    width: 1.75rem;
+    opacity: 26%;
+}
+
+#save_img:hover {
+    opacity: 54%;;
+}
