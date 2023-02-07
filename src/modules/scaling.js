@@ -37,7 +37,7 @@ export default class ScalingGraph extends React.Component {
       maxboundingbox: [-100, 200, 200, -100],
       showCopyright: false, 
       showInfobox: false,
-      showNavigation: false,
+      // showNavigation: false,
       zoom: {
         factorX: 1.25,  // horizontal zoom factor (multiplied to JXG.Board#zoomX)
         factorY: 1.25,  // vertical zoom factor (multiplied to JXG.Board#zoomY)
@@ -55,6 +55,18 @@ export default class ScalingGraph extends React.Component {
         enabled: true,   // Allow panning
         needTwoFingers: false, // panning is done with two fingers on touch devices
         needShift: false, // mouse panning needs pressing of the shift key
+      },
+      navbar:  {
+        strokeColor: '#333333',
+        fillColor: 'transparent',
+        highlightFillColor: '#aaaaaa',
+        padding: '0px',
+        position: 'absolute',
+        fontSize: '14px',
+        cursor: 'pointer',
+        zIndex: '100',
+        right: '5px',
+        bottom: '0px',
       }
     });
     
@@ -105,7 +117,8 @@ export default class ScalingGraph extends React.Component {
   }
 
   plotScalingFunctions() {
-    for (let [subjectIndex, subjectCode] of this.subjects.entries()) {
+    console.log(this.subjects);
+    for (let [subjectIndex, subjectCode] of this.subjects.entries()) {  // entries on a list does enumerate
       // create function
       const scalingData = getScalingData(this.props.year);
       let a = scalingData[subjectCode]["a"];
@@ -250,7 +263,7 @@ export default class ScalingGraph extends React.Component {
         // move the point to the mouse and update it's name to be it's coordinate
         this.board.suspendUpdate();
         mouseCoordinates.moveTo(coordinates);
-        mouseCoordinates.setAttribute({name: `(${nearestX.toFixed(0)}, ${nearestY.toFixed(2)})`})
+        mouseCoordinates.setAttribute({name: `(${nearestX.toFixed(0)}, ${nearestY.toFixed(2)})`});
         this.board.unsuspendUpdate();
       } else {
         if (previouslyVisible) {
@@ -279,10 +292,11 @@ export default class ScalingGraph extends React.Component {
 
     let previousSubjects = [...this.subjects];
     this.subjects = Object.keys(this.props.subjects).filter((subjectCode) => {return this.props.subjects[subjectCode] !== undefined}); // this is a list, whereas this.props.subjects is an object
+    console.log(this.subjects);
     this.subjectsHaveChanged = !(JSON.stringify(previousSubjects) === JSON.stringify(this.subjects));
     
     if (this.subjectsHaveChanged || this.year !== this.props.year) {
-      this.year = this.props.year;
+      this.year = this.props.year;  // track the year that was previously to check whether the year has changed
       this.clearBoard();
       if (this.subjects.length > 0) this.plotScalingFunctions();
     }
