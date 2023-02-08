@@ -171,35 +171,94 @@ export default class ScalingGraph extends React.Component {
     }
   }
 
-  // static method
-  zoomFactorChange(zoomFactor, previousZoomFactor, thresholdZoomFactor) {
-    // tests whether the zoom factor has crossed the threshold (for optimisation purposes so no redundant attribute setting)
-    if (zoomFactor >= thresholdZoomFactor) {
-      return previousZoomFactor < thresholdZoomFactor;
-    } else {
-      return previousZoomFactor > thresholdZoomFactor;
-    }
-  }
-
   addZoomLevelListeners() {
-    // show/hide labels and/or legend depending on zoom level
-    let previousZoomFactor = 1;
-    this.board.on('boundingbox', () => {
-      let boundingBox = this.board.getBoundingBox();
-      let zoomFactor = (BOUNDING_BOX[2] - BOUNDING_BOX[0]) / (boundingBox[2] - boundingBox[0]);
-      
-      // show/hide subject labels
-      if (this.zoomFactorChange(zoomFactor, previousZoomFactor, SUBJECT_LABELS_ZOOM_THRESHOLD)) {
-        this.board.suspendUpdate();
-        let showLabels = (zoomFactor >= SUBJECT_LABELS_ZOOM_THRESHOLD);
-        for (let point of this.points) {
-          point.setAttribute({withLabel: showLabels});
-        }
-        this.board.unsuspendUpdate();
+    function zoomFactorChange(zoomFactor, previousZoomFactor, thresholdZoomFactor) {
+      // tests whether the zoom factor has crossed the threshold (for optimisation purposes so no redundant attribute setting)
+      if (zoomFactor >= thresholdZoomFactor) {
+        return previousZoomFactor < thresholdZoomFactor;
+      } else {
+        return previousZoomFactor > thresholdZoomFactor;
       }
+    }
+
+    // returns a tuple representing a rectangle of space [x, y, width, height]
+    function getCoordinate(point) {
+      /* These values include the point itself (whereas the current versions do not) so a larger area is considered occupied
+      const xCoord = point.coords.scrCoords[1];
+      const yCoord = point.coords.scrCoords[2];
+      const width =  point.label.rendNode.offsetWidth + Math.abs(point.label.visProp.offset[0]);
+      const height = point.label.rendNode.offsetHeight + Math.abs(point.label.visProp.offset[1]);   // only works because text below point
+      */
+
+      const xCoord = point.label.coords.scrCoords[1];
+      const yCoord = point.label.coords.scrCoords[2];
+      const width =  point.label.rendNode.offsetWidth;
+      const height = point.label.rendNode.offsetHeight;
+      return [xCoord, yCoord, width, height];
+    }
+    
+    // only show labels if they don't overlap with others
+    function isFreeSpace(coordinate, occupiedCoordinates) {
+      const [xCoord, yCoord, width, height] = coordinate;
+      for (const [minX, minY, maxWidth, maxHeight] of occupiedCoordinates) {
+        const xCollision = (
+          (xCoord >= minX && xCoord <= minX + maxWidth) || (xCoord + width >= minX && xCoord + width <= minX + maxWidth)  || // check if xCoord is within occupied space
+          (minX >= xCoord && minX <= xCoord + width) || (minX + maxWidth >= xCoord && minX + maxWidth <= xCoord + width)     // check if occupied coordinate is within xCoord
+        );
+        const yCollision = (
+          (yCoord >= minY && yCoord <= minY + maxHeight) || (yCoord + height >= minY && yCoord + height <= minY + maxHeight) ||
+          (minY >= yCoord && minY <= yCoord + height) || (minY + maxHeight >= yCoord && minY + maxHeight <= yCoord + height)
+          );
+        if (xCollision && yCollision) return false;
+      }
+      return true;
+    }
+
+    this.subjectsWithLabels = [];   // a list of points whose labels are visible
+
+    // show/hide labels and/or legend depending on zoom level
+    let previousZoomFactor = 0;   // set to zero so there is always a change in zoom at the start
+    this.board.on('boundingbox', () => {
+      const boundingBox = this.board.getBoundingBox();
+      const zoomFactor = (BOUNDING_BOX[2] - BOUNDING_BOX[0]) / (boundingBox[2] - boundingBox[0]);
+      if (zoomFactor.toFixed(3) === previousZoomFactor.toFixed(3)) return;  // only update if the zoom level changes (rounded due to imprecision)
+
+      let occupiedCoordinates = []; // a list of coordinate tuples that tracks which spaces are being occupied by labels
+      // compute which spaces are occupied
+      for (let point of this.subjectsWithLabels) {
+        occupiedCoordinates.push(getCoordinate(point));
+      }
+
+      // first try to add new subject labels if there's space
+      this.board.suspendUpdate();
+      for (let point of this.points) {
+        if (this.subjectsWithLabels.includes(point)) continue;
+
+        const coordinate = getCoordinate(point);
+        
+        if (this.subjectsWithLabels.length < 1 || isFreeSpace(coordinate, occupiedCoordinates)) {
+          point.setAttribute({withLabel: true});
+          this.subjectsWithLabels.unshift(point);
+          occupiedCoordinates.push(coordinate);
+        } else {
+          point.setAttribute({withLabel: false});
+        }
+      }
+
+      // then delete subject labels if it's too full
+      for (let point of this.subjectsWithLabels) {
+        const coordinate = getCoordinate(point);
+        const otherCoordinates = occupiedCoordinates.filter((coord) => {return JSON.stringify(coord) !== JSON.stringify(coordinate);});
+        if (!isFreeSpace(coordinate, otherCoordinates)) {
+          point.setAttribute({withLabel: false});
+          occupiedCoordinates = otherCoordinates;
+          this.subjectsWithLabels = this.subjectsWithLabels.filter((subject) => {return subject !== point});
+        }
+      }
+      this.board.unsuspendUpdate();
       
-      // show/hide legend (only for mobile)
-      if (this.isMobile && this.zoomFactorChange(zoomFactor, previousZoomFactor, MOBILE_LEGEND_ZOOM_THRESHOLD)) {
+      // show/hide legend once zoomed in enough (only for mobile)
+      if (this.isMobile && zoomFactorChange(zoomFactor, previousZoomFactor, MOBILE_LEGEND_ZOOM_THRESHOLD)) {
         document.getElementById('jsxlegend').style.display = (zoomFactor >= MOBILE_LEGEND_ZOOM_THRESHOLD) ? 'none' : ''; // none is hidden, blank is shown
       }
 
