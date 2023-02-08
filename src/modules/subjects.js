@@ -231,7 +231,7 @@ export default class SubjectsTable extends React.Component {
 		}
 
 		return (
-			<div>
+			<div className={this.props.className}>
 				<SaveButton onClick={this.props.onSubjectsSave} saved={this.props.saved} className="float-end"/>
 				<h4>Subjects</h4>
 				<ul className="mb-1">

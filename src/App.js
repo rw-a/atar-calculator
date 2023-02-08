@@ -83,7 +83,7 @@ class Section extends React.Component {
 		};	
 
 		return (
-			<div className="section-inner">
+			<div className={`${this.props.className} section-inner`}>
 				<Nav activeKey="1" onSelect={this.handleTabChange}>
 					<NavDropdown title={this.tab_titles[this.state.tab]} id="section-dropdown" as="h4">
 						<NavDropdown.Item className={(this.state.tab === "scaling") ? "active" : ""} eventKey="scaling">
@@ -190,25 +190,27 @@ class Calculator extends React.Component {
 					<p className='text-small fst-italic me-1 mb-2 mb-md-1'>ATAR Calculator and Subject Scaling Grapher for Queensland (QCE system). Neither QTAC nor QCAA endorse or are affiliated with this website. Scaling changes every year, so use at your own risk!</p>
 					<YearSelector onYearSelect={this.handleYearSelect} className="align-self-end align-self-md-start"></YearSelector>
 				</div>	
-					<SubjectsTable 
-						subjects={this.state.subjects} 
-						saved={saved}
-						onScoreChange={this.handleScoreChange}
-						onSubjectAdd={this.handleSubjectAdd}
-						onSubjectDelete={this.handleSubjectDelete}
-						onSubjectsSave={this.handleSubjectsSave}
-						year={this.state.year}
-					/>
-					<Section 
-						defaultTab={"results"}
-						subjects={this.state.subjects}
-						saved={saved}
-						year={this.state.year}
-						onScoreChange={this.handleScoreChange}
-						onSubjectAdd={this.handleSubjectAdd}
-						onSubjectDelete={this.handleSubjectDelete}
-						onSubjectsSave={this.handleSubjectsSave}
-					/>
+				<SubjectsTable 
+					subjects={this.state.subjects} 
+					saved={saved}
+					onScoreChange={this.handleScoreChange}
+					onSubjectAdd={this.handleSubjectAdd}
+					onSubjectDelete={this.handleSubjectDelete}
+					onSubjectsSave={this.handleSubjectsSave}
+					year={this.state.year}
+					className="my-2"
+				/>
+				<Section 
+					defaultTab={"results"}
+					subjects={this.state.subjects}
+					saved={saved}
+					year={this.state.year}
+					onScoreChange={this.handleScoreChange}
+					onSubjectAdd={this.handleSubjectAdd}
+					onSubjectDelete={this.handleSubjectDelete}
+					onSubjectsSave={this.handleSubjectsSave}
+					className="my-3"
+				/>
 			</div>
 		);
 	}
