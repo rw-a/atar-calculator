@@ -111,7 +111,7 @@ export default class ScalingGraph extends React.Component {
     let objectsList = [...this.board.objectsList];
     for (let index = objectsList.length - 1; index >= 0; index -= 1) {
       let object = objectsList[index];
-      if (object.elType === "line" || object.elType === "curve" || (object.elType === "text" && object.visProp.cssclass !== "mouseCoordinates") || (object.elType === "point" && object.Xjc !== null) || !this.originalObjects.includes(object))
+      if (object.elType === "line" || object.elType === "curve" || (object.elType === "text" && object.htmlStr.length > 3 && object.visProp.cssclass !== "mouseCoordinates") || (object.elType === "point" && object.Xjc !== null) || !this.originalObjects.includes(object))
         this.board.removeObject(object.id);
     }
   }
