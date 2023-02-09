@@ -181,6 +181,27 @@ export default class ScalingGraph extends React.Component {
       }
     }
 
+    this.subjectsWithLabels = [];   // a list of points whose labels are visible
+
+    // show/hide labels and/or legend depending on zoom level
+    let previousZoomFactor = 0;   // set to zero so there is always a change in zoom at the start
+    this.board.on('boundingbox', () => {
+      const boundingBox = this.board.getBoundingBox();
+      const zoomFactor = (BOUNDING_BOX[2] - BOUNDING_BOX[0]) / (boundingBox[2] - boundingBox[0]);
+      if (zoomFactor.toFixed(3) === previousZoomFactor.toFixed(3)) return;  // only update if the zoom level changes (rounded due to imprecision)
+      
+      this.autoHideSubjectLabels();
+
+      // show/hide legend once zoomed in enough (only for mobile)
+      if (this.isMobile && zoomFactorChange(zoomFactor, previousZoomFactor, MOBILE_LEGEND_ZOOM_THRESHOLD)) {
+        document.getElementById('jsxlegend').style.display = (zoomFactor >= MOBILE_LEGEND_ZOOM_THRESHOLD) ? 'none' : ''; // none is hidden, blank is shown
+      }
+
+      previousZoomFactor = zoomFactor;
+    }); 
+  }
+
+  autoHideSubjectLabels() {
     // returns a tuple representing a rectangle of space [x, y, width, height]
     function getCoordinate(point) {
       /* These values include the point itself (whereas the current versions do not) so a larger area is considered occupied
@@ -214,56 +235,45 @@ export default class ScalingGraph extends React.Component {
       return true;
     }
 
-    this.subjectsWithLabels = [];   // a list of points whose labels are visible
 
-    // show/hide labels and/or legend depending on zoom level
-    let previousZoomFactor = 0;   // set to zero so there is always a change in zoom at the start
-    this.board.on('boundingbox', () => {
-      const boundingBox = this.board.getBoundingBox();
-      const zoomFactor = (BOUNDING_BOX[2] - BOUNDING_BOX[0]) / (boundingBox[2] - boundingBox[0]);
-      if (zoomFactor.toFixed(3) === previousZoomFactor.toFixed(3)) return;  // only update if the zoom level changes (rounded due to imprecision)
+    let occupiedCoordinates = []; // a list of coordinate tuples that tracks which spaces are being occupied by labels
+    // compute which spaces are occupied
+    for (let point of this.subjectsWithLabels) {
+      occupiedCoordinates.push(getCoordinate(point));
+    }
 
-      let occupiedCoordinates = []; // a list of coordinate tuples that tracks which spaces are being occupied by labels
-      // compute which spaces are occupied
-      for (let point of this.subjectsWithLabels) {
-        occupiedCoordinates.push(getCoordinate(point));
-      }
+    console.log(this.subjectsWithLabels, this.points);
+    // console.log(occupiedCoordinates);
 
-      // first try to add new subject labels if there's space
-      this.board.suspendUpdate();
-      for (let point of this.points) {
-        if (this.subjectsWithLabels.includes(point)) continue;
+    this.board.suspendUpdate();
 
-        const coordinate = getCoordinate(point);
-        
-        if (this.subjectsWithLabels.length < 1 || isFreeSpace(coordinate, occupiedCoordinates)) {
-          point.setAttribute({withLabel: true});
-          this.subjectsWithLabels.unshift(point);
-          occupiedCoordinates.push(coordinate);
-        } else {
-          point.setAttribute({withLabel: false});
-        }
-      }
+    // first try to add new subject labels if there's space
+    for (let point of this.points) {
+      if (this.subjectsWithLabels.includes(point)) continue;
 
-      // then delete subject labels if it's too full
-      for (let point of this.subjectsWithLabels) {
-        const coordinate = getCoordinate(point);
-        const otherCoordinates = occupiedCoordinates.filter((coord) => {return JSON.stringify(coord) !== JSON.stringify(coordinate);});
-        if (!isFreeSpace(coordinate, otherCoordinates)) {
-          point.setAttribute({withLabel: false});
-          occupiedCoordinates = otherCoordinates;
-          this.subjectsWithLabels = this.subjectsWithLabels.filter((subject) => {return subject !== point});
-        }
-      }
-      this.board.unsuspendUpdate();
+      const coordinate = getCoordinate(point);
       
-      // show/hide legend once zoomed in enough (only for mobile)
-      if (this.isMobile && zoomFactorChange(zoomFactor, previousZoomFactor, MOBILE_LEGEND_ZOOM_THRESHOLD)) {
-        document.getElementById('jsxlegend').style.display = (zoomFactor >= MOBILE_LEGEND_ZOOM_THRESHOLD) ? 'none' : ''; // none is hidden, blank is shown
+      if (this.subjectsWithLabels.length < 1 || isFreeSpace(coordinate, occupiedCoordinates)) {
+        point.setAttribute({withLabel: true});
+        this.subjectsWithLabels.unshift(point);
+        occupiedCoordinates.push(coordinate);
+      } else {
+        point.setAttribute({withLabel: false});
       }
+    }
 
-      previousZoomFactor = zoomFactor;
-    }); 
+    // then delete subject labels if it's too full
+    for (let point of this.subjectsWithLabels) {
+      const coordinate = getCoordinate(point);
+      const otherCoordinates = occupiedCoordinates.filter((coord) => {return JSON.stringify(coord) !== JSON.stringify(coordinate);});
+      if (!isFreeSpace(coordinate, otherCoordinates)) {
+        point.setAttribute({withLabel: false});
+        occupiedCoordinates = otherCoordinates;
+        this.subjectsWithLabels = this.subjectsWithLabels.filter((subject) => {return subject !== point});
+      }
+    }
+
+    this.board.unsuspendUpdate();
   }
 
   createMouseCoordinates() {
@@ -337,6 +347,9 @@ export default class ScalingGraph extends React.Component {
 
   clearPoints() {
     // clear the points which show the raw score inputted but not the graphs. useful if only the raw score changes and not the subjects
+    this.points = [];
+    this.subjectsWithLabels = [];
+
     let objectsList = [...this.board.objectsList];
     for (let index = objectsList.length - 1; index >= 0; index -= 1) {
       let object = objectsList[index];
@@ -361,10 +374,11 @@ export default class ScalingGraph extends React.Component {
     if (this.subjectsHaveChanged) {
       this.clearLegend();
       if (this.subjects.length > 0) this.createLegend();
-    } else {
-      this.clearPoints();
     }
+
+    this.clearPoints();
     this.plotPoints();
+    this.autoHideSubjectLabels();
 
     this.board.unsuspendUpdate();
     this.legend.unsuspendUpdate();
