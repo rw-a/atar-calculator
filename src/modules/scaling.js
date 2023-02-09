@@ -255,14 +255,14 @@ export default class ScalingGraph extends React.Component {
         this.subjectsWithLabels.unshift(point);
         occupiedCoordinates.push(coordinate);
       } else {
-        point.setAttribute({withLabel: false});
+        if (point.hasLabel) point.setAttribute({withLabel: false});
       }
     }
 
     // then delete subject labels if it's too full
     for (let point of this.subjectsWithLabels) {
       const coordinate = getCoordinate(point);
-      const otherCoordinates = occupiedCoordinates.filter((coord) => {return JSON.stringify(coord) !== JSON.stringify(coordinate);});
+      const otherCoordinates = occupiedCoordinates.filter((coord) => {return coord[0] !== coordinate[0] || coord[1] !== coordinate[1] || coord[2] !== coordinate[2] || coord[3] !== coordinate[3];});
       if (!isFreeSpace(coordinate, otherCoordinates)) {
         point.setAttribute({withLabel: false});
         occupiedCoordinates = otherCoordinates;
