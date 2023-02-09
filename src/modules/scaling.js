@@ -242,9 +242,6 @@ export default class ScalingGraph extends React.Component {
       occupiedCoordinates.push(getCoordinate(point));
     }
 
-    console.log(this.subjectsWithLabels, this.points);
-    // console.log(occupiedCoordinates);
-
     this.board.suspendUpdate();
 
     // first try to add new subject labels if there's space
