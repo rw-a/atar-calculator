@@ -85,8 +85,7 @@ export function calculateScaledScore(rawScore, subjectCode, year) {
 	rawScore = Number(rawScore);
 	let a = Number(scalingData[subjectCode]["a"]);
 	let b = Number(scalingData[subjectCode]["b"]);
-	let c = Number(scalingData[subjectCode]["c"]);
-	return a / (1 + Math.exp(-b * (rawScore - c)));
+	return 100 / (1 + Math.exp(-a * (rawScore - b)));
 }
 
 function mapRawToScaledScores(subjectRawScores, year) {

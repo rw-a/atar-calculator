@@ -122,9 +122,8 @@ export default class ScalingGraph extends React.Component {
       const scalingData = getScalingData(this.props.year);
       let a = scalingData[subjectCode]["a"];
       let b = scalingData[subjectCode]["b"];
-      let c = scalingData[subjectCode]["c"];
       let subjectFunction = this.board.create('functiongraph', [function(x){
-        return (a / (1 + Math.exp(-b * (x - c))));
+        return (100 / (1 + Math.exp(-a * (x - b))));
       }, 0, 100], {strokeColor: COLORS[subjectIndex % COLORS.length]});   // modulus ensures colours repeat if exhausted
       subjectFunction.hasPoint = function(x, y) {return false;}; // disable highlighting
     }
