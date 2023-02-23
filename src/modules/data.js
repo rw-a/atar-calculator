@@ -57,7 +57,7 @@ export function estimateAtarModel(tea, year) {
     if (yearStr === "2020") {
         return -0.000154594 * (tea ** 2) + 0.279766 * tea - 0.0000199988;
     } else if (yearStr === "2021") {
-        return -0.000124505 * (tea ** 2) + 0.265103 * tea - 0.000190829;
+        return -0.0000971137 * (tea ** 2) + 0.251785 * tea - 0.000701489;
     } else if (yearStr === "2022") {
         return -0.0000862361 * (tea ** 2) + 0.246812 * tea + 0.00832645;
     } else {
