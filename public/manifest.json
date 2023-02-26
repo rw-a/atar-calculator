@@ -1,7 +1,7 @@
 {
   "short_name": "ATAR Calculator QLD",
   "name": "ATAR Calculator QLD",
-  "description": "Accurate ATAR Calculator and Subject Scaling Grapher for Queensland (QCE). Designed using 2022/2021/2020 data.",
+  "description": "Accurate ATAR Calculator and Subject Scaling Grapher for Queensland (QCE). Designed using 2022, 2021, and 2020 data.",
   "icons": [
     {
       "src": "favicon.ico",
