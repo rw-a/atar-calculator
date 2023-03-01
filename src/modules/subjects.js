@@ -9,6 +9,10 @@ import Tooltip from 'react-bootstrap/Tooltip';
 import { getSubjects } from './data';
 import SUBJECTS from './../data/all_subjects.json';
 
+import help_button_img from './../assets/help.svg';
+import save_button_img from './../assets/save.svg';
+import save_button_filled_img from './../assets/save_filled.svg';
+
 class SubjectName extends React.Component {
     render() {
 		return (
@@ -17,7 +21,7 @@ class SubjectName extends React.Component {
 				{
 					(this.props.name.endsWith("[Accelerated]")) ? 
 						<OverlayTrigger placement="top" overlay={<Tooltip>If you completed the subject a year early. Uses the scaling of the previous year (i.e. {this.props.year - 1})</Tooltip>}>
-							<Image className='help-icon' src={require('./../assets/help.svg').default}/>
+							<Image className='help-icon' src={help_button_img}/>
 						</OverlayTrigger> : ""
 				}
 			</span>
@@ -200,10 +204,11 @@ class SaveButton extends React.Component {
 	}
 
 	render() {
+		let img_src;
 		if (this.props.saved) {
-			var img_src = require("./../assets/save_filled.svg").default;
+			img_src = save_button_filled_img;
 		} else {
-			img_src = require("./../assets/save.svg").default;
+			img_src = save_button_img;
 		}
 		return (
 			<img src={img_src} id="save_img" title="Save Subjects" alt="Save Subjects" onClick={this.handleClick} className={this.props.className}></img>

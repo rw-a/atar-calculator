@@ -10,6 +10,8 @@ import Tooltip from 'react-bootstrap/Tooltip';
 import { getAtarData, getScalingData, estimateAtarModel } from './data';
 import SUBJECTS from './../data/all_subjects.json';
 
+import help_button_img from './../assets/help.svg';
+
 
 class ResultsRow extends React.Component {
 	render() {
@@ -172,7 +174,7 @@ export default class ResultsTable extends React.Component {
 					<div className='text-center'>
 						<p className='fs-18px'>Estimated TEA
 							<OverlayTrigger placement="top" overlay={<Tooltip>The sum of your top 5 scaled scores.</Tooltip>}>
-								<Image className='help-icon' src={require('./../assets/help.svg').default}/>
+								<Image className='help-icon' src={help_button_img}/>
 							</OverlayTrigger>
 						</p>
 						<p className='fs-4'>{tea.toFixed(2)}</p>
@@ -190,7 +192,7 @@ export default class ResultsTable extends React.Component {
 							<th>Scaled Score</th>
 							<th>TEA Potential 
 								<OverlayTrigger placement="top" overlay={<Tooltip>How much your TEA would increase if the raw score increased by 1.</Tooltip>}>
-									<Image className='help-icon' src={require('./../assets/help.svg').default}/>
+									<Image className='help-icon' src={help_button_img}/>
 								</OverlayTrigger>
 							</th>
 						</tr>
