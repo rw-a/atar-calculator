@@ -185,7 +185,7 @@ class Calculator extends React.Component {
 
 		return (
 			<div id="content">
-				<h2>QLD/QCE ATAR Calculator</h2>
+				<h2>ATAR Calculator QLD/QCE</h2>
 				<div className="d-flex flex-column flex-md-row justify-content-between my-2">
 					<p className='text-small fst-italic me-1 mb-2 mb-md-1'>ATAR Calculator and Subject Scaling Grapher for Queensland (QCE system). Neither QTAC nor QCAA endorse or are affiliated with this website. Scaling changes every year, so use at your own risk!</p>
 					<YearSelector onYearSelect={this.handleYearSelect} className="align-self-end align-self-md-start"></YearSelector>
