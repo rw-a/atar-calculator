@@ -1,11 +1,11 @@
 self.__precacheManifest = [
   {
-    "revision": "46f716730087cf3f8d1c",
-    "url": "/atar-calculator/static/css/main.8a9f4c05.chunk.css"
+    "revision": "6fd3d56a49078497da01",
+    "url": "/atar-calculator/static/css/main.28811e02.chunk.css"
   },
   {
-    "revision": "46f716730087cf3f8d1c",
-    "url": "/atar-calculator/static/js/main.46f71673.chunk.js"
+    "revision": "6fd3d56a49078497da01",
+    "url": "/atar-calculator/static/js/main.6fd3d56a.chunk.js"
   },
   {
     "revision": "1de2eff420fca937c213",
@@ -52,7 +52,7 @@ self.__precacheManifest = [
     "url": "/atar-calculator/static/media/delete_filled.aeced149.svg"
   },
   {
-    "revision": "9ef777aa33a8eb3ba50e33aa51d54e6d",
+    "revision": "97f65311c2efff5809f12ccf83b803ee",
     "url": "/atar-calculator/index.html"
   }
 ];

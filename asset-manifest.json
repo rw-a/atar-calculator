@@ -1,7 +1,7 @@
 {
-  "main.css": "/atar-calculator/static/css/main.8a9f4c05.chunk.css",
-  "main.js": "/atar-calculator/static/js/main.46f71673.chunk.js",
-  "main.js.map": "/atar-calculator/static/js/main.46f71673.chunk.js.map",
+  "main.css": "/atar-calculator/static/css/main.28811e02.chunk.css",
+  "main.js": "/atar-calculator/static/js/main.6fd3d56a.chunk.js",
+  "main.js.map": "/atar-calculator/static/js/main.6fd3d56a.chunk.js.map",
   "static/css/1.d5152c3a.chunk.css": "/atar-calculator/static/css/1.d5152c3a.chunk.css",
   "static/js/1.1de2eff4.chunk.js": "/atar-calculator/static/js/1.1de2eff4.chunk.js",
   "static/js/1.1de2eff4.chunk.js.map": "/atar-calculator/static/js/1.1de2eff4.chunk.js.map",
@@ -18,8 +18,8 @@
   "static/media/save_filled.svg": "/atar-calculator/static/media/save_filled.036224a0.svg",
   "static/media/subjects.css": "/atar-calculator/static/media/delete_filled.aeced149.svg",
   "static/css/1.d5152c3a.chunk.css.map": "/atar-calculator/static/css/1.d5152c3a.chunk.css.map",
-  "static/css/main.8a9f4c05.chunk.css.map": "/atar-calculator/static/css/main.8a9f4c05.chunk.css.map",
+  "static/css/main.28811e02.chunk.css.map": "/atar-calculator/static/css/main.28811e02.chunk.css.map",
   "index.html": "/atar-calculator/index.html",
-  "precache-manifest.54b98c11a5832a07c6c6abe0e64cda81.js": "/atar-calculator/precache-manifest.54b98c11a5832a07c6c6abe0e64cda81.js",
+  "precache-manifest.c283e1f999f698fdf297250d838bc37b.js": "/atar-calculator/precache-manifest.c283e1f999f698fdf297250d838bc37b.js",
   "service-worker.js": "/atar-calculator/service-worker.js"
 }
