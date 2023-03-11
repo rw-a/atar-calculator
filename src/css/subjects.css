@@ -48,9 +48,9 @@ input {
 #save_img {
     height: 1.75rem;
     width: 1.75rem;
-    opacity: 26%;
+    opacity: 0.26;
 }
 
 #save_img:hover {
-    opacity: 54%;;
+    opacity: 0.54;;
 }
