@@ -1,7 +1,7 @@
 {
   "main.css": "/atar-calculator/static/css/main.8a9f4c05.chunk.css",
-  "main.js": "/atar-calculator/static/js/main.d2a39c12.chunk.js",
-  "main.js.map": "/atar-calculator/static/js/main.d2a39c12.chunk.js.map",
+  "main.js": "/atar-calculator/static/js/main.46f71673.chunk.js",
+  "main.js.map": "/atar-calculator/static/js/main.46f71673.chunk.js.map",
   "static/css/1.d5152c3a.chunk.css": "/atar-calculator/static/css/1.d5152c3a.chunk.css",
   "static/js/1.1de2eff4.chunk.js": "/atar-calculator/static/js/1.1de2eff4.chunk.js",
   "static/js/1.1de2eff4.chunk.js.map": "/atar-calculator/static/js/1.1de2eff4.chunk.js.map",
@@ -20,6 +20,6 @@
   "static/css/1.d5152c3a.chunk.css.map": "/atar-calculator/static/css/1.d5152c3a.chunk.css.map",
   "static/css/main.8a9f4c05.chunk.css.map": "/atar-calculator/static/css/main.8a9f4c05.chunk.css.map",
   "index.html": "/atar-calculator/index.html",
-  "precache-manifest.2005c857f43dc0213d6d3551215aa8d3.js": "/atar-calculator/precache-manifest.2005c857f43dc0213d6d3551215aa8d3.js",
+  "precache-manifest.54b98c11a5832a07c6c6abe0e64cda81.js": "/atar-calculator/precache-manifest.54b98c11a5832a07c6c6abe0e64cda81.js",
   "service-worker.js": "/atar-calculator/service-worker.js"
 }

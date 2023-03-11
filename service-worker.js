@@ -14,7 +14,7 @@
 importScripts("https://storage.googleapis.com/workbox-cdn/releases/3.6.3/workbox-sw.js");
 
 importScripts(
-  "/atar-calculator/precache-manifest.2005c857f43dc0213d6d3551215aa8d3.js"
+  "/atar-calculator/precache-manifest.54b98c11a5832a07c6c6abe0e64cda81.js"
 );
 
 workbox.clientsClaim();
