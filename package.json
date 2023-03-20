@@ -8,7 +8,7 @@
     "@testing-library/react": "^13.3.0",
     "@testing-library/user-event": "^13.5.0",
     "gh-pages": "^4.0.0",
-    "jsxgraph": "^1.4.6",
+    "jsxgraph": "1.4.6",
     "react": "^18.1.0",
     "react-bootstrap": "^2.7.0",
     "react-dom": "^18.1.0",
