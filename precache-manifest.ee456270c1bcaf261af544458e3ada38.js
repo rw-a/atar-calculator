@@ -1,19 +1,19 @@
 self.__precacheManifest = [
   {
-    "revision": "6fd3d56a49078497da01",
-    "url": "/atar-calculator/static/css/main.28811e02.chunk.css"
+    "revision": "d91f37d807d2d790a4c7",
+    "url": "/atar-calculator/static/css/main.b4593f90.chunk.css"
   },
   {
-    "revision": "6fd3d56a49078497da01",
-    "url": "/atar-calculator/static/js/main.6fd3d56a.chunk.js"
+    "revision": "d91f37d807d2d790a4c7",
+    "url": "/atar-calculator/static/js/main.d91f37d8.chunk.js"
   },
   {
-    "revision": "1de2eff420fca937c213",
-    "url": "/atar-calculator/static/css/1.d5152c3a.chunk.css"
+    "revision": "de6152048288b4565818",
+    "url": "/atar-calculator/static/css/1.e2376704.chunk.css"
   },
   {
-    "revision": "1de2eff420fca937c213",
-    "url": "/atar-calculator/static/js/1.1de2eff4.chunk.js"
+    "revision": "de6152048288b4565818",
+    "url": "/atar-calculator/static/js/1.de615204.chunk.js"
   },
   {
     "revision": "49c897e134fedb44ee2d",
@@ -28,8 +28,8 @@ self.__precacheManifest = [
     "url": "/atar-calculator/static/js/4.49e14441.chunk.js"
   },
   {
-    "revision": "deb87853fc1a5ca651ac",
-    "url": "/atar-calculator/static/js/runtime~main.deb87853.js"
+    "revision": "1c4a1d77c2301e43f46b",
+    "url": "/atar-calculator/static/js/runtime~main.1c4a1d77.js"
   },
   {
     "revision": "8191094cb987cb3e239a78200fce2150",
@@ -52,7 +52,7 @@ self.__precacheManifest = [
     "url": "/atar-calculator/static/media/delete_filled.aeced149.svg"
   },
   {
-    "revision": "97f65311c2efff5809f12ccf83b803ee",
+    "revision": "3162c970ae3114e03fab8a1a1f5484e3",
     "url": "/atar-calculator/index.html"
   }
 ];
