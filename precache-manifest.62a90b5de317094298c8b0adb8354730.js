@@ -1,11 +1,11 @@
 self.__precacheManifest = [
   {
-    "revision": "7483e73ab0148ee9e6db",
+    "revision": "89fcf1fa03e5c73cbb6f",
     "url": "/atar-calculator/static/css/main.8509e12b.chunk.css"
   },
   {
-    "revision": "7483e73ab0148ee9e6db",
-    "url": "/atar-calculator/static/js/main.48903607.chunk.js"
+    "revision": "89fcf1fa03e5c73cbb6f",
+    "url": "/atar-calculator/static/js/main.452577d0.chunk.js"
   },
   {
     "revision": "6ceb0c05a76f2156ee79",
@@ -44,15 +44,15 @@ self.__precacheManifest = [
     "url": "/atar-calculator/static/media/save_filled.036224a0.svg"
   },
   {
-    "revision": "86376276ca4d2bcdce8a45e2272aa3df",
-    "url": "/atar-calculator/static/media/delete.86376276.svg"
-  },
-  {
     "revision": "aeced1493e8b44d507e352a0b69364c5",
     "url": "/atar-calculator/static/media/delete_filled.aeced149.svg"
   },
   {
-    "revision": "2e427ad45d047fbc3b0e6aa07799db16",
+    "revision": "86376276ca4d2bcdce8a45e2272aa3df",
+    "url": "/atar-calculator/static/media/delete.86376276.svg"
+  },
+  {
+    "revision": "14e8647e7c3f7b8f2b216e406ef5ecd6",
     "url": "/atar-calculator/index.html"
   }
 ];
