@@ -44,15 +44,15 @@ self.__precacheManifest = [
     "url": "/atar-calculator/static/media/save_filled.036224a0.svg"
   },
   {
-    "revision": "aeced1493e8b44d507e352a0b69364c5",
-    "url": "/atar-calculator/static/media/delete_filled.aeced149.svg"
-  },
-  {
     "revision": "86376276ca4d2bcdce8a45e2272aa3df",
     "url": "/atar-calculator/static/media/delete.86376276.svg"
   },
   {
-    "revision": "14e8647e7c3f7b8f2b216e406ef5ecd6",
+    "revision": "aeced1493e8b44d507e352a0b69364c5",
+    "url": "/atar-calculator/static/media/delete_filled.aeced149.svg"
+  },
+  {
+    "revision": "a3b0bc89f94216339a6c337217d10408",
     "url": "/atar-calculator/index.html"
   }
 ];
