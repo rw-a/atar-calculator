@@ -21,7 +21,7 @@ class SubjectName extends React.Component {
 				{
 					(this.props.name.endsWith("[Accelerated]")) ? 
 						<OverlayTrigger placement="top" overlay={<Tooltip>If you completed the subject a year early. Uses the scaling of the previous year (i.e. {this.props.year - 1})</Tooltip>}>
-							<Image className='help-icon' src={help_button_img}/>
+							<Image className='help-icon' src={help_button_img} alt="Subject Tooltip"/>
 						</OverlayTrigger> : ""
 				}
 			</span>
