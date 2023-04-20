@@ -1,14 +1,14 @@
-import SUBJECTS_2020 from './../data/2020_subjects.json';
-import SCALINGDATA_2020 from './../data/2020_scaling_data.json';
-import ATARDATA_2020 from './../data/2020_atar_data.json'
+import SUBJECTS_2020 from '../data/2020_subjects.json';
+import SCALINGDATA_2020 from '../data/2020_scaling_data.json';
+import ATARDATA_2020 from '../data/2020_atar_data.json'
 
-import SUBJECTS_2021 from './../data/2021_subjects.json';
-import SCALINGDATA_2021 from './../data/2021_scaling_data.json';
-import ATARDATA_2021 from './../data/2021_atar_data.json'
+import SUBJECTS_2021 from '../data/2021_subjects.json';
+import SCALINGDATA_2021 from '../data/2021_scaling_data.json';
+import ATARDATA_2021 from '../data/2021_atar_data.json'
 
-import SUBJECTS_2022 from './../data/2022_subjects.json';
-import SCALINGDATA_2022 from './../data/2022_scaling_data.json';
-import ATARDATA_2022 from './../data/2022_atar_data.json'
+import SUBJECTS_2022 from '../data/2022_subjects.json';
+import SCALINGDATA_2022 from '../data/2022_scaling_data.json';
+import ATARDATA_2022 from '../data/2022_atar_data.json'
 
 
 export function getSubjects(year) {

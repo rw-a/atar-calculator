@@ -7,7 +7,7 @@ import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Tooltip from 'react-bootstrap/Tooltip';
 
 import { getSubjects } from './data';
-import SUBJECTS from './../data/all_subjects.json';
+import SUBJECTS from '../data/all_subjects.json';
 
 import help_button_img from './../assets/help.svg';
 import save_button_img from './../assets/save.svg';

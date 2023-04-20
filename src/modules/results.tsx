@@ -8,7 +8,7 @@ import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Tooltip from 'react-bootstrap/Tooltip';
 
 import { getAtarData, getScalingData, estimateAtarModel } from './data';
-import SUBJECTS from './../data/all_subjects.json';
+import SUBJECTS from '../data/all_subjects.json';
 
 import help_button_img from './../assets/help.svg';
 
