@@ -114,7 +114,7 @@ export default function Calculator() {
 	}
 
 	function handleSubjectsSave() {
-		setCookie("subjects", JSON.stringify(subjects), 180);
+		localStorage.setItem("subjects", JSON.stringify(subjects));
 		// this.forceUpdate();
 		// REPLACE FORCE UPDATE WITH STATE WHICH TRACKS IF SAVED
 	}
@@ -149,14 +149,15 @@ export default function Calculator() {
 
 	useEffect(() => {
 		// Load previously saved state
-		let state = getCookie("subjects");
-		if (state === "") return;
-		state = JSON.parse(state);
+		const stateJSON = localStorage.getItem("subjects");
+		if (!stateJSON || stateJSON === JSON.stringify(subjects)) return;
+		// if (!stateJSON) return;
+		const state = JSON.parse(stateJSON);
 		setSubjects(state);
 	});
 
 	// check if saved state matches current state
-	const savedState = getCookie("subjects");
+	const savedState = localStorage.getItem("subjects");
 	const saved = (savedState === JSON.stringify(subjects));
 
 	return (
