@@ -116,35 +116,35 @@ export default function Calculator() {
 	function handleSubjectsSave() {
 		setCookie("subjects", JSON.stringify(subjects), 180);
 		// this.forceUpdate();
+		// REPLACE FORCE UPDATE WITH STATE WHICH TRACKS IF SAVED
 	}
 
 	function handleYearSelect(selectedYear) {
 		// copy subjects to allSubjects
-		const currentSubjects = {...subjects};
-		const allSubjects = {...allSubjects};
-		for (let subjectCode of Object.keys(currentSubjects)) {
-			if (currentSubjects[subjectCode] === undefined) continue;
-			allSubjects[subjectCode] = currentSubjects[subjectCode];
+		const newSubjects = {...subjects};
+		const newAllSubjects = {...allSubjects};
+		for (const subjectCode of Object.keys(newSubjects)) {
+			if (newSubjects[subjectCode] === undefined) continue;
+			newAllSubjects[subjectCode] = newSubjects[subjectCode];
 		}
 
 		// clear subjects
-		for (let subjectCode of Object.keys(currentSubjects)) {
-			currentSubjects[subjectCode] = undefined;
+		for (const subjectCode of Object.keys(newSubjects)) {
+			newSubjects[subjectCode] = undefined;
 		}
 
 		// copy valid subjects from allSubjects to subjects
 		const subjectsInYear = getSubjects(selectedYear);
-		for (let subjectCode of Object.keys(allSubjects)) {
-			if (allSubjects[subjectCode] === undefined) continue;
+		for (const subjectCode of Object.keys(newAllSubjects)) {
+			if (newAllSubjects[subjectCode] === undefined) continue;
 			if (Object.keys(subjectsInYear).includes(subjectCode)) {
-				currentSubjects[subjectCode] = allSubjects[subjectCode];
+				newSubjects[subjectCode] = newAllSubjects[subjectCode];
 			}
 		}
 
-
 		setYear(selectedYear);
-		setSubjects(currentSubjects);
-		setAllSubjects(allSubjects);
+		setSubjects(newSubjects);
+		setAllSubjects(newAllSubjects);
 	}
 
 	useEffect(() => {
