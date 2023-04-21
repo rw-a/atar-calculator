@@ -13,17 +13,15 @@ import SUBJECTS from '../data/all_subjects.json';
 import help_button_img from './../assets/help.svg';
 
 
-class ResultsRow extends React.Component {
-	render() {
-		return(
-			<tr>
-				<td>{SUBJECTS[this.props.code]}</td>
-				<td className='text-center'>{this.props.rawScore}</td>
-				<td className='text-center'>{this.props.scaledScore}</td>
-				<td className='text-center'>{this.props.teaPotential}</td>
-			</tr>
-		);
-	}
+function ResultsRow({code, rawScore, scaledScore, teaPotential}) {
+	return(
+		<tr>
+			<td>{SUBJECTS[code]}</td>
+			<td className='text-center'>{rawScore}</td>
+			<td className='text-center'>{scaledScore}</td>
+			<td className='text-center'>{teaPotential}</td>
+		</tr>
+	);
 }
 
 function calculateTeaFromScaledScores(scaledScores) {
@@ -112,96 +110,93 @@ export function calculateTeaFromSubjects(subjectRawScores, year) {
 	return tea;
 }
   
-export default class ResultsTable extends React.Component {
-	render() {
-		let subjectRawScores = this.props.subjectRawScores;
-		let subjectCodes = Object.keys(subjectRawScores).filter((subjectCode) => {return (subjectRawScores[subjectCode] !== undefined)});
-		let subjectScaledScores = mapRawToScaledScores(subjectRawScores, this.props.year);
+export default function ResultsTable({year, subjectRawScores}) {
+	const subjectCodes = Object.keys(subjectRawScores).filter((subjectCode) => {return (subjectRawScores[subjectCode] !== undefined)});
+	const subjectScaledScores = mapRawToScaledScores(subjectRawScores, year);
 
-		// sort the subjects
-		subjectCodes.sort((a, b) => {
-			// by scaled score
-			return (subjectScaledScores[b] - subjectScaledScores[a]);
-		});
+	// sort the subjects
+	subjectCodes.sort((a, b) => {
+		// by scaled score
+		return (subjectScaledScores[b] - subjectScaledScores[a]);
+	});
 
-		// generate the rows of the table
-		let rows = [];
-		for (let [subjectIndex, subjectCode] of subjectCodes.entries()) {
-			let rawScore = subjectRawScores[subjectCode];
-			
-			if (rawScore === "") {
-				var scaledScore = "";
-				var teaPotential = "";
-			} else {
-				rawScore = Number(rawScore);
-				scaledScore = subjectScaledScores[subjectCode].toFixed(2);
-				if (rawScore < 100) {
-					// tea potential is how much the scaled score could increase if your raw score increased by 1
-					teaPotential = (calculateScaledScore(rawScore + 1, subjectCode, this.props.year) - scaledScore).toFixed(2);
-					if (subjectIndex > 4) {
-						let newScaledScore = calculateScaledScore(rawScore + 1, subjectCode, this.props.year);
-						if (newScaledScore < subjectScaledScores[subjectCodes[4]]) {
-							teaPotential = 0;	// if the new scaled score is less than the scaled score of the 5th subject, it still wouldn't increase TEA
-						} else {
-							teaPotential = (newScaledScore - subjectScaledScores[subjectCodes[4]]).toFixed(2);	// how much more the TEA would be than the 5th subject (since 5th is already contributing, must find difference)
-						}
-						
-					}
-				} else {
-					teaPotential = 0;
-				}
-			}
-
-			rows.push(
-				<ResultsRow key={subjectCode} code={subjectCode} rawScore={rawScore} scaledScore={scaledScore} teaPotential={teaPotential}/>
-			);
-		}
-		// if no subjects added, add blank boxes as placeholders
-		if (rows.length < 1) {
-			rows.push(
-				<ResultsRow key="0" code={""} rawScore={"‎"} scaledScore={""} teaPotential={""}/>
-			);
-		}
-
-		// do the math
-		let scaledScores = Object.values(subjectScaledScores);    // only the values, don't care about which subject
-		let tea = calculateTeaFromScaledScores(scaledScores);
-		let atar = calculateAtarFromTea(tea, this.props.year);
+	// generate the rows of the table
+	let rows = [];
+	for (let [subjectIndex, subjectCode] of subjectCodes.entries()) {
+		let rawScore = subjectRawScores[subjectCode];
 		
-		return (
-			<div>
-				<Stack direction="horizontal" className="justify-content-around">
-					<div className='text-center'>
-						<p className='fs-18px'>Estimated TEA
-							<OverlayTrigger placement="top" overlay={<Tooltip>The sum of your top 5 scaled scores.</Tooltip>}>
-								<Image className='help-icon' src={help_button_img} alt="Estimated TEA Tooltip"/>
-							</OverlayTrigger>
-						</p>
-						<p className='fs-4'>{tea.toFixed(2)}</p>
-					</div>
-					<div className='text-center'>
-						<p className='fs-18px'>Estimated ATAR</p>
-						<p className='fs-4'>{atar}</p>
-					</div>
-				</Stack>
-				<Table bordered size="sm" className="border-dark">
-					<thead>
-						<tr className='text-center'>
-							<th>Subject</th>
-							<th>Raw Score</th>
-							<th>Scaled Score</th>
-							<th>TEA Potential 
-								<OverlayTrigger placement="top" overlay={<Tooltip>How much your TEA would increase if the raw score increased by 1.</Tooltip>}>
-									<Image className='help-icon' src={help_button_img} alt="TEA Potential Tooltip"/>
-								</OverlayTrigger>
-							</th>
-						</tr>
-					</thead>
-					<tbody>
-						{rows}
-					</tbody>
-				</Table>
-			</div>
+		if (rawScore === "") {
+			var scaledScore = "";
+			var teaPotential = "";
+		} else {
+			rawScore = Number(rawScore);
+			scaledScore = subjectScaledScores[subjectCode].toFixed(2);
+			if (rawScore < 100) {
+				// tea potential is how much the scaled score could increase if your raw score increased by 1
+				teaPotential = (calculateScaledScore(rawScore + 1, subjectCode, year) - scaledScore).toFixed(2);
+				if (subjectIndex > 4) {
+					let newScaledScore = calculateScaledScore(rawScore + 1, subjectCode, year);
+					if (newScaledScore < subjectScaledScores[subjectCodes[4]]) {
+						teaPotential = 0;	// if the new scaled score is less than the scaled score of the 5th subject, it still wouldn't increase TEA
+					} else {
+						teaPotential = (newScaledScore - subjectScaledScores[subjectCodes[4]]).toFixed(2);	// how much more the TEA would be than the 5th subject (since 5th is already contributing, must find difference)
+					}
+					
+				}
+			} else {
+				teaPotential = 0;
+			}
+		}
+
+		rows.push(
+			<ResultsRow key={subjectCode} code={subjectCode} rawScore={rawScore} scaledScore={scaledScore} teaPotential={teaPotential}/>
 		);
 	}
+	// if no subjects added, add blank boxes as placeholders
+	if (rows.length < 1) {
+		rows.push(
+			<ResultsRow key="0" code={""} rawScore={"‎"} scaledScore={""} teaPotential={""}/>
+		);
+	}
+
+	// do the math
+	const scaledScores = Object.values(subjectScaledScores);    // only the values, don't care about which subject
+	const tea = calculateTeaFromScaledScores(scaledScores);
+	const atar = calculateAtarFromTea(tea, year);
+	
+	return (
+		<div>
+			<Stack direction="horizontal" className="justify-content-around">
+				<div className='text-center'>
+					<p className='fs-18px'>Estimated TEA
+						<OverlayTrigger placement="top" overlay={<Tooltip>The sum of your top 5 scaled scores.</Tooltip>}>
+							<Image className='help-icon' src={help_button_img} alt="Estimated TEA Tooltip"/>
+						</OverlayTrigger>
+					</p>
+					<p className='fs-4'>{tea.toFixed(2)}</p>
+				</div>
+				<div className='text-center'>
+					<p className='fs-18px'>Estimated ATAR</p>
+					<p className='fs-4'>{atar}</p>
+				</div>
+			</Stack>
+			<Table bordered size="sm" className="border-dark">
+				<thead>
+					<tr className='text-center'>
+						<th>Subject</th>
+						<th>Raw Score</th>
+						<th>Scaled Score</th>
+						<th>TEA Potential 
+							<OverlayTrigger placement="top" overlay={<Tooltip>How much your TEA would increase if the raw score increased by 1.</Tooltip>}>
+								<Image className='help-icon' src={help_button_img} alt="TEA Potential Tooltip"/>
+							</OverlayTrigger>
+						</th>
+					</tr>
+				</thead>
+				<tbody>
+					{rows}
+				</tbody>
+			</Table>
+		</div>
+	);
 }
