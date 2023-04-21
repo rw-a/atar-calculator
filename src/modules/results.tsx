@@ -27,9 +27,9 @@ function ResultsRow({code, rawScore, scaledScore, teaPotential}) {
 function calculateTeaFromScaledScores(scaledScores) {
 		// calculate the TEA by taking the top 5 scaled scores
 		let tea = 0;
-		let numSubjects = scaledScores.length;
+		const numSubjects = scaledScores.length;
 		for (let i = 0; i < Math.min(5, numSubjects); i++) {
-			let maxScaledScore = Math.max(...scaledScores);
+			const maxScaledScore = Math.max(...scaledScores);
 			tea += maxScaledScore;
 
 			// remove the max score from the list
@@ -44,30 +44,30 @@ function calculateTeaFromScaledScores(scaledScores) {
 function calculateAtarFromTea(tea, year) {
 	// calculate ATAR using TEA
 	const atarData = getAtarData(year);
-	let teaList = Object.keys(atarData);     // assumes that ATARDATA is already sorted in ascending TEA order
+	const teaList = Object.keys(atarData);     // assumes that ATARDATA is already sorted in ascending TEA order
 	for (let i = 0; i < teaList.length; i++) {
-		let currentTEA = Number(teaList[i]);
+		const currentTEA = Number(teaList[i]);
 		if (tea < currentTEA) {
-			let maxATAR = atarData[currentTEA].toFixed(2);
+			const maxATAR = atarData[currentTEA].toFixed(2);
 			// console.log((Math.round(estimateAtarModel(tea, year) * 20) / 20).toFixed(2));
 
 			if (i === 0) {
 				// if TEA is below the lowest available datapoint
-				let estimatedAtar = (Math.round(estimateAtarModel(tea, year) * 20) / 20).toFixed(2);
+				const estimatedAtar = (Math.round(estimateAtarModel(tea, year) * 20) / 20).toFixed(2);
 				if (estimatedAtar < maxATAR) {
 					return `~${estimatedAtar}`;
 				} else {
 					return `<${maxATAR}`;
 				}
 			} else {
-				let previousTEA = Number(teaList[i - 1]);
-				let minATAR = atarData[previousTEA].toFixed(2);
+				const previousTEA = Number(teaList[i - 1]);
+				const minATAR = atarData[previousTEA].toFixed(2);
 				if (minATAR === maxATAR || minATAR === "99.95") {
 					return minATAR;
 				} else {
 					// if the conservative method is not precise enough, try using the estimated atar to give a more precise answer
 					if (maxATAR - minATAR > 0.5) {
-						let estimatedAtar = (Math.round(estimateAtarModel(tea, year) * 20) / 20).toFixed(2);
+						const estimatedAtar = (Math.round(estimateAtarModel(tea, year) * 20) / 20).toFixed(2);
 						if (estimatedAtar >= minATAR && estimatedAtar <= maxATAR) {
 							return `~${estimatedAtar}`;
 						}
@@ -83,17 +83,17 @@ function calculateAtarFromTea(tea, year) {
 export function calculateScaledScore(rawScore, subjectCode, year) {
 	const scalingData = getScalingData(year);
 	rawScore = Number(rawScore);
-	let a = Number(scalingData[subjectCode]["a"]);
-	let b = Number(scalingData[subjectCode]["b"]);
+	const a = Number(scalingData[subjectCode]["a"]);
+	const b = Number(scalingData[subjectCode]["b"]);
 	return 100 / (1 + Math.exp(-a * (rawScore - b)));
 }
 
 function mapRawToScaledScores(subjectRawScores, year) {
 	// creates an object with keys being subjectCode and value being scaledScore
-	let subjectScaledScores = {};
-	let subjectCodes = Object.keys(subjectRawScores).filter((subjectCode) => {return (subjectRawScores[subjectCode] !== undefined)});
-	for (let subjectCode of subjectCodes) {
-		let rawScore = subjectRawScores[subjectCode];
+	const subjectScaledScores = {};
+	const subjectCodes = Object.keys(subjectRawScores).filter((subjectCode) => {return (subjectRawScores[subjectCode] !== undefined)});
+	for (const subjectCode of subjectCodes) {
+		const rawScore = subjectRawScores[subjectCode];
 		if (rawScore.length > 0) { // only scale if there is an actual input. otherwise be blank
 			subjectScaledScores[subjectCode] = calculateScaledScore(rawScore, subjectCode, year);
 		} else {
@@ -104,9 +104,9 @@ function mapRawToScaledScores(subjectRawScores, year) {
 }
 
 export function calculateTeaFromSubjects(subjectRawScores, year) {
-	let subjectScaledScores = mapRawToScaledScores(subjectRawScores, year);
-	let scaledScores = Object.values(subjectScaledScores);
-	let tea = calculateTeaFromScaledScores(scaledScores);
+	const subjectScaledScores = mapRawToScaledScores(subjectRawScores, year);
+	const scaledScores = Object.values(subjectScaledScores);
+	const tea = calculateTeaFromScaledScores(scaledScores);
 	return tea;
 }
   
@@ -121,13 +121,15 @@ export default function ResultsTable({year, subjectRawScores}) {
 	});
 
 	// generate the rows of the table
-	let rows = [];
+	const rows = [];
 	for (let [subjectIndex, subjectCode] of subjectCodes.entries()) {
 		let rawScore = subjectRawScores[subjectCode];
-		
+		let scaledScore;
+		let teaPotential;
+
 		if (rawScore === "") {
-			var scaledScore = "";
-			var teaPotential = "";
+			scaledScore = "";
+			teaPotential = "";
 		} else {
 			rawScore = Number(rawScore);
 			scaledScore = subjectScaledScores[subjectCode].toFixed(2);
@@ -135,7 +137,7 @@ export default function ResultsTable({year, subjectRawScores}) {
 				// tea potential is how much the scaled score could increase if your raw score increased by 1
 				teaPotential = (calculateScaledScore(rawScore + 1, subjectCode, year) - scaledScore).toFixed(2);
 				if (subjectIndex > 4) {
-					let newScaledScore = calculateScaledScore(rawScore + 1, subjectCode, year);
+					const newScaledScore = calculateScaledScore(rawScore + 1, subjectCode, year);
 					if (newScaledScore < subjectScaledScores[subjectCodes[4]]) {
 						teaPotential = 0;	// if the new scaled score is less than the scaled score of the 5th subject, it still wouldn't increase TEA
 					} else {
