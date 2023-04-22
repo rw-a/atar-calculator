@@ -1,5 +1,5 @@
 import './../css/subjects.css';
-import React, { ChangeEvent } from 'react';
+import React from 'react';
 import Select from 'react-select';
 
 import Image from 'react-bootstrap/Image';
@@ -70,6 +70,7 @@ function SubjectRawScore({score, onScoreChange}: SubjectRawScoreProps) {
 			type="number" 
 			min="0" 
 			max="100"
+			title="Subject Raw Score Input"
 			value={score} 
 			onChange={handleScoreChange}>
 		</input>
@@ -82,7 +83,7 @@ interface SubjectRowProps {
 	year: number,
 	score: string,
 	onScoreChange: (code: string, score: string) => void
-	onSubjectDelete?: (code: string) => void,
+	onSubjectDelete: (code: string) => void,
 }
 
 function SubjectRow({code, year, score, onScoreChange, onSubjectDelete}: SubjectRowProps) {
@@ -195,7 +196,8 @@ interface SaveButtonProps {
 function SaveButton({saved, onClick, className}: SaveButtonProps) {
 	const imgSrc = (saved) ? saveButtonImgFilled : saveButtonImg;
 	return (
-		<img src={imgSrc} id="save_img" title="Save Subjects" alt="Save Subjects" onClick={onClick} className={className}></img>
+		<img src={imgSrc} id="save_img" title="Save Subjects" alt="Save Subjects" onClick={onClick} 
+			className={className}></img>
 	);
 }
 
@@ -207,11 +209,14 @@ interface SubjectsTableProps {
 	className: string,
 	onScoreChange: (code: string, score: string) => void,
 	onSubjectAdd: (selectedOption: {value: string}) => void,
-	onSubjectDelete?: (code: string) => void,
+	onSubjectDelete: (code: string) => void,
 	onSubjectsSave: () => void,
 }
 
-export default function SubjectsTable({subjects, year, saved, className, onScoreChange, onSubjectAdd, onSubjectsSave, onSubjectDelete}: SubjectsTableProps) {
+export default function SubjectsTable({
+		subjects, year, saved, className, 
+		onScoreChange, onSubjectAdd, onSubjectsSave, onSubjectDelete
+		}: SubjectsTableProps) {
 	// generate a row for each subject
 	const rows = [];
 	for (const subjectCode of Object.keys(subjects)) {

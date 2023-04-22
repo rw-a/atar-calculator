@@ -20,9 +20,12 @@ const ScalingGraph = React.lazy(() => import('./modules/scaling'));
 function YearSelector({onYearSelect}: {onYearSelect: (selectedYear: number) => void}) {
 	return (
 			<ToggleButtonGroup type="radio" name="year" defaultValue={2022} onChange={onYearSelect}>
-				<ToggleButton variant="outline-primary" className="mb-auto button-small" id="year-2020" key={2020} value={2020}>2020</ToggleButton>
-				<ToggleButton variant="outline-primary" className="mb-auto button-small" id="year-2021" key={2021} value={2021}>2021</ToggleButton>
-				<ToggleButton variant="outline-primary" className="mb-auto button-small" id="year-2022" key={2022} value={2022}>2022</ToggleButton>
+				<ToggleButton variant="outline-primary" className="mb-auto button-small" 
+					id="year-2020" key={2020} value={2020}>2020</ToggleButton>
+				<ToggleButton variant="outline-primary" className="mb-auto button-small" 
+					id="year-2021" key={2021} value={2021}>2021</ToggleButton>
+				<ToggleButton variant="outline-primary" className="mb-auto button-small" 
+					id="year-2022" key={2022} value={2022}>2022</ToggleButton>
 			</ToggleButtonGroup>
 		);
 }
@@ -145,10 +148,6 @@ export default function Calculator() {
 				defaultTab={"results"}
 				subjects={subjectsFiltered}
 				year={year}
-				onScoreChange={handleScoreChange}
-				onSubjectAdd={handleSubjectAdd}
-				onSubjectDelete={handleSubjectDelete}
-				onSubjectsSave={handleSubjectsSave}
 				className="my-3"
 			/>
 		</div>
