@@ -1,7 +1,6 @@
 import './../css/subjects.css';
 import React from 'react';
 import Select, { StylesConfig } from 'react-select';
-import Option from 'react-select';
 
 import Image from 'react-bootstrap/Image';
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';

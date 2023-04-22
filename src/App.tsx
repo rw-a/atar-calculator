@@ -7,7 +7,7 @@ import Nav from 'react-bootstrap/Nav';
 import NavDropdown from 'react-bootstrap/NavDropdown';
 import Image from 'react-bootstrap/Image';
 
-import { SubjectCode, Subjects, Score } from './types';
+import { SubjectCode, Subjects, Score, Tabs } from './types';
 import { getSubjects } from './modules/data';
 import SubjectsTable from './modules/subjects';
 import ResultsTable from './modules/results';
@@ -35,7 +35,7 @@ function YearSelector({onYearSelect}: {onYearSelect: (selectedYear: number) => v
 interface SectionProps {
 	subjects: Subjects,
 	year: number,
-	defaultTab: "scaling" | "results",
+	defaultTab: Tabs,
 	className: string,
 }
 
@@ -53,11 +53,17 @@ function Section({subjects, year, defaultTab, className}: SectionProps) {
 				<ScalingGraph subjects={subjects} year={year}/>
 			</Suspense>,
 		results: <ResultsTable subjectRawScores={subjects} year={year}/>
-	};	
+	};
+	
+	function handleOnSelect(selectedTab: string | null) {
+		if (selectedTab) {
+			setTab(selectedTab as Tabs);
+		}
+	}
 
 	return (
 		<div className={`${className} section-inner`}>
-			<Nav activeKey="1" onSelect={setTab}>
+			<Nav activeKey="1" onSelect={handleOnSelect}>
 				<NavDropdown title={tabTitles[tab]} id="section-dropdown" as="h4">
 					<NavDropdown.Item className={(tab === "scaling") ? "active" : ""} eventKey="scaling">
 						<Image src={subjectScalingTabImg} alt="Subject Scaling Tab"/> Subject Scaling
