@@ -21,6 +21,7 @@ export function getSubjects(year: number) {
             return SUBJECTS_2022
         default:
             console.error(`Invalid year at getSubjects(). Year=${year}`);
+            return {};
     }
 }
 
@@ -34,6 +35,7 @@ export function getScalingData(year: number) {
             return SCALINGDATA_2022;
         default:
             console.error(`Invalid year at getScalingData(). Year=${year}`);
+            return {};
     }
 }
 
@@ -47,6 +49,7 @@ export function getAtarData(year: number) {
             return ATARDATA_2022;
         default:
             console.error(`Invalid year at getAtarData(). Year=${year}`);
+            return {};
     }
 }
 

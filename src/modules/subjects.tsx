@@ -18,26 +18,10 @@ export interface Subjects {
 	[key: string]: string | undefined
 }
 
-interface SubjectComponent {
-	name?: string,
-	code?: string,
-	year?: string,
-	score?: string,
-	subjects?: Subjects,
-	saved?: boolean,
-	className?: string,
-	defaultTab?: string,
-	onClick?: (event: React.MouseEvent) => void,
-	onScoreChange?: (code: string, score: string) => void,
-	onSubjectAdd?: ChangeEvent,
-	onSubjectDelete?: (score: string) => void,
-	onSubjectsSave?: () => void,
-}
-
 
 interface SubjectNameProps {
 	name: string,
-	year: string
+	year: number
 }
 
 function SubjectName({name, year}: SubjectNameProps) {
@@ -46,7 +30,10 @@ function SubjectName({name, year}: SubjectNameProps) {
 			{name}
 			{
 				(name.endsWith("[Accelerated]")) ? 
-					<OverlayTrigger placement="top" overlay={<Tooltip>If you completed the subject a year early. Uses the scaling of the previous year (i.e. {Number(year) - 1})</Tooltip>}>
+					<OverlayTrigger placement="top" overlay={
+						<Tooltip>If you completed the subject a year early. 
+							Uses the scaling of the previous year (i.e. {Number(year) - 1})</Tooltip>
+					}>
 						<Image className='help-icon' src={helpButtonImg} alt="Subject Tooltip"/>
 					</OverlayTrigger> : ""
 			}
@@ -80,7 +67,6 @@ function SubjectRawScore({score, onScoreChange}: SubjectRawScoreProps) {
 
 	return (
 		<input 
-			className="SubjectRawScore" 
 			type="number" 
 			min="0" 
 			max="100"
@@ -90,13 +76,16 @@ function SubjectRawScore({score, onScoreChange}: SubjectRawScoreProps) {
 	);
 }
 
-function DeleteSubject({onClick}: SubjectComponent) {
-	return (
-		<span className="DeleteSubject" onClick={onClick}></span>
-	);
+
+interface SubjectRowProps {
+	code: string,
+	year: number,
+	score: string,
+	onScoreChange: (code: string, score: string) => void
+	onSubjectDelete?: (code: string) => void,
 }
 
-function SubjectRow({code, year, score, onScoreChange, onSubjectDelete}) {
+function SubjectRow({code, year, score, onScoreChange, onSubjectDelete}: SubjectRowProps) {
 	function handleScoreChange(score: string) {
 		onScoreChange(code, score);
 	}
@@ -107,15 +96,21 @@ function SubjectRow({code, year, score, onScoreChange, onSubjectDelete}) {
 
 	return (
 		<li className="SubjectRow">
-			<DeleteSubject onClick={handleSubjectDelete} />
+			<span className="DeleteSubject" onClick={handleSubjectDelete}></span>
 			<SubjectName name={SUBJECTS[code]} year={year}/>
 			<SubjectRawScore score={score} onScoreChange={handleScoreChange} />
 		</li>
 	);
 }
 
-function SubjectSelector({subjects, year, onSubjectAdd}: SubjectComponent) {
-	const filterOptions = (candidate, input) => {
+interface SubjectSelectorProps {
+	subjects: Subjects,
+	year: number,
+	onSubjectAdd: (selectedOption: {value: string}) => void,
+}
+
+function SubjectSelector({subjects, year, onSubjectAdd}: SubjectSelectorProps) {
+	const filterOptions = (candidate: {value: string, label: string}, input: string) => {
 		// remove an option if it has already been added
 		if (Object.keys(subjects).includes(candidate.value) && subjects[candidate.value] !== undefined) {
 			return false;
@@ -137,14 +132,14 @@ function SubjectSelector({subjects, year, onSubjectAdd}: SubjectComponent) {
 	}
 
 	const customStyles = {
-		control: (provided, state) => ({
+		control: (provided: object/*, state: unknown*/) => ({
 			...provided,
 			// background: '#fff',
 			minHeight: '2.3rem',
 			height: '2.3rem',
 			alignContent: 'center',
 		}),
-		valueContainer: (provided, state) => ({
+		valueContainer: (provided: object/*, state: unknown*/) => ({
 			...provided,
 			height: '2.3rem',
 			display: 'flex',
@@ -153,11 +148,11 @@ function SubjectSelector({subjects, year, onSubjectAdd}: SubjectComponent) {
 			alignContent: 'center',
 			padding: '0rem 0.5rem'
 		}),
-		input: (provided, state) => ({
+		input: (provided: object/*, state: unknown*/) => ({
 			...provided,
 			width: '1px',
 		}),
-		placeholder: (provided, state) => ({
+		placeholder: (provided: object/*, state: unknown*/) => ({
 			...provided,
 			fontSize: '1rem',
 			marginLeft: '0px',
@@ -166,11 +161,11 @@ function SubjectSelector({subjects, year, onSubjectAdd}: SubjectComponent) {
 			...provided,
 			display: 'none',
 		}), */
-		indicatorsContainer: (provided, state) => ({
+		indicatorsContainer: (provided: object/*, state: unknown*/) => ({
 			...provided,
 			height: '2.2rem',
 		}),
-		option: (provided, state) => ({
+		option: (provided: object/*, state: unknown*/) => ({
 			...provided,
 			padding: '0.35rem 0.75rem',
 		}),
@@ -190,19 +185,33 @@ function SubjectSelector({subjects, year, onSubjectAdd}: SubjectComponent) {
 	);
 }
 
-function SaveButton({saved, onClick, className}: SubjectComponent) {
-	let imgSrc;
-	if (saved) {
-		imgSrc = saveButtonImgFilled;
-	} else {
-		imgSrc = saveButtonImg;
-	}
+
+interface SaveButtonProps {
+	saved: boolean,
+	onClick: () => void,
+	className: string,
+}
+
+function SaveButton({saved, onClick, className}: SaveButtonProps) {
+	const imgSrc = (saved) ? saveButtonImgFilled : saveButtonImg;
 	return (
 		<img src={imgSrc} id="save_img" title="Save Subjects" alt="Save Subjects" onClick={onClick} className={className}></img>
 	);
 }
 
-export default function SubjectsTable({subjects, year, saved, className, onScoreChange, onSubjectAdd, onSubjectsSave, onSubjectDelete}: SubjectComponent) {
+
+interface SubjectsTableProps {
+	subjects: Subjects,
+	year: number,
+	saved: boolean,
+	className: string,
+	onScoreChange: (code: string, score: string) => void,
+	onSubjectAdd: (selectedOption: {value: string}) => void,
+	onSubjectDelete?: (code: string) => void,
+	onSubjectsSave: () => void,
+}
+
+export default function SubjectsTable({subjects, year, saved, className, onScoreChange, onSubjectAdd, onSubjectsSave, onSubjectDelete}: SubjectsTableProps) {
 	// generate a row for each subject
 	const rows = [];
 	for (const subjectCode of Object.keys(subjects)) {

@@ -1,5 +1,5 @@
 import './App.css';
-import React, {ChangeEvent, Suspense, useEffect, useState} from 'react';
+import React, {Suspense, useEffect, useState} from 'react';
 
 import ToggleButton from 'react-bootstrap/ToggleButton';
 import ToggleButtonGroup from 'react-bootstrap/ToggleButtonGroup';
@@ -12,7 +12,7 @@ import ResultsTable from './modules/results';
 
 const ScalingGraph = React.lazy(() => import('./modules/scaling'));
 
-function YearSelector({onYearSelect}: {onYearSelect: ChangeEvent}) {
+function YearSelector({onYearSelect}: {onYearSelect: (selectedYear: number) => void}) {
 	return (
 			<ToggleButtonGroup type="radio" name="year" defaultValue={2022} onChange={onYearSelect}>
 				<ToggleButton variant="outline-primary" className="mb-auto button-small" id="year-2020" key={2020} value={2020}>2020</ToggleButton>
@@ -22,7 +22,15 @@ function YearSelector({onYearSelect}: {onYearSelect: ChangeEvent}) {
 		);
 }
 
-function Section({subjects, year, defaultTab, className}: SubjectComponent) {
+
+interface SectionProps {
+	subjects: Subjects,
+	year: number,
+	defaultTab: "scaling" | "results",
+	className: string,
+}
+
+function Section({subjects, year, defaultTab, className}: SectionProps) {
 	const tabTitles = {
 		scaling: "Subject Scaling Graph",
 		results: "Results"
@@ -62,12 +70,11 @@ function Section({subjects, year, defaultTab, className}: SubjectComponent) {
 
 export default function Calculator() {
 	const [year, setYear] = useState(2022);
-	// subjects contains only the subjects with data in the selected year, whereas allSubjects has all the subjects, including ones with no data in the selected year 
+	
 	const storedSubjects = localStorage.getItem("subjects");
 	const prevSubjects = (storedSubjects) ? JSON.parse(storedSubjects) : {} as Subjects;
-	const [savedSubjects, setSavedSubjects] = useState(prevSubjects)
+	const [savedSubjects, setSavedSubjects] = useState(prevSubjects);
 	const [subjects, setSubjects] = useState(prevSubjects);
-	const [allSubjects, setAllSubjects] = useState(prevSubjects);
 
 	function handleScoreChange(subjectCode: string, score: string) {
 		const newSubjects = {...subjects};
@@ -87,10 +94,6 @@ export default function Calculator() {
 		const newSubjects = {...subjects};
 		newSubjects[subjectCode] = undefined;
 		setSubjects(newSubjects);
-
-		const newAllSubjects = {...allSubjects};
-		newAllSubjects[subjectCode] = undefined;
-		setAllSubjects(newAllSubjects);
 	}
 
 	useEffect(() => {
@@ -102,44 +105,36 @@ export default function Calculator() {
 	}
 
 	function handleYearSelect(selectedYear: number) {
-		// copy subjects to allSubjects
-		const newSubjects = {...subjects};
-		const newAllSubjects = {...allSubjects};
-		for (const subjectCode of Object.keys(newSubjects)) {
-			if (newSubjects[subjectCode] === undefined) continue;
-			newAllSubjects[subjectCode] = newSubjects[subjectCode];
-		}
-
-		// clear subjects
-		for (const subjectCode of Object.keys(newSubjects)) {
-			newSubjects[subjectCode] = undefined;
-		}
-
-		// copy valid subjects from allSubjects to subjects
-		const subjectsInYear = getSubjects(selectedYear);
-		for (const subjectCode of Object.keys(newAllSubjects)) {
-			if (newAllSubjects[subjectCode] === undefined) continue;
-			if (Object.keys(subjectsInYear).includes(subjectCode)) {
-				newSubjects[subjectCode] = newAllSubjects[subjectCode];
-			}
-		}
-
 		setYear(selectedYear);
-		setSubjects(newSubjects);
-		setAllSubjects(newAllSubjects);
 	}
-	
+
 	const saved = (JSON.stringify(savedSubjects) === JSON.stringify(subjects));
+
+	const subjectsFiltered = {} as Subjects;
+	const subjectsInYear = getSubjects(year);
+	for (const subjectCode of Object.keys(subjects)) {
+		if (subjects[subjectCode] === undefined) continue;
+		if (Object.keys(subjectsInYear).includes(subjectCode)) {
+			subjectsFiltered[subjectCode] = subjects[subjectCode];
+		}
+	}
 
 	return (
 		<div id="content">
 			<h2>ATAR Calculator QLD/QCE</h2>
 			<div className="d-flex flex-column flex-md-row justify-content-between my-2">
-				<p className='text-small fst-italic me-1 mb-2 mb-md-1'>ATAR Calculator and Subject Scaling Grapher for Queensland (QCE system). Neither QTAC nor QCAA endorse or are affiliated with this website. Scaling changes every year, so use at your own risk!</p>
-				<YearSelector onYearSelect={handleYearSelect} className="align-self-end align-self-md-start"></YearSelector>
+				<p className='text-small fst-italic me-1 mb-2 mb-md-1'>
+					ATAR Calculator and Subject Scaling Grapher for Queensland (QCE system). 
+					Neither QTAC nor QCAA endorse or are affiliated with this website. 
+					Scaling changes every year, so use at your own risk!
+				</p>
+				<YearSelector 
+					onYearSelect={handleYearSelect} 
+					className="align-self-end align-self-md-start">
+				</YearSelector>
 			</div>	
 			<SubjectsTable 
-				subjects={subjects} 
+				subjects={subjectsFiltered} 
 				saved={saved}
 				onScoreChange={handleScoreChange}
 				onSubjectAdd={handleSubjectAdd}
@@ -150,8 +145,7 @@ export default function Calculator() {
 			/>
 			<Section 
 				defaultTab={"results"}
-				subjects={subjects}
-				saved={saved}
+				subjects={subjectsFiltered}
 				year={year}
 				onScoreChange={handleScoreChange}
 				onSubjectAdd={handleSubjectAdd}
