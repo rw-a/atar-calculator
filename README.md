@@ -4,7 +4,7 @@ Visit the calculator website here: **https://rw-a.github.io/atar-calculator/**
 ## Disclaimer
 - This service is provided “as is” and takes no liability for damages arising out of its use.
 - Neither QTAC nor QCAA endorse or have any involvement in any material appearing on this website.
-- Prediction relies on extrapolation and is based only on historical data so it is inherently inaccurate.
+- Prediction relies on extrapolation and is based only on historical data, so use at your own risk.
 
 ## Usage
 1. Visit the [calculator website](https://rw-a.github.io/atar-calculator/).
