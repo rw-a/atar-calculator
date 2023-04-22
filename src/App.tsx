@@ -5,10 +5,15 @@ import ToggleButton from 'react-bootstrap/ToggleButton';
 import ToggleButtonGroup from 'react-bootstrap/ToggleButtonGroup';
 import Nav from 'react-bootstrap/Nav';
 import NavDropdown from 'react-bootstrap/NavDropdown';
+import Image from 'react-bootstrap/Image';
 
 import { getSubjects } from './modules/data';
 import SubjectsTable, { Subjects } from './modules/subjects';
 import ResultsTable from './modules/results';
+
+import subjectScalingTabImg from './assets/subject_scaling_tab.svg';
+import resultsTabImg from './assets/results_tab.svg';
+
 
 const ScalingGraph = React.lazy(() => import('./modules/scaling'));
 
@@ -51,14 +56,10 @@ function Section({subjects, year, defaultTab, className}: SectionProps) {
 			<Nav activeKey="1" onSelect={setTab}>
 				<NavDropdown title={tabTitles[tab]} id="section-dropdown" as="h4">
 					<NavDropdown.Item className={(tab === "scaling") ? "active" : ""} eventKey="scaling">
-						<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-bar-chart-fill" viewBox="0 0 16 16">
-							<path d="M1 11a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1v-3zm5-4a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v7a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V7zm5-5a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1h-2a1 1 0 0 1-1-1V2z"/>
-						</svg> Subject Scaling
+						<Image src={subjectScalingTabImg} alt="Subject Scaling Tab"/> Subject Scaling
 					</NavDropdown.Item>
 					<NavDropdown.Item className={(tab === "results") ? "active" : ""} eventKey="results">
-						<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-calculator-fill" viewBox="0 0 16 16">
-							<path d="M2 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2zm2 .5v2a.5.5 0 0 0 .5.5h7a.5.5 0 0 0 .5-.5v-2a.5.5 0 0 0-.5-.5h-7a.5.5 0 0 0-.5.5zm0 4v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5zM4.5 9a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5h-1zM4 12.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5zM7.5 6a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5h-1zM7 9.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5zm.5 2.5a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5h-1zM10 6.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5zm.5 2.5a.5.5 0 0 0-.5.5v4a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-4a.5.5 0 0 0-.5-.5h-1z"/>
-						</svg> Results
+						<Image src={resultsTabImg} alt="Results Tab"/> Results
 					</NavDropdown.Item>
 				</NavDropdown>
 			</Nav>
@@ -128,10 +129,7 @@ export default function Calculator() {
 					Neither QTAC nor QCAA endorse or are affiliated with this website. 
 					Scaling changes every year, so use at your own risk!
 				</p>
-				<YearSelector 
-					onYearSelect={handleYearSelect} 
-					className="align-self-end align-self-md-start">
-				</YearSelector>
+				<YearSelector onYearSelect={handleYearSelect}></YearSelector>
 			</div>	
 			<SubjectsTable 
 				subjects={subjectsFiltered} 
