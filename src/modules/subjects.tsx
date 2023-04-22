@@ -6,17 +6,13 @@ import Image from 'react-bootstrap/Image';
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Tooltip from 'react-bootstrap/Tooltip';
 
+import { Subjects, OnScoreChange, Score, OnSubjectDelete, OnSubjectAdd, OnClick, OnSubjectsSave } from '../types';
 import { getSubjects } from './data';
 import SUBJECTS from '../data/all_subjects.json';
 
 import helpButtonImg from './../assets/help.svg';
 import saveButtonImg from './../assets/save.svg';
 import saveButtonImgFilled from './../assets/save_filled.svg';
-
-
-export interface Subjects {
-	[key: string]: string | undefined
-}
 
 
 interface SubjectNameProps {
@@ -44,7 +40,7 @@ function SubjectName({name, year}: SubjectNameProps) {
 
 interface SubjectRawScoreProps {
 	score: string,
-	onScoreChange: (score: string) => void,
+	onScoreChange: OnScoreChange;
 }
   
 function SubjectRawScore({score, onScoreChange}: SubjectRawScoreProps) {
@@ -81,9 +77,9 @@ function SubjectRawScore({score, onScoreChange}: SubjectRawScoreProps) {
 interface SubjectRowProps {
 	code: string,
 	year: number,
-	score: string,
-	onScoreChange: (code: string, score: string) => void
-	onSubjectDelete: (code: string) => void,
+	score: Score,
+	onScoreChange: OnScoreChange,
+	onSubjectDelete: OnSubjectDelete,
 }
 
 function SubjectRow({code, year, score, onScoreChange, onSubjectDelete}: SubjectRowProps) {
@@ -107,7 +103,7 @@ function SubjectRow({code, year, score, onScoreChange, onSubjectDelete}: Subject
 interface SubjectSelectorProps {
 	subjects: Subjects,
 	year: number,
-	onSubjectAdd: (selectedOption: {value: string}) => void,
+	onSubjectAdd: OnSubjectAdd,
 }
 
 function SubjectSelector({subjects, year, onSubjectAdd}: SubjectSelectorProps) {
@@ -189,7 +185,7 @@ function SubjectSelector({subjects, year, onSubjectAdd}: SubjectSelectorProps) {
 
 interface SaveButtonProps {
 	saved: boolean,
-	onClick: () => void,
+	onClick: OnClick,
 	className: string,
 }
 
@@ -207,10 +203,10 @@ interface SubjectsTableProps {
 	year: number,
 	saved: boolean,
 	className: string,
-	onScoreChange: (code: string, score: string) => void,
-	onSubjectAdd: (selectedOption: {value: string}) => void,
-	onSubjectDelete: (code: string) => void,
-	onSubjectsSave: () => void,
+	onScoreChange: OnScoreChange,
+	onSubjectAdd: OnSubjectAdd,
+	onSubjectDelete: OnSubjectDelete,
+	onSubjectsSave: OnSubjectsSave,
 }
 
 export default function SubjectsTable({

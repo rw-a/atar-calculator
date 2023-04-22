@@ -7,8 +7,9 @@ import Nav from 'react-bootstrap/Nav';
 import NavDropdown from 'react-bootstrap/NavDropdown';
 import Image from 'react-bootstrap/Image';
 
+import { Subjects } from './types';
 import { getSubjects } from './modules/data';
-import SubjectsTable, { Subjects } from './modules/subjects';
+import SubjectsTable from './modules/subjects';
 import ResultsTable from './modules/results';
 
 import subjectScalingTabImg from './assets/subject_scaling_tab.svg';
