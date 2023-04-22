@@ -63,8 +63,11 @@ function Section({subjects, year, defaultTab, className}: SubjectComponent) {
 export default function Calculator() {
 	const [year, setYear] = useState(2022);
 	// subjects contains only the subjects with data in the selected year, whereas allSubjects has all the subjects, including ones with no data in the selected year 
-	const [subjects, setSubjects] = useState({} as Subjects);
-	const [allSubjects, setAllSubjects] = useState({} as Subjects);
+	const storedSubjects = localStorage.getItem("subjects");
+	const prevSubjects = (storedSubjects) ? JSON.parse(storedSubjects) : {} as Subjects;
+	const [savedSubjects, setSavedSubjects] = useState(prevSubjects)
+	const [subjects, setSubjects] = useState(prevSubjects);
+	const [allSubjects, setAllSubjects] = useState(prevSubjects);
 
 	function handleScoreChange(subjectCode: string, score: string) {
 		const newSubjects = {...subjects};
@@ -90,10 +93,12 @@ export default function Calculator() {
 		setAllSubjects(newAllSubjects);
 	}
 
+	useEffect(() => {
+		localStorage.setItem("subjects", JSON.stringify(savedSubjects));
+	}, [savedSubjects]);
+
 	function handleSubjectsSave() {
-		localStorage.setItem("subjects", JSON.stringify(subjects));
-		// this.forceUpdate();
-		// REPLACE FORCE UPDATE WITH STATE WHICH TRACKS IF SAVED
+		setSavedSubjects(subjects);
 	}
 
 	function handleYearSelect(selectedYear: number) {
@@ -123,18 +128,8 @@ export default function Calculator() {
 		setSubjects(newSubjects);
 		setAllSubjects(newAllSubjects);
 	}
-
-	useEffect(() => {
-		// Load previously saved state
-		const stateJSON = localStorage.getItem("subjects");
-		if (!stateJSON || stateJSON === JSON.stringify(subjects)) return;
-		const state = JSON.parse(stateJSON);
-		setSubjects(state);
-	});
-
-	// check if saved state matches current state
-	const savedState = localStorage.getItem("subjects");
-	const saved = (savedState === JSON.stringify(subjects));
+	
+	const saved = (JSON.stringify(savedSubjects) === JSON.stringify(subjects));
 
 	return (
 		<div id="content">
