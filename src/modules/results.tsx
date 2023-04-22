@@ -10,10 +10,17 @@ import Tooltip from 'react-bootstrap/Tooltip';
 import { getAtarData, getScalingData, estimateAtarModel } from './data';
 import SUBJECTS from '../data/all_subjects.json';
 
-import help_button_img from './../assets/help.svg';
+import helpButtonImg from './../assets/help.svg';
 
 
-function ResultsRow({code, rawScore, scaledScore, teaPotential}) {
+interface ResultsRowProps {
+	code: string,
+	rawScore: number,
+	scaledScore: number,
+	teaPotential: number,
+}
+
+function ResultsRow({code, rawScore, scaledScore, teaPotential}: ResultsRowProps) {
 	return(
 		<tr>
 			<td>{SUBJECTS[code]}</td>
@@ -24,7 +31,7 @@ function ResultsRow({code, rawScore, scaledScore, teaPotential}) {
 	);
 }
 
-function calculateTeaFromScaledScores(scaledScores) {
+function calculateTeaFromScaledScores(scaledScores: number[]) {
 		// calculate the TEA by taking the top 5 scaled scores
 		let tea = 0;
 		const numSubjects = scaledScores.length;
@@ -41,7 +48,7 @@ function calculateTeaFromScaledScores(scaledScores) {
 		return tea;
 }
 
-function calculateAtarFromTea(tea, year) {
+function calculateAtarFromTea(tea: number, year: number) {
 	// calculate ATAR using TEA
 	const atarData = getAtarData(year);
 	const teaList = Object.keys(atarData);     // assumes that ATARDATA is already sorted in ascending TEA order
@@ -80,7 +87,7 @@ function calculateAtarFromTea(tea, year) {
 	return "99.95";
 }
 
-export function calculateScaledScore(rawScore, subjectCode, year) {
+export function calculateScaledScore(rawScore: number, subjectCode: number, year: number) {
 	const scalingData = getScalingData(year);
 	rawScore = Number(rawScore);
 	const a = Number(scalingData[subjectCode]["a"]);
@@ -88,7 +95,11 @@ export function calculateScaledScore(rawScore, subjectCode, year) {
 	return 100 / (1 + Math.exp(-a * (rawScore - b)));
 }
 
-function mapRawToScaledScores(subjectRawScores, year) {
+interface SubjectRawScores {
+	[key: string]: number
+}
+
+function mapRawToScaledScores(subjectRawScores: SubjectRawScores, year: number) {
 	// creates an object with keys being subjectCode and value being scaledScore
 	const subjectScaledScores = {};
 	const subjectCodes = Object.keys(subjectRawScores).filter((subjectCode) => {return (subjectRawScores[subjectCode] !== undefined)});
@@ -103,7 +114,7 @@ function mapRawToScaledScores(subjectRawScores, year) {
 	return subjectScaledScores;
 }
 
-export function calculateTeaFromSubjects(subjectRawScores, year) {
+export function calculateTeaFromSubjects(subjectRawScores: SubjectRawScores, year: number) {
 	const subjectScaledScores = mapRawToScaledScores(subjectRawScores, year);
 	const scaledScores = Object.values(subjectScaledScores);
 	const tea = calculateTeaFromScaledScores(scaledScores);
@@ -172,7 +183,7 @@ export default function ResultsTable({year, subjectRawScores}) {
 				<div className='text-center'>
 					<p className='fs-18px'>Estimated TEA
 						<OverlayTrigger placement="top" overlay={<Tooltip>The sum of your top 5 scaled scores.</Tooltip>}>
-							<Image className='help-icon' src={help_button_img} alt="Estimated TEA Tooltip"/>
+							<Image className='help-icon' src={helpButtonImg} alt="Estimated TEA Tooltip"/>
 						</OverlayTrigger>
 					</p>
 					<p className='fs-4'>{tea.toFixed(2)}</p>
@@ -190,7 +201,7 @@ export default function ResultsTable({year, subjectRawScores}) {
 						<th>Scaled Score</th>
 						<th>TEA Potential 
 							<OverlayTrigger placement="top" overlay={<Tooltip>How much your TEA would increase if the raw score increased by 1.</Tooltip>}>
-								<Image className='help-icon' src={help_button_img} alt="TEA Potential Tooltip"/>
+								<Image className='help-icon' src={helpButtonImg} alt="TEA Potential Tooltip"/>
 							</OverlayTrigger>
 						</th>
 					</tr>
