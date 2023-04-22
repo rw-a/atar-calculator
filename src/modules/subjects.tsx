@@ -1,6 +1,7 @@
 import './../css/subjects.css';
 import React from 'react';
-import Select from 'react-select';
+import Select, { StylesConfig } from 'react-select';
+import Option from 'react-select';
 
 import Image from 'react-bootstrap/Image';
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
@@ -40,7 +41,7 @@ function SubjectName({name, year}: SubjectNameProps) {
 
 interface SubjectRawScoreProps {
 	score: Score,
-	onScoreChange: OnScoreChange;
+	onScoreChange: ((score: Score) => void);
 }
   
 function SubjectRawScore({score, onScoreChange}: SubjectRawScoreProps) {
@@ -84,7 +85,7 @@ interface SubjectRowProps {
 
 function SubjectRow({code, year, score, onScoreChange, onSubjectDelete}: SubjectRowProps) {
 	function handleScoreChange(score: Score) {
-		onScoreChange(code, score);
+		onScoreChange(score, code);
 	}
 
 	function handleSubjectDelete() {
@@ -117,6 +118,9 @@ function SubjectSelector({subjects, year, onSubjectAdd}: SubjectSelectorProps) {
 		if (input) {
 			if (candidate.label.toLowerCase().includes(input.toLowerCase()))
 				return true;
+			else {
+				return false;
+			}
 		} else {
 			// if no input, allow everything
 			return true;
@@ -125,10 +129,10 @@ function SubjectSelector({subjects, year, onSubjectAdd}: SubjectSelectorProps) {
 
 	const options = [];
 	for (const subjectCode of Object.keys(getSubjects(year))) {
-		options.push({value: subjectCode, label: SUBJECTS[subjectCode]});
+		options.push({value: subjectCode, label: SUBJECTS[subjectCode as SubjectCode]});
 	}
 
-	const customStyles = {
+	const customStyles: StylesConfig = {
 		control: (provided: object/*, state: unknown*/) => ({
 			...provided,
 			// background: '#fff',
@@ -221,7 +225,7 @@ export default function SubjectsTable({
 			rows.push(
 				<SubjectRow 
 					key={subjectCode} 
-					code={subjectCode} 
+					code={subjectCode as SubjectCode} 
 					score={Number(score)} 
 					onScoreChange={onScoreChange} 
 					onSubjectDelete={onSubjectDelete}
