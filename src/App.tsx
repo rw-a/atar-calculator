@@ -7,7 +7,7 @@ import Nav from 'react-bootstrap/Nav';
 import NavDropdown from 'react-bootstrap/NavDropdown';
 import Image from 'react-bootstrap/Image';
 
-import { Subjects } from './types';
+import { SubjectCode, Subjects, Score } from './types';
 import { getSubjects } from './modules/data';
 import SubjectsTable from './modules/subjects';
 import ResultsTable from './modules/results';
@@ -81,7 +81,7 @@ export default function Calculator() {
 	const [savedSubjects, setSavedSubjects] = useState(prevSubjects);
 	const [subjects, setSubjects] = useState(prevSubjects);
 
-	function handleScoreChange(subjectCode: string, score: string) {
+	function handleScoreChange(score: Score, subjectCode: SubjectCode) {
 		const newSubjects = {...subjects};
 		newSubjects[subjectCode] = score;
 		setSubjects(newSubjects);
@@ -93,7 +93,7 @@ export default function Calculator() {
 		setSubjects(newSubjects);
 	}
 
-	function handleSubjectDelete(subjectCode: string) {
+	function handleSubjectDelete(subjectCode: SubjectCode) {
 		// delete a subject by making its score undefined
 		// IMPORTANT if anything iterates through the state, it must ignore undefined values
 		const newSubjects = {...subjects};

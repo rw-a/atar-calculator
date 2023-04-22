@@ -16,15 +16,15 @@ export type SubjectCode =
     | "40" | "41" | "42" | "43" | "44" | "45" | "46" | "47" | "48" | "49" 
     | "50" | "51" | "52" | "53" | "54" | "55" | "56" | "136" | "138" | "141"; */
 
-export type SubjectCode = typeof SUBJECTS;
+export type SubjectCode = keyof typeof SUBJECTS;
 
 export type Tabs = "scaling" | "results";
 
 
 
 /* Subjects */
-export type OnScoreChange = ((score: string, code: string) => void) & ((score: string) => void);
-export type OnSubjectDelete = (code: string) => void;
+export type OnScoreChange = ((score: Score, code: SubjectCode) => void) & ((score: Score) => void);
+export type OnSubjectDelete = (code: SubjectCode) => void;
 export type OnSubjectAdd = (selectedOption: {value: string}) => void;
 export type OnSubjectsSave = () => void;
 export type OnClick = () => void;

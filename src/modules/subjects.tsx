@@ -6,7 +6,7 @@ import Image from 'react-bootstrap/Image';
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Tooltip from 'react-bootstrap/Tooltip';
 
-import { Subjects, OnScoreChange, Score, OnSubjectDelete, OnSubjectAdd, OnClick, OnSubjectsSave } from '../types';
+import { Subjects, OnScoreChange, Score, OnSubjectDelete, OnSubjectAdd, OnClick, OnSubjectsSave, SubjectCode } from '../types';
 import { getSubjects } from './data';
 import SUBJECTS from '../data/all_subjects.json';
 
@@ -39,12 +39,12 @@ function SubjectName({name, year}: SubjectNameProps) {
 
 
 interface SubjectRawScoreProps {
-	score: string,
+	score: Score,
 	onScoreChange: OnScoreChange;
 }
   
 function SubjectRawScore({score, onScoreChange}: SubjectRawScoreProps) {
-	function handleScoreChange(event: React.FormEvent<HTMLInputElement> & {target: HTMLInputElement}){
+	function handleScoreChange(event: React.FormEvent<HTMLInputElement> & {target: HTMLInputElement}) {
 		if (!event.target) return;
 
 		if (event.target.value) {
@@ -55,7 +55,7 @@ function SubjectRawScore({score, onScoreChange}: SubjectRawScoreProps) {
 			} else if (score < 0) {
 				score = Math.abs(score);
 			}
-			onScoreChange(String(score));
+			onScoreChange(score);
 		} else {
 			onScoreChange("");  // allow blank values 
 		}
@@ -75,7 +75,7 @@ function SubjectRawScore({score, onScoreChange}: SubjectRawScoreProps) {
 
 
 interface SubjectRowProps {
-	code: string,
+	code: SubjectCode,
 	year: number,
 	score: Score,
 	onScoreChange: OnScoreChange,
@@ -83,7 +83,7 @@ interface SubjectRowProps {
 }
 
 function SubjectRow({code, year, score, onScoreChange, onSubjectDelete}: SubjectRowProps) {
-	function handleScoreChange(score: string) {
+	function handleScoreChange(score: Score) {
 		onScoreChange(code, score);
 	}
 
@@ -216,12 +216,13 @@ export default function SubjectsTable({
 	// generate a row for each subject
 	const rows = [];
 	for (const subjectCode of Object.keys(subjects)) {
-		if (subjects[subjectCode] !== undefined) {
+		const score = subjects[subjectCode];
+		if (score !== undefined) {
 			rows.push(
 				<SubjectRow 
 					key={subjectCode} 
 					code={subjectCode} 
-					score={subjects[subjectCode]} 
+					score={Number(score)} 
 					onScoreChange={onScoreChange} 
 					onSubjectDelete={onSubjectDelete}
 					year={year}
