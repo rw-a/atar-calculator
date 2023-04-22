@@ -10,6 +10,8 @@ import SUBJECTS_2022 from '../data/2022_subjects.json';
 import SCALINGDATA_2022 from '../data/2022_scaling_data.json';
 import ATARDATA_2022 from '../data/2022_atar_data.json';
 
+import { AtarData, ScalingData } from '../types';
+
 
 export function getSubjects(year: number) {
     switch (year) {
@@ -25,7 +27,7 @@ export function getSubjects(year: number) {
     }
 }
 
-export function getScalingData(year: number) {
+export function getScalingData(year: number): ScalingData {
     switch (year) {
         case 2020:
             return SCALINGDATA_2020;
@@ -39,7 +41,7 @@ export function getScalingData(year: number) {
     }
 }
 
-export function getAtarData(year: number) {
+export function getAtarData(year: number): AtarData {
     switch (year) {
         case 2020:
             return ATARDATA_2020;

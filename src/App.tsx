@@ -126,7 +126,7 @@ export default function Calculator() {
 	for (const subjectCode of Object.keys(subjects)) {
 		if (subjects[subjectCode] === undefined) continue;
 		if (Object.keys(subjectsInYear).includes(subjectCode)) {
-			subjectsFiltered[subjectCode] = subjects[subjectCode];
+			subjectsFiltered[subjectCode as SubjectCode] = subjects[subjectCode];
 		}
 	}
 

@@ -1,30 +1,36 @@
 import SUBJECTS from './data/all_subjects.json';
 
-/* App */
-export interface Subjects {
-	[key: string]: string | undefined
-}
 
+/* App */
+export type Tabs = "scaling" | "results";
 export type Score = number | "";
 
-/*
-export type SubjectCode = 
-    "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" 
-    | "10" | "11" | "12" | "13" | "14" | "15" | "16" | "17" | "18" | "19" 
-    | "20" | "21" | "22" | "23" | "24" | "25" | "26" | "27" | "28" | "29" 
-    | "30" | "31" | "32" | "33" | "34" | "35" | "36" | "37" | "38" | "39" 
-    | "40" | "41" | "42" | "43" | "44" | "45" | "46" | "47" | "48" | "49" 
-    | "50" | "51" | "52" | "53" | "54" | "55" | "56" | "136" | "138" | "141"; */
-
 export type SubjectCode = keyof typeof SUBJECTS;
-
-export type Tabs = "scaling" | "results";
-
+export type Subjects = {
+	[key in SubjectCode]: string | undefined
+};
 
 
 /* Subjects */
-export type OnScoreChange = ((score: Score, code: SubjectCode) => void) & ((score: Score) => void);
+export type OnScoreChange = ((score: Score, code: SubjectCode) => void);
 export type OnSubjectDelete = (code: SubjectCode) => void;
 export type OnSubjectAdd = (selectedOption: {value: string}) => void;
 export type OnSubjectsSave = () => void;
 export type OnClick = () => void;
+
+
+/* Results */
+export type SubjectScores = {
+    [key in SubjectCode]?: Score;
+};
+
+export type ScalingData = {
+    [key in SubjectCode]?: {
+        "a": string;
+        "b": string;
+    };
+};
+
+export interface AtarData {
+    [key: string]: number
+}

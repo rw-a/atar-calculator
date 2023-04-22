@@ -6,7 +6,8 @@ import Image from 'react-bootstrap/Image';
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Tooltip from 'react-bootstrap/Tooltip';
 
-import { Subjects, OnScoreChange, Score, OnSubjectDelete, OnSubjectAdd, OnClick, OnSubjectsSave, SubjectCode } from '../types';
+import { Subjects, SubjectCode, Score, 
+	OnScoreChange, OnSubjectDelete, OnSubjectAdd, OnClick, OnSubjectsSave } from '../types';
 import { getSubjects } from './data';
 import SUBJECTS from '../data/all_subjects.json';
 
@@ -109,7 +110,8 @@ interface SubjectSelectorProps {
 function SubjectSelector({subjects, year, onSubjectAdd}: SubjectSelectorProps) {
 	const filterOptions = (candidate: {value: string, label: string}, input: string) => {
 		// remove an option if it has already been added
-		if (Object.keys(subjects).includes(candidate.value) && subjects[candidate.value] !== undefined) {
+		if (Object.keys(subjects).includes(candidate.value) 
+				&& subjects[candidate.value as SubjectCode] !== undefined) {
 			return false;
 		}
 

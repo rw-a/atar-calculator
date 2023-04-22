@@ -7,6 +7,7 @@ import Image from 'react-bootstrap/Image';
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Tooltip from 'react-bootstrap/Tooltip';
 
+import { SubjectCode, Score, SubjectScores } from '../types';
 import { getAtarData, getScalingData, estimateAtarModel } from './data';
 import SUBJECTS from '../data/all_subjects.json';
 
@@ -14,10 +15,10 @@ import helpButtonImg from './../assets/help.svg';
 
 
 interface ResultsRowProps {
-	code: string,
-	rawScore: number,
-	scaledScore: number,
-	teaPotential: number,
+	code: SubjectCode,
+	rawScore: Score,
+	scaledScore: Score,
+	teaPotential: Score,
 }
 
 function ResultsRow({code, rawScore, scaledScore, teaPotential}: ResultsRowProps) {
@@ -31,9 +32,11 @@ function ResultsRow({code, rawScore, scaledScore, teaPotential}: ResultsRowProps
 	);
 }
 
-function calculateTeaFromScaledScores(scaledScores: number[]) {
+function calculateTeaFromScaledScores(scaledScoresAll: Score[]) {
+		const scaledScores = scaledScoresAll.filter((scaledScore) => scaledScore !== "") as number[];
+
 		// calculate the TEA by taking the top 5 scaled scores
-		let tea = 0;
+		let tea: Score = 0;
 		const numSubjects = scaledScores.length;
 		for (let i = 0; i < Math.min(5, numSubjects); i++) {
 			const maxScaledScore = Math.max(...scaledScores);
@@ -87,7 +90,7 @@ function calculateAtarFromTea(tea: number, year: number) {
 	return "99.95";
 }
 
-export function calculateScaledScore(rawScore: number, subjectCode: number, year: number) {
+export function calculateScaledScore(rawScore: Score, subjectCode: SubjectCode, year: number) {
 	const scalingData = getScalingData(year);
 	rawScore = Number(rawScore);
 	const a = Number(scalingData[subjectCode]["a"]);
@@ -95,14 +98,12 @@ export function calculateScaledScore(rawScore: number, subjectCode: number, year
 	return 100 / (1 + Math.exp(-a * (rawScore - b)));
 }
 
-interface SubjectRawScores {
-	[key: string]: number
-}
-
-function mapRawToScaledScores(subjectRawScores: SubjectRawScores, year: number) {
+function mapRawToScaledScores(subjectRawScores: SubjectScores, year: number) {
 	// creates an object with keys being subjectCode and value being scaledScore
 	const subjectScaledScores = {};
-	const subjectCodes = Object.keys(subjectRawScores).filter((subjectCode) => {return (subjectRawScores[subjectCode] !== undefined)});
+	const subjectCodes = Object.keys(subjectRawScores).filter(
+		(subjectCode) => {return (subjectRawScores[subjectCode] !== undefined)}
+	);
 	for (const subjectCode of subjectCodes) {
 		const rawScore = subjectRawScores[subjectCode];
 		if (rawScore.length > 0) { // only scale if there is an actual input. otherwise be blank
@@ -114,15 +115,23 @@ function mapRawToScaledScores(subjectRawScores: SubjectRawScores, year: number) 
 	return subjectScaledScores;
 }
 
-export function calculateTeaFromSubjects(subjectRawScores: SubjectRawScores, year: number) {
+export function calculateTeaFromSubjects(subjectRawScores: SubjectScores, year: number) {
 	const subjectScaledScores = mapRawToScaledScores(subjectRawScores, year);
 	const scaledScores = Object.values(subjectScaledScores);
 	const tea = calculateTeaFromScaledScores(scaledScores);
 	return tea;
 }
+
+
+interface ResultsTableProps {
+	year: number,
+	subjectRawScores: SubjectScores,
+}
   
-export default function ResultsTable({year, subjectRawScores}) {
-	const subjectCodes = Object.keys(subjectRawScores).filter((subjectCode) => {return (subjectRawScores[subjectCode] !== undefined)});
+export default function ResultsTable({year, subjectRawScores}: ResultsTableProps) {
+	const subjectCodes = Object.keys(subjectRawScores).filter(
+		(subjectCode) => {return (subjectRawScores[subjectCode] !== undefined)}
+	);
 	const subjectScaledScores = mapRawToScaledScores(subjectRawScores, year);
 
 	// sort the subjects
