@@ -11,56 +11,56 @@ import SCALINGDATA_2022 from '../data/2022_scaling_data.json';
 import ATARDATA_2022 from '../data/2022_atar_data.json';
 
 
-export function getSubjects(year) {
-    const yearStr = String(year);
-    if (yearStr === "2020") {
-        return SUBJECTS_2020;
-    } else if (yearStr === "2021") {
-        return SUBJECTS_2021;
-    } else if (yearStr === "2022") {
-        return SUBJECTS_2022;
-    } else {
-        console.error(`Invalid year at getSubjects(). Year=${year}`);
+export function getSubjects(year: number) {
+    switch (year) {
+        case 2020:
+            return SUBJECTS_2020;
+        case 2021:
+            return SUBJECTS_2021;
+        case 2022:
+            return SUBJECTS_2022
+        default:
+            console.error(`Invalid year at getSubjects(). Year=${year}`);
     }
 }
 
-export function getScalingData(year) {
-    const yearStr = String(year);
-    if (yearStr === "2020") {
-        return SCALINGDATA_2020;
-    } else if (yearStr === "2021") {
-        return SCALINGDATA_2021;
-    } else if (yearStr === "2022") {
-        return SCALINGDATA_2022;
-    } else {
-        console.error(`Invalid year at getScalingData(). Year=${year}`);
+export function getScalingData(year: number) {
+    switch (year) {
+        case 2020:
+            return SCALINGDATA_2020;
+        case 2021:
+            return SCALINGDATA_2021;
+        case 2022:
+            return SCALINGDATA_2022;
+        default:
+            console.error(`Invalid year at getScalingData(). Year=${year}`);
     }
 }
 
-export function getAtarData(year) {
-    const yearStr = String(year);
-    if (yearStr === "2020") {
-        return ATARDATA_2020;
-    } else if (yearStr === "2021") {
-        return ATARDATA_2021;
-    } else if (yearStr === "2022") {
-        return ATARDATA_2022;
-    } else {
-        console.error(`Invalid year at getAtarData(). Year=${year}`);
+export function getAtarData(year: number) {
+    switch (year) {
+        case 2020:
+            return ATARDATA_2020;
+        case 2021:
+            return ATARDATA_2021;
+        case 2022:
+            return ATARDATA_2022;
+        default:
+            console.error(`Invalid year at getAtarData(). Year=${year}`);
     }
 }
 
 
 /* Fallback models if there is no data near the given raw score. */
-export function estimateAtarModel(tea, year) {
-    const yearStr = String(year);
-    if (yearStr === "2020") {
-        return -0.000154594 * (tea ** 2) + 0.279766 * tea - 0.0000199988;
-    } else if (yearStr === "2021") {
-        return -0.0000971137 * (tea ** 2) + 0.251785 * tea - 0.000701489;
-    } else if (yearStr === "2022") {
-        return -0.0000866052 * (tea ** 2) + 0.247 * tea + 0.00542687;
-    } else {
-        console.error(`Invalid year at predictAtarModel(). Year=${year}`);
+export function estimateAtarModel(tea: number, year: number) {
+    switch (year) {
+        case 2020:
+            return -0.000154594 * (tea ** 2) + 0.279766 * tea - 0.0000199988;
+        case 2021:
+            return -0.0000971137 * (tea ** 2) + 0.251785 * tea - 0.000701489;
+        case 2022:
+            return -0.0000866052 * (tea ** 2) + 0.247 * tea + 0.00542687;
+        default:
+            console.error(`Invalid year at predictAtarModel(). Year=${year}`);
     }
 }

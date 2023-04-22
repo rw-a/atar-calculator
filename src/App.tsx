@@ -1,5 +1,5 @@
 import './App.css';
-import React, {Suspense, useEffect, useState} from 'react';
+import React, {ChangeEvent, Suspense, useEffect, useState} from 'react';
 
 import ToggleButton from 'react-bootstrap/ToggleButton';
 import ToggleButtonGroup from 'react-bootstrap/ToggleButtonGroup';
@@ -7,36 +7,12 @@ import Nav from 'react-bootstrap/Nav';
 import NavDropdown from 'react-bootstrap/NavDropdown';
 
 import { getSubjects } from './modules/data';
-import SubjectsTable from './modules/subjects';
+import SubjectsTable, { Subjects } from './modules/subjects';
 import ResultsTable from './modules/results';
 
 const ScalingGraph = React.lazy(() => import('./modules/scaling'));
 
-
-function setCookie(cookieName, cookieValue, expiryDays) {
-  const date = new Date();
-  date.setTime(date.getTime() + (expiryDays*24*60*60*1000));
-  let expires = "expires="+ date.toUTCString();
-  document.cookie = cookieName + "=" + cookieValue + ";" + expires + ";path=/";
-}
-
-function getCookie(cookieName) {
-	let name = cookieName + "=";
-	let decodedCookie = decodeURIComponent(document.cookie);
-	let cookieArray = decodedCookie.split(';');
-	for(let i = 0; i < cookieArray.length; i++) {
-		let cookie = cookieArray[i];
-		while (cookie.charAt(0) === ' ') {
-			cookie = cookie.substring(1);
-		}
-		if (cookie.indexOf(name) === 0) {
-			return cookie.substring(name.length, cookie.length);
-		}
-	}
-	return "";
-}
-
-function YearSelector({onYearSelect}) {
+function YearSelector({onYearSelect}: {onYearSelect: ChangeEvent}) {
 	return (
 			<ToggleButtonGroup type="radio" name="year" defaultValue={2022} onChange={onYearSelect}>
 				<ToggleButton variant="outline-primary" className="mb-auto button-small" id="year-2020" key={2020} value={2020}>2020</ToggleButton>
@@ -46,7 +22,7 @@ function YearSelector({onYearSelect}) {
 		);
 }
 
-function Section({subjects, year, defaultTab, className}) {
+function Section({subjects, year, defaultTab, className}: SubjectComponent) {
 	const tabTitles = {
 		scaling: "Subject Scaling Graph",
 		results: "Results"
@@ -83,25 +59,26 @@ function Section({subjects, year, defaultTab, className}) {
 	);
 }
 
-export default function Calculator() {
-	const [year, setYear] = useState('2022');
-	// subjects contains only the subjects with data in the selected year, whereas allSubjects has all the subjects, including ones with no data in the selected year 
-	const [subjects, setSubjects] = useState({});
-	const [allSubjects, setAllSubjects] = useState({});
 
-	function handleScoreChange(subjectCode, score) {
+export default function Calculator() {
+	const [year, setYear] = useState(2022);
+	// subjects contains only the subjects with data in the selected year, whereas allSubjects has all the subjects, including ones with no data in the selected year 
+	const [subjects, setSubjects] = useState({} as Subjects);
+	const [allSubjects, setAllSubjects] = useState({} as Subjects);
+
+	function handleScoreChange(subjectCode: string, score: string) {
 		const newSubjects = {...subjects};
 		newSubjects[subjectCode] = score;
 		setSubjects(newSubjects);
 	}
 
-	function handleSubjectAdd(selectedOption) {
+	function handleSubjectAdd(selectedOption: {value: string}) {
 		const newSubjects = {...subjects};
 		newSubjects[selectedOption.value] = "";
 		setSubjects(newSubjects);
 	}
 
-	function handleSubjectDelete(subjectCode) {
+	function handleSubjectDelete(subjectCode: string) {
 		// delete a subject by making its score undefined
 		// IMPORTANT if anything iterates through the state, it must ignore undefined values
 		const newSubjects = {...subjects};
@@ -119,7 +96,7 @@ export default function Calculator() {
 		// REPLACE FORCE UPDATE WITH STATE WHICH TRACKS IF SAVED
 	}
 
-	function handleYearSelect(selectedYear) {
+	function handleYearSelect(selectedYear: number) {
 		// copy subjects to allSubjects
 		const newSubjects = {...subjects};
 		const newAllSubjects = {...allSubjects};
@@ -151,7 +128,6 @@ export default function Calculator() {
 		// Load previously saved state
 		const stateJSON = localStorage.getItem("subjects");
 		if (!stateJSON || stateJSON === JSON.stringify(subjects)) return;
-		// if (!stateJSON) return;
 		const state = JSON.parse(stateJSON);
 		setSubjects(state);
 	});

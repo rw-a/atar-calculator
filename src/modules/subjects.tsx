@@ -1,5 +1,5 @@
 import './../css/subjects.css';
-import React from 'react';
+import React, { ChangeEvent } from 'react';
 import Select from 'react-select';
 
 import Image from 'react-bootstrap/Image';
@@ -9,37 +9,73 @@ import Tooltip from 'react-bootstrap/Tooltip';
 import { getSubjects } from './data';
 import SUBJECTS from '../data/all_subjects.json';
 
-import help_button_img from './../assets/help.svg';
-import save_button_img from './../assets/save.svg';
-import save_button_filled_img from './../assets/save_filled.svg';
+import helpButtonImg from './../assets/help.svg';
+import saveButtonImg from './../assets/save.svg';
+import saveButtonImgFilled from './../assets/save_filled.svg';
 
-function SubjectName({name}) {
+
+export interface Subjects {
+	[key: string]: string | undefined
+}
+
+interface SubjectComponent {
+	name?: string,
+	code?: string,
+	year?: string,
+	score?: string,
+	subjects?: Subjects,
+	saved?: boolean,
+	className?: string,
+	defaultTab?: string,
+	onClick?: (event: React.MouseEvent) => void,
+	onScoreChange?: (code: string, score: string) => void,
+	onSubjectAdd?: ChangeEvent,
+	onSubjectDelete?: (score: string) => void,
+	onSubjectsSave?: () => void,
+}
+
+
+interface SubjectNameProps {
+	name: string,
+	year: string
+}
+
+function SubjectName({name, year}: SubjectNameProps) {
 	return (
 		<span className="me-auto">
 			{name}
 			{
 				(name.endsWith("[Accelerated]")) ? 
-					<OverlayTrigger placement="top" overlay={<Tooltip>If you completed the subject a year early. Uses the scaling of the previous year (i.e. {this.props.year - 1})</Tooltip>}>
-						<Image className='help-icon' src={help_button_img} alt="Subject Tooltip"/>
+					<OverlayTrigger placement="top" overlay={<Tooltip>If you completed the subject a year early. Uses the scaling of the previous year (i.e. {Number(year) - 1})</Tooltip>}>
+						<Image className='help-icon' src={helpButtonImg} alt="Subject Tooltip"/>
 					</OverlayTrigger> : ""
 			}
 		</span>
 	);
-  }
+}
+
+
+interface SubjectRawScoreProps {
+	score: string,
+	onScoreChange: (score: string) => void,
+}
   
-function SubjectRawScore({score, onScoreChange}) {
-	function handleScoreChange(e) {
-		// only allow integer values between 0 and 100
-		let score = Math.round(e.target.value);
-		if (score > 100) {
-			return;
-		} else if (score < 0) {
-			score = Math.abs(score);
+function SubjectRawScore({score, onScoreChange}: SubjectRawScoreProps) {
+	function handleScoreChange(event: React.FormEvent<HTMLInputElement> & {target: HTMLInputElement}){
+		if (!event.target) return;
+
+		if (event.target.value) {
+			// only allow integer values between 0 and 100
+			let score = Math.round(Number(event.target.value));
+			if (score > 100) {
+				return;
+			} else if (score < 0) {
+				score = Math.abs(score);
+			}
+			onScoreChange(String(score));
+		} else {
+			onScoreChange("");  // allow blank values 
 		}
-		if (e.target.value.length < 1) {
-			score = "";  // allow blank values 
-		}
-		onScoreChange(String(score));
 	}
 
 	return (
@@ -54,14 +90,14 @@ function SubjectRawScore({score, onScoreChange}) {
 	);
 }
 
-function DeleteSubject({onClick}) {
+function DeleteSubject({onClick}: SubjectComponent) {
 	return (
 		<span className="DeleteSubject" onClick={onClick}></span>
 	);
 }
 
 function SubjectRow({code, year, score, onScoreChange, onSubjectDelete}) {
-	function handleScoreChange(score) {
+	function handleScoreChange(score: string) {
 		onScoreChange(code, score);
 	}
 
@@ -78,7 +114,7 @@ function SubjectRow({code, year, score, onScoreChange, onSubjectDelete}) {
 	);
 }
 
-function SubjectSelector({subjects, year, onSubjectAdd}) {
+function SubjectSelector({subjects, year, onSubjectAdd}: SubjectComponent) {
 	const filterOptions = (candidate, input) => {
 		// remove an option if it has already been added
 		if (Object.keys(subjects).includes(candidate.value) && subjects[candidate.value] !== undefined) {
@@ -154,19 +190,19 @@ function SubjectSelector({subjects, year, onSubjectAdd}) {
 	);
 }
 
-function SaveButton({saved, onClick, className}) {
-	let img_src;
+function SaveButton({saved, onClick, className}: SubjectComponent) {
+	let imgSrc;
 	if (saved) {
-		img_src = save_button_filled_img;
+		imgSrc = saveButtonImgFilled;
 	} else {
-		img_src = save_button_img;
+		imgSrc = saveButtonImg;
 	}
 	return (
-		<img src={img_src} id="save_img" title="Save Subjects" alt="Save Subjects" onClick={onClick} className={className}></img>
+		<img src={imgSrc} id="save_img" title="Save Subjects" alt="Save Subjects" onClick={onClick} className={className}></img>
 	);
 }
 
-export default function SubjectsTable({subjects, year, saved, className, onScoreChange, onSubjectAdd, onSubjectsSave, onSubjectDelete}) {
+export default function SubjectsTable({subjects, year, saved, className, onScoreChange, onSubjectAdd, onSubjectsSave, onSubjectDelete}: SubjectComponent) {
 	// generate a row for each subject
 	const rows = [];
 	for (const subjectCode of Object.keys(subjects)) {
