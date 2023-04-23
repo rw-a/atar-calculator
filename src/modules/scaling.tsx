@@ -2,10 +2,10 @@ import './../css/scaling.css';
 import React from 'react';
 import JXG, { COORDS_BY_SCREEN } from 'jsxgraph';
 
-import { calculateScaledScore } from './results';
+import { calculateScaledScore } from '../utility/atar_calculations';
 
 import SUBJECTS from '../data/all_subjects.json';
-import { getScalingData } from './data';
+import { getScalingData } from '../utility/data';
   
 const COLORS = [
   'steelblue',

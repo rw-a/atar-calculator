@@ -8,7 +8,7 @@ import Tooltip from 'react-bootstrap/Tooltip';
 
 import { Subjects, SubjectCode, Score, 
 	OnScoreChange, OnSubjectDelete, OnSubjectAdd, OnClick, OnSubjectsSave } from '../types';
-import { getSubjects } from './data';
+import { getSubjects } from '../utility/data';
 import SUBJECTS from '../data/all_subjects.json';
 
 import helpButtonImg from './../assets/help.svg';
