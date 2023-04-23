@@ -67,5 +67,6 @@ export function estimateAtarModel(tea: number, year: number) {
             return -0.0000866052 * (tea ** 2) + 0.247 * tea + 0.00542687;
         default:
             console.error(`Invalid year at predictAtarModel(). Year=${year}`);
+            return 0;
     }
 }

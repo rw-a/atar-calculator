@@ -32,7 +32,7 @@ function ResultsRow({code, rawScore, scaledScore, teaPotential}: ResultsRowProps
 	);
 }
 
-function calculateTeaFromScaledScores(scaledScoresAll: Score[]) {
+function calculateTeaFromScaledScores(scaledScoresAll: Score[]): number {
 		const scaledScores = scaledScoresAll.filter((scaledScore) => scaledScore !== "") as number[];
 
 		// calculate the TEA by taking the top 5 scaled scores
@@ -51,7 +51,7 @@ function calculateTeaFromScaledScores(scaledScoresAll: Score[]) {
 		return tea;
 }
 
-function calculateAtarFromTea(tea: number, year: number) {
+function calculateAtarFromTea(tea: number, year: number): string {
 	// calculate ATAR using TEA
 	const atarData = getAtarData(year);
 	const teaList = Object.keys(atarData);     // assumes that ATARDATA is already sorted in ascending TEA order
@@ -70,13 +70,14 @@ function calculateAtarFromTea(tea: number, year: number) {
 					return `<${maxATAR}`;
 				}
 			} else {
-				const previousTEA = Number(teaList[i - 1]);
+				const previousTEA = teaList[i - 1];
 				const minATAR = atarData[previousTEA].toFixed(2);
 				if (minATAR === maxATAR || minATAR === "99.95") {
 					return minATAR;
 				} else {
-					// if the conservative method is not precise enough, try using the estimated atar to give a more precise answer
-					if (maxATAR - minATAR > 0.5) {
+					// if the conservative method is not precise enough, 
+					// try using the estimated atar to give a more precise answer
+					if (Number(maxATAR) - Number(minATAR) > 0.5) {
 						const estimatedAtar = (Math.round(estimateAtarModel(tea, year) * 20) / 20).toFixed(2);
 						if (estimatedAtar >= minATAR && estimatedAtar <= maxATAR) {
 							return `~${estimatedAtar}`;
@@ -90,9 +91,8 @@ function calculateAtarFromTea(tea: number, year: number) {
 	return "99.95";
 }
 
-export function calculateScaledScore(rawScore: Score, subjectCode: SubjectCode, year: number) {
+export function calculateScaledScore(rawScore: number, subjectCode: SubjectCode, year: number) {
 	const scalingData = getScalingData(year);
-	rawScore = Number(rawScore);
 	const a = Number(scalingData[subjectCode]["a"]);
 	const b = Number(scalingData[subjectCode]["b"]);
 	return 100 / (1 + Math.exp(-a * (rawScore - b)));
@@ -102,11 +102,11 @@ function mapRawToScaledScores(subjectRawScores: SubjectScores, year: number) {
 	// creates an object with keys being subjectCode and value being scaledScore
 	const subjectScaledScores = {};
 	const subjectCodes = Object.keys(subjectRawScores).filter(
-		(subjectCode) => {return (subjectRawScores[subjectCode] !== undefined)}
-	);
+		(subjectCode) => {return (subjectRawScores[subjectCode as SubjectCode] !== undefined)}
+	) as SubjectCode[];
 	for (const subjectCode of subjectCodes) {
 		const rawScore = subjectRawScores[subjectCode];
-		if (rawScore.length > 0) { // only scale if there is an actual input. otherwise be blank
+		if (rawScore || rawScore === 0) { // only scale if there is an actual input. otherwise be blank
 			subjectScaledScores[subjectCode] = calculateScaledScore(rawScore, subjectCode, year);
 		} else {
 			subjectScaledScores[subjectCode] = "";
