@@ -1,5 +1,4 @@
 import './../css/results.css';
-import React from 'react';
 
 import Stack from 'react-bootstrap/Stack';
 import Table from 'react-bootstrap/Table';
@@ -7,27 +6,61 @@ import Image from 'react-bootstrap/Image';
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Tooltip from 'react-bootstrap/Tooltip';
 
-import { SubjectCode, Subjects } from '../types';
-import { mapRawToScaledScores, calculateScaledScore, calculateTeaFromScaledScores, calculateAtarFromTea } from '../utility/atar_calculations';
+import { SubjectCode, Subjects, Score } from '../types';
+import { mapRawToScaledScores, calculateScaledScore, 
+	calculateTeaFromScaledScores, calculateAtarFromTea } from '../utility/atar_calculations';
 import SUBJECTS from '../data/all_subjects.json';
 
 import helpButtonImg from './../assets/help.svg';
 
 
+const NUM_SUBJECTS_IN_TEA = 5;
+
+
 interface ResultsRowProps {
 	code: SubjectCode | "",			// union allows for placeholder row
-	rawScore: string,
-	scaledScore: string,
-	teaPotential: string,
+	rawScore: Score | "‎",
+	scaledScore: Score,
+	teaPotential: Score,
 }
 
 function ResultsRow({code, rawScore, scaledScore, teaPotential}: ResultsRowProps) {
+	let subjectName: string;
+	if (code === "") {
+		subjectName = "";
+	} else {
+		subjectName = SUBJECTS[code];
+	}
+
+	let rawScoreDisplay: string;
+	if (rawScore === "") {
+		rawScoreDisplay = "";
+	} else if (rawScore === "‎") {
+		rawScoreDisplay = "‎";
+	} else {
+		rawScoreDisplay = rawScore.toFixed(2);
+	}
+
+	let scaledScoreDisplay: string;
+	if (scaledScore === "") {
+		scaledScoreDisplay = "";
+	} else {
+		scaledScoreDisplay = scaledScore.toFixed(2);
+	}
+
+	let teaPotentialDisplay: string;
+	if (teaPotential === "") {
+		teaPotentialDisplay = "";
+	} else {
+		teaPotentialDisplay = teaPotential.toFixed(2);
+	}
+
 	return(
 		<tr>
-			<td>{SUBJECTS[code]}</td>
-			<td className='text-center'>{rawScore}</td>
-			<td className='text-center'>{scaledScore}</td>
-			<td className='text-center'>{teaPotential}</td>
+			<td>{subjectName}</td>
+			<td className='text-center'>{rawScoreDisplay}</td>
+			<td className='text-center'>{scaledScoreDisplay}</td>
+			<td className='text-center'>{teaPotentialDisplay}</td>
 		</tr>
 	);
 }
@@ -51,25 +84,29 @@ export default function ResultsTable({year, subjects}: ResultsTableProps) {
 	// generate the rows of the table
 	const rows = [];
 	for (const [subjectIndex, subjectCode] of subjectCodes.entries()) {
-		let rawScore = subjects[subjectCode];
-		let scaledScore;
-		let teaPotential;
+		const rawScore = subjects[subjectCode];
+		let scaledScore: Score;
+		let teaPotential: Score;
 
 		if (rawScore === "") {
 			scaledScore = "";
 			teaPotential = "";
 		} else {
-			rawScore = Number(rawScore);
-			scaledScore = subjectScaledScores[subjectCode].toFixed(2);
+			scaledScore = subjectScaledScores[subjectCode];
 			if (rawScore < 100) {
 				// tea potential is how much the scaled score could increase if your raw score increased by 1
-				teaPotential = (calculateScaledScore(rawScore + 1, subjectCode, year) - scaledScore).toFixed(2);
-				if (subjectIndex > 4) {
+				teaPotential = calculateScaledScore(rawScore + 1, subjectCode, year) - Number(scaledScore);
+				if (subjectIndex > NUM_SUBJECTS_IN_TEA - 1) {
 					const newScaledScore = calculateScaledScore(rawScore + 1, subjectCode, year);
-					if (newScaledScore < subjectScaledScores[subjectCodes[4]]) {
-						teaPotential = 0;	// if the new scaled score is less than the scaled score of the 5th subject, it still wouldn't increase TEA
+					const fifthSubjectScaledScore = Number(subjectScaledScores[subjectCodes[NUM_SUBJECTS_IN_TEA - 1]]);
+					if (newScaledScore < fifthSubjectScaledScore) {
+						// if the new scaled score is less than the scaled score of the 5th subject
+						// then it still wouldn't increase TEA
+						teaPotential = 0;	
 					} else {
-						teaPotential = (newScaledScore - subjectScaledScores[subjectCodes[4]]).toFixed(2);	// how much more the TEA would be than the 5th subject (since 5th is already contributing, must find difference)
+						// how much more the TEA would be than the 5th subject 
+						// since 5th is already contributing, must find difference
+						teaPotential = newScaledScore - fifthSubjectScaledScore;
 					}
 					
 				}
@@ -79,7 +116,13 @@ export default function ResultsTable({year, subjects}: ResultsTableProps) {
 		}
 
 		rows.push(
-			<ResultsRow key={subjectCode} code={subjectCode} rawScore={rawScore} scaledScore={scaledScore} teaPotential={teaPotential}/>
+			<ResultsRow 
+				key={subjectCode} 
+				code={subjectCode} 
+				rawScore={rawScore} 
+				scaledScore={scaledScore} 
+				teaPotential={teaPotential}
+			/>
 		);
 	}
 	// if no subjects added, add blank boxes as placeholders
@@ -99,7 +142,9 @@ export default function ResultsTable({year, subjects}: ResultsTableProps) {
 			<Stack direction="horizontal" className="justify-content-around">
 				<div className='text-center'>
 					<p className='fs-18px'>Estimated TEA
-						<OverlayTrigger placement="top" overlay={<Tooltip>The sum of your top 5 scaled scores.</Tooltip>}>
+						<OverlayTrigger placement="top" overlay={
+								<Tooltip>The sum of your top 5 scaled scores.</Tooltip>
+							}>
 							<Image className='help-icon' src={helpButtonImg} alt="Estimated TEA Tooltip"/>
 						</OverlayTrigger>
 					</p>
@@ -117,7 +162,9 @@ export default function ResultsTable({year, subjects}: ResultsTableProps) {
 						<th>Raw Score</th>
 						<th>Scaled Score</th>
 						<th>TEA Potential 
-							<OverlayTrigger placement="top" overlay={<Tooltip>How much your TEA would increase if the raw score increased by 1.</Tooltip>}>
+							<OverlayTrigger placement="top" overlay={
+									<Tooltip>How much your TEA would increase if the raw score increased by 1.</Tooltip>
+								}>
 								<Image className='help-icon' src={helpButtonImg} alt="TEA Potential Tooltip"/>
 							</OverlayTrigger>
 						</th>
