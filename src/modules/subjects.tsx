@@ -110,8 +110,7 @@ interface SubjectSelectorProps {
 function SubjectSelector({subjects, year, onSubjectAdd}: SubjectSelectorProps) {
 	const filterOptions = (candidate: {value: string, label: string}, input: string) => {
 		// remove an option if it has already been added
-		if (Object.keys(subjects).includes(candidate.value) 
-				&& subjects[candidate.value as SubjectCode] !== undefined) {
+		if (Object.keys(subjects).includes(candidate.value)) {
 			return false;
 		}
 
@@ -221,19 +220,16 @@ export default function SubjectsTable({
 	// generate a row for each subject
 	const rows = [];
 	for (const subjectCode of Object.keys(subjects)) {
-		const score = subjects[subjectCode];
-		if (score !== undefined) {
-			rows.push(
-				<SubjectRow 
-					key={subjectCode} 
-					code={subjectCode as SubjectCode} 
-					score={Number(score)} 
-					onScoreChange={onScoreChange} 
-					onSubjectDelete={onSubjectDelete}
-					year={year}
-				/>
-			);
-		}
+		rows.push(
+			<SubjectRow 
+				key={subjectCode} 
+				code={subjectCode as SubjectCode} 
+				score={subjects[subjectCode as SubjectCode]} 
+				onScoreChange={onScoreChange} 
+				onSubjectDelete={onSubjectDelete}
+				year={year}
+			/>
+		);
 	}
 
 	return (

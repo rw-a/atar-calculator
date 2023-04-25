@@ -7,7 +7,7 @@ import Image from 'react-bootstrap/Image';
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Tooltip from 'react-bootstrap/Tooltip';
 
-import { SubjectCode, Score, SubjectScores } from '../types';
+import { SubjectCode, Subjects } from '../types';
 import { mapRawToScaledScores, calculateScaledScore, calculateTeaFromScaledScores, calculateAtarFromTea } from '../utility/atar_calculations';
 import SUBJECTS from '../data/all_subjects.json';
 
@@ -15,10 +15,10 @@ import helpButtonImg from './../assets/help.svg';
 
 
 interface ResultsRowProps {
-	code: SubjectCode,
-	rawScore: Score,
-	scaledScore: Score,
-	teaPotential: Score,
+	code: SubjectCode | "",			// union allows for placeholder row
+	rawScore: string,
+	scaledScore: string,
+	teaPotential: string,
 }
 
 function ResultsRow({code, rawScore, scaledScore, teaPotential}: ResultsRowProps) {
@@ -35,25 +35,23 @@ function ResultsRow({code, rawScore, scaledScore, teaPotential}: ResultsRowProps
 
 interface ResultsTableProps {
 	year: number,
-	subjectRawScores: SubjectScores,
+	subjects: Subjects,
 }
   
-export default function ResultsTable({year, subjectRawScores}: ResultsTableProps) {
-	const subjectCodes = Object.keys(subjectRawScores).filter(
-		(subjectCode) => {return (subjectRawScores[subjectCode] !== undefined)}
-	);
-	const subjectScaledScores = mapRawToScaledScores(subjectRawScores, year);
+export default function ResultsTable({year, subjects}: ResultsTableProps) {
+	const subjectCodes = Object.keys(subjects) as SubjectCode[];
+	const subjectScaledScores = mapRawToScaledScores(subjects, year);
 
 	// sort the subjects
 	subjectCodes.sort((a, b) => {
 		// by scaled score
-		return (subjectScaledScores[b] - subjectScaledScores[a]);
+		return (Number(subjectScaledScores[b]) - Number(subjectScaledScores[a]));
 	});
 
 	// generate the rows of the table
 	const rows = [];
-	for (let [subjectIndex, subjectCode] of subjectCodes.entries()) {
-		let rawScore = subjectRawScores[subjectCode];
+	for (const [subjectIndex, subjectCode] of subjectCodes.entries()) {
+		let rawScore = subjects[subjectCode];
 		let scaledScore;
 		let teaPotential;
 

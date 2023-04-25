@@ -1,4 +1,4 @@
-import { Score, SubjectCode, SubjectScores } from '../types';
+import { Score, Subjects, SubjectCode, SubjectScores } from '../types';
 import { getAtarData, getScalingData, estimateAtarModel } from '../utility/data';
 
 export function calculateTeaFromScaledScores(scaledScoresAll: Score[]): number {
@@ -67,14 +67,14 @@ export function calculateScaledScore(rawScore: number, subjectCode: SubjectCode,
     return 100 / (1 + Math.exp(-a * (rawScore - b)));
     }
 
-export function mapRawToScaledScores(subjectRawScores: SubjectScores, year: number) {
+export function mapRawToScaledScores(subjects: Subjects, year: number): SubjectScores {
     // creates an object with keys being subjectCode and value being scaledScore
-    const subjectScaledScores = {};
-    const subjectCodes = Object.keys(subjectRawScores).filter(
-        (subjectCode) => {return (subjectRawScores[subjectCode as SubjectCode] !== undefined)}
+    const subjectScaledScores = {} as SubjectScores;
+    const subjectCodes = Object.keys(subjects).filter(
+        (subjectCode) => {return (subjects[subjectCode as SubjectCode] !== undefined)}
     ) as SubjectCode[];
     for (const subjectCode of subjectCodes) {
-        const rawScore = subjectRawScores[subjectCode];
+        const rawScore = subjects[subjectCode];
         if (rawScore || rawScore === 0) { // only scale if there is an actual input. otherwise be blank
             subjectScaledScores[subjectCode] = calculateScaledScore(rawScore, subjectCode, year);
         } else {

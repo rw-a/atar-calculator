@@ -7,7 +7,7 @@ export type Score = number | "";
 
 export type SubjectCode = keyof typeof SUBJECTS;
 export type Subjects = {
-	[key in SubjectCode]: string | undefined
+	[key in SubjectCode]: string
 };
 
 
@@ -21,11 +21,11 @@ export type OnClick = () => void;
 
 /* Results */
 export type SubjectScores = {
-    [key in SubjectCode]?: Score;
+    [key in SubjectCode]: Score;
 };
 
 export type ScalingData = {
-    [key in SubjectCode]?: {
+    [key in SubjectCode]: {
         "a": string;
         "b": string;
     };

@@ -52,7 +52,7 @@ function Section({subjects, year, defaultTab, className}: SectionProps) {
 			<Suspense fallback={<div>Loading...</div>}>
 				<ScalingGraph subjects={subjects} year={year}/>
 			</Suspense>,
-		results: <ResultsTable subjectRawScores={subjects} year={year}/>
+		results: <ResultsTable subjects={subjects} year={year}/>
 	};
 	
 	function handleOnSelect(selectedTab: string | null) {
@@ -100,10 +100,8 @@ export default function Calculator() {
 	}
 
 	function handleSubjectDelete(subjectCode: SubjectCode) {
-		// delete a subject by making its score undefined
-		// IMPORTANT if anything iterates through the state, it must ignore undefined values
 		const newSubjects = {...subjects};
-		newSubjects[subjectCode] = undefined;
+		delete newSubjects[subjectCode];
 		setSubjects(newSubjects);
 	}
 
@@ -124,7 +122,6 @@ export default function Calculator() {
 	const subjectsFiltered = {} as Subjects;
 	const subjectsInYear = getSubjects(year);
 	for (const subjectCode of Object.keys(subjects)) {
-		if (subjects[subjectCode] === undefined) continue;
 		if (Object.keys(subjectsInYear).includes(subjectCode)) {
 			subjectsFiltered[subjectCode as SubjectCode] = subjects[subjectCode];
 		}
