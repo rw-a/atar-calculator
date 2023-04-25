@@ -23,7 +23,7 @@ export function getSubjects(year: number) {
             return SUBJECTS_2022
         default:
             console.error(`Invalid year at getSubjects(). Year=${year}`);
-            return {};
+            return {} as never;
     }
 }
 
@@ -37,7 +37,7 @@ export function getScalingData(year: number): ScalingData {
             return SCALINGDATA_2022;
         default:
             console.error(`Invalid year at getScalingData(). Year=${year}`);
-            return {};
+            return {} as never;
     }
 }
 
@@ -51,7 +51,7 @@ export function getAtarData(year: number): AtarData {
             return ATARDATA_2022;
         default:
             console.error(`Invalid year at getAtarData(). Year=${year}`);
-            return {};
+            return {} as never;
     }
 }
 
@@ -67,6 +67,6 @@ export function estimateAtarModel(tea: number, year: number) {
             return -0.0000866052 * (tea ** 2) + 0.247 * tea + 0.00542687;
         default:
             console.error(`Invalid year at predictAtarModel(). Year=${year}`);
-            return 0;
+            return 0 as never;
     }
 }

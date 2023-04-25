@@ -93,9 +93,10 @@ export default function Calculator() {
 		setSubjects(newSubjects);
 	}
 
-	function handleSubjectAdd(selectedOption: {value: string}) {
+	function handleSubjectAdd(selectedOption: unknown) {
+		const option = selectedOption as {value: SubjectCode};
 		const newSubjects = {...subjects};
-		newSubjects[selectedOption.value] = "";
+		newSubjects[option.value] = "";
 		setSubjects(newSubjects);
 	}
 
