@@ -140,13 +140,16 @@ export default function ScalingGraph({ subjects, year }: ScalingGraphProps) {
 
     function clearBoard() {
         // Removes every object in the board but preserves the objects required to render a blank board
+
+        points.current = [];
+        pointsWithLabels.current = [];
+
         const objectsList = [...board.current.objectsList] as JXGObject[];
         for (let index = objectsList.length - 1; index >= 0; index -= 1) {
             const object = objectsList[index];
-            if (object.elType === "line" || object.elType === "curve" 
-            || (object.elType === "text" && object.htmlStr.length > 3 && object.visProp.cssclass !== CSS_CLASS_NAMES.MOUSE_COORDINATE_LABEL) 
-            || (object.elType === "point" && object.Xjc !== null) || !originalObjects.current.includes(object))
+            if (Object.values(CSS_CLASS_NAMES).includes(object.visProp.cssclass as string)) {
                 board.current.removeObject(object.id);
+            }
         }
     }
 
@@ -443,19 +446,19 @@ export default function ScalingGraph({ subjects, year }: ScalingGraphProps) {
             prevYear.current = year;
             clearBoard();
             if (subjectCodes.length > 0) plotScalingFunctions();
+        } else {
+            clearPoints();
         }
         if (prevSubjectsHaveChanged) {
             clearLegend();
             if (subjectCodes.length > 0) createLegend();
         }
     
-        clearPoints();
         plotPoints();
         autoHideSubjectLabels();
-    
+        
         board.current.unsuspendUpdate();
         legend.current.unsuspendUpdate();
-        console.log(board.current.objectsList);
     });
 
     const maxWidth = document.querySelector('.section-inner').getBoundingClientRect().width;
