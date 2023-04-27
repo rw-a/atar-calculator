@@ -196,7 +196,7 @@ interface SaveButtonProps {
 function SaveButton({saved, onClick, className}: SaveButtonProps) {
 	const imgSrc = (saved) ? saveButtonImgFilled : saveButtonImg;
 	return (
-		<img src={imgSrc} id="save_img" title="Save Subjects" alt="Save Subjects" onClick={onClick} 
+		<img src={imgSrc} id="save_img" title={(saved) ? "Subjects Saved!" : "Save Subjects"} alt="Save Subjects" onClick={onClick} 
 			className={className}></img>
 	);
 }
