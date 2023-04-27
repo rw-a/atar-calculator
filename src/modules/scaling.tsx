@@ -136,53 +136,7 @@ export default function ScalingGraph({ subjects, year }: ScalingGraphProps) {
 
         originalObjects.current = [...board.current.objectsList as JXGObject[]];
         prevSubjects.current = [];
-    }, []);    
-
-    function clearBoard() {
-        // Removes every object in the board but preserves the objects required to render a blank board
-
-        points.current = [];
-        pointsWithLabels.current = [];
-
-        const objectsList = [...board.current.objectsList] as JXGObject[];
-        for (let index = objectsList.length - 1; index >= 0; index -= 1) {
-            const object = objectsList[index];
-            if (Object.values(CSS_CLASS_NAMES).includes(object.visProp.cssclass as string)) {
-                board.current.removeObject(object.id);
-            }
-        }
-    }
-
-    function plotScalingFunctions() {
-        // Plots the scaling function for each subject
-
-        for (const [subjectIndex, subjectCode] of subjectCodes.entries()) {  // entries on a list does enumerate
-            // create function
-            const scalingData = getScalingData(year);
-            const a = scalingData[subjectCode]["a"];
-            const b = scalingData[subjectCode]["b"];
-
-            const subjectFunction = board.current.create('functiongraph', [function (x: number) {
-                return (100 / (1 + Math.exp(-a * (x - b))));}, 0, 100], 
-                { 
-                    strokeColor: COLORS[subjectIndex % COLORS.length],
-                    cssClass: CSS_CLASS_NAMES.SUBJECT_FUNCTION
-                }
-            );   // modulus ensures colours repeat if exhausted
-
-            subjectFunction.hasPoint = function (x, y) { return false; }; // disable highlighting
-        }
-    }
-
-    function clearLegend() {
-        // Deletes every object in the legend board
-
-        const legendObjectsList = [...legend.current.objectsList] as JXGObject[];
-        for (let index = legendObjectsList.length - 1; index >= 0; index -= 1) {
-            const object = legendObjectsList[index];
-            legend.current.removeObject(object.id);
-        }
-    }
+    }, []);
 
     function createLegend() {
         // Adds the subject names to the legend board and resizes the legend board size to fit
@@ -197,35 +151,6 @@ export default function ScalingGraph({ subjects, year }: ScalingGraphProps) {
         const legendHeight = newLegend.lines.at(-1).getTextAnchor().scrCoords.at(-1) + rowHeight + maxWidth / 30;
         document.getElementById('jsxlegend').style.top = `${graphHeight - legendHeight}px`;
         legend.current.resizeContainer(LEGEND_WIDTH, legendHeight, false, true);
-    }
-
-    function plotPoints() {
-        // Plots the points (raw score) onto each subject scaling function
-
-        // determine whether to show the points, at the current zoom level
-        const boundingBox = board.current.getBoundingBox();
-        const zoomFactor = (BOUNDING_BOX[2] - BOUNDING_BOX[0]) / (boundingBox[2] - boundingBox[0]);
-        const showLabels = (zoomFactor >= SUBJECT_LABELS_ZOOM_THRESHOLD);
-
-        for (const [subjectCode, rawScore] of Object.entries(subjects)) {
-            // plot raw score input
-            if (rawScore) {
-                const scaledScore = calculateScaledScore(rawScore, subjectCode as SubjectCode, year);
-
-                const point = board.current.create('point', [rawScore, scaledScore], { 
-                    face: "cross", 
-                    name: SUBJECTS[subjectCode as SubjectCode], 
-                    withLabel: true, 
-                    cssClass: CSS_CLASS_NAMES.SUBJECT_SCORE 
-                }) as JXG.Point;
-                point.hasPoint = function () { return false; }; // disable highlighting
-                points.current.push(point);
-                
-                // Create subject name label
-                point.label.setAttribute({ offset: [10, -4], cssClass: CSS_CLASS_NAMES.SUBJECT_NAME });
-                if (!showLabels) point.setAttribute({ withLabel: false });
-            }
-        }
     }
 
     function addZoomLevelListeners() {
@@ -420,6 +345,21 @@ export default function ScalingGraph({ subjects, year }: ScalingGraphProps) {
         board.current.on('pointermove', updateMouseCoordinates);
     }
 
+    function clearBoard() {
+        // Removes every object in the board but preserves the objects required to render a blank board
+
+        points.current = [];
+        pointsWithLabels.current = [];
+
+        const objectsList = [...board.current.objectsList] as JXGObject[];
+        for (let index = objectsList.length - 1; index >= 0; index -= 1) {
+            const object = objectsList[index];
+            if (Object.values(CSS_CLASS_NAMES).includes(object.visProp.cssclass as string)) {
+                board.current.removeObject(object.id);
+            }
+        }
+    }
+
     function clearPoints() {
         // Clear the points which show the raw score but not the functions. Useful if only the raw score changes and not the subjects
 
@@ -431,6 +371,66 @@ export default function ScalingGraph({ subjects, year }: ScalingGraphProps) {
             const object = objectsList[index];
             if ((object.visProp.cssclass === CSS_CLASS_NAMES.SUBJECT_SCORE)) {
                 board.current.removeObject(object.id);
+            }
+        }
+    }
+
+    function clearLegend() {
+        // Deletes every object in the legend board
+
+        const legendObjectsList = [...legend.current.objectsList] as JXGObject[];
+        for (let index = legendObjectsList.length - 1; index >= 0; index -= 1) {
+            const object = legendObjectsList[index];
+            legend.current.removeObject(object.id);
+        }
+    }
+
+    function plotScalingFunctions() {
+        // Plots the scaling function for each subject
+
+        for (const [subjectIndex, subjectCode] of subjectCodes.entries()) {  // entries on a list does enumerate
+            // create function
+            const scalingData = getScalingData(year);
+            const a = scalingData[subjectCode]["a"];
+            const b = scalingData[subjectCode]["b"];
+
+            const subjectFunction = board.current.create('functiongraph', [function (x: number) {
+                return (100 / (1 + Math.exp(-a * (x - b))));}, 0, 100], 
+                { 
+                    strokeColor: COLORS[subjectIndex % COLORS.length],
+                    cssClass: CSS_CLASS_NAMES.SUBJECT_FUNCTION
+                }
+            );   // modulus ensures colours repeat if exhausted
+
+            subjectFunction.hasPoint = function (x, y) { return false; }; // disable highlighting
+        }
+    }
+
+    function plotPoints() {
+        // Plots the points (raw score) onto each subject scaling function
+
+        // determine whether to show the points, at the current zoom level
+        const boundingBox = board.current.getBoundingBox();
+        const zoomFactor = (BOUNDING_BOX[2] - BOUNDING_BOX[0]) / (boundingBox[2] - boundingBox[0]);
+        const showLabels = (zoomFactor >= SUBJECT_LABELS_ZOOM_THRESHOLD);
+
+        for (const [subjectCode, rawScore] of Object.entries(subjects)) {
+            // plot raw score input
+            if (rawScore) {
+                const scaledScore = calculateScaledScore(rawScore, subjectCode as SubjectCode, year);
+
+                const point = board.current.create('point', [rawScore, scaledScore], { 
+                    face: "cross", 
+                    name: SUBJECTS[subjectCode as SubjectCode], 
+                    withLabel: true, 
+                    cssClass: CSS_CLASS_NAMES.SUBJECT_SCORE 
+                }) as JXG.Point;
+                point.hasPoint = function () { return false; }; // disable highlighting
+                points.current.push(point);
+                
+                // Create subject name label
+                point.label.setAttribute({ offset: [10, -4], cssClass: CSS_CLASS_NAMES.SUBJECT_NAME });
+                if (!showLabels) point.setAttribute({ withLabel: false });
             }
         }
     }
