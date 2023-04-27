@@ -43,6 +43,8 @@ export default function ScalingGraph({ subjects, year }: ScalingGraphProps) {
     const legend = useRef({} as JXG.Board);
 
     useEffect(() => {
+        // Initialise the board and legend AFTER the initial render
+
         board.current = JXG.JSXGraph.initBoard("jsxgraph", {
             axis: true,
             maxFrameRate: 30,
@@ -123,6 +125,7 @@ export default function ScalingGraph({ subjects, year }: ScalingGraphProps) {
     const prevYear = useRef(2022) as {current: number};
 
     function clearBoard() {
+        // Removes every object in the board but preserves the objects required to render a blank board
         const objectsList = [...board.current.objectsList] as JXGObject[];
         for (let index = objectsList.length - 1; index >= 0; index -= 1) {
             const object = objectsList[index];
@@ -134,6 +137,8 @@ export default function ScalingGraph({ subjects, year }: ScalingGraphProps) {
     }
 
     function plotScalingFunctions() {
+        // Plots the scaling function for each subject
+
         for (const [subjectIndex, subjectCode] of prevSubjects.current.entries()) {  // entries on a list does enumerate
             // create function
             const scalingData = getScalingData(year);
@@ -149,6 +154,8 @@ export default function ScalingGraph({ subjects, year }: ScalingGraphProps) {
     }
 
     function clearLegend() {
+        // Deletes every object in the legend board
+
         const legendObjectsList = [...legend.current.objectsList] as JXGObject[];
         for (let index = legendObjectsList.length - 1; index >= 0; index -= 1) {
             const object = legendObjectsList[index];
@@ -157,6 +164,8 @@ export default function ScalingGraph({ subjects, year }: ScalingGraphProps) {
     }
 
     function createLegend() {
+        // Adds the subject names to the legend board and resizes the legend board size to fit
+
         const subjectsNames = prevSubjects.current.map((subjectCode: SubjectCode) => { return SUBJECTS[subjectCode] });
         const longestSubjectName = subjectsNames.reduce((subject1, subject2) => { return (subject1.length > subject2.length) ? subject1 : subject2 });
         const numLines = Math.ceil(longestSubjectName.length / 12);
@@ -170,6 +179,8 @@ export default function ScalingGraph({ subjects, year }: ScalingGraphProps) {
     }
 
     function plotPoints() {
+        // Plots the points (raw score) onto each subject scaling function
+
         // determine whether to show the points, at the current zoom level
         const boundingBox = board.current.getBoundingBox();
         const zoomFactor = (BOUNDING_BOX[2] - BOUNDING_BOX[0]) / (boundingBox[2] - boundingBox[0]);
@@ -190,6 +201,8 @@ export default function ScalingGraph({ subjects, year }: ScalingGraphProps) {
     }
 
     function addZoomLevelListeners() {
+        // Adds an event listener to automatically show/hide features of graph based on zoom level
+
         function zoomFactorChange(zoomFactor: number, previousZoomFactor: number, thresholdZoomFactor: number) {
             // tests whether the zoom factor has crossed the threshold (for optimisation purposes so no redundant attribute setting)
             if (zoomFactor >= thresholdZoomFactor) {
@@ -220,6 +233,8 @@ export default function ScalingGraph({ subjects, year }: ScalingGraphProps) {
     }
 
     function autoHideSubjectLabels() {
+        // Automatically hidies subject labels if they collide with other subject labels
+
         // returns a tuple representing a rectangle of space [x, y, width, height]
         function getCoordinate(point: JXG.Point) {
             /* These values include the point itself (whereas the current versions do not) so a larger area is considered occupied
@@ -303,6 +318,8 @@ export default function ScalingGraph({ subjects, year }: ScalingGraphProps) {
     }
 
     function createMouseCoordinates() {
+        // Creates a point which follows the mouse position and shows the coordinates
+
         // create coordinates at mouse
         const mouseCoordinates = board.current.create('point', [0, 0], {
             visible: false,
@@ -326,7 +343,8 @@ export default function ScalingGraph({ subjects, year }: ScalingGraphProps) {
         // update position of mouse coordinates
         let previousCoordinates = [0, 0];   // tracks whether there has been a change in coordinates (only update on change for optimisation)
         let previouslyVisible = false;      // tracks whether coordinates were previously shown (for optimisation)
-        const updateMouseCoordinates = () => {
+
+        function updateMouseCoordinates() {
             if (prevSubjects.current.length < 1) return false;
 
             const coords = new JXG.Coords(COORDS_BY_SCREEN, board.current.getMousePosition(), board.current).usrCoords.slice(1);
@@ -369,12 +387,14 @@ export default function ScalingGraph({ subjects, year }: ScalingGraphProps) {
                 }
             }
         }
+
         board.current.on('touchstart', updateMouseCoordinates);
         board.current.on('pointermove', updateMouseCoordinates);
     }
 
     function clearPoints() {
-        // clear the points which show the raw score inputted but not the graphs. useful if only the raw score changes and not the subjects
+        // Clear the points which show the raw score but not the functions. Useful if only the raw score changes and not the subjects
+
         prevPoints.current = [];
         prevSubjectsWithLabels.current = [];
 
@@ -398,6 +418,8 @@ export default function ScalingGraph({ subjects, year }: ScalingGraphProps) {
             prevYear.current = year;  // track the year that was previously to check whether the year has changed
             clearBoard();
             if (prevSubjects.current.length > 0) plotScalingFunctions();
+        } else {
+            console.log("A");
         }
         if (prevSubjectsHaveChanged) {
             clearLegend();
