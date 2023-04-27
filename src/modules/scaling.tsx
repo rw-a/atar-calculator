@@ -29,9 +29,7 @@ const MOBILE_LEGEND_ZOOM_THRESHOLD = 10;
 
 // Every JXG object you create should have a cssClass attribute value (from below)
 // This ensures that they can be properly deleted when clearing the board
-const CSS_CLASS_NAMES = {
-    MOUSE_COORDINATE: "mouseCoordinate",
-    MOUSE_COORDINATE_LABEL: "mouseCoordinateLabel",
+const OBJECTS_TO_CLEAR = {
     SUBJECT_SCORE: "subjectScore",
     SUBJECT_NAME: "subjectName",
     SUBJECT_FUNCTION: "subjectFunction"
@@ -289,10 +287,9 @@ export default function ScalingGraph({ subjects, year }: ScalingGraphProps) {
                 touch: 0,
                 mouse: 0,
                 pen: 0
-            },
-            cssClass: CSS_CLASS_NAMES.MOUSE_COORDINATE
+            }
         });
-        mouseCoordinates.label.setAttribute({ offset: [7, 13], cssClass: CSS_CLASS_NAMES.MOUSE_COORDINATE_LABEL });
+        mouseCoordinates.label.setAttribute({ offset: [7, 13] });
 
         // update position of mouse coordinates
         let previousCoordinates = [0, 0];   // tracks whether there has been a change in coordinates (only update on change for optimisation)
@@ -355,7 +352,7 @@ export default function ScalingGraph({ subjects, year }: ScalingGraphProps) {
         const objectsList = [...board.current.objectsList] as JXGObject[];
         for (let index = objectsList.length - 1; index >= 0; index -= 1) {
             const object = objectsList[index];
-            if (Object.values(CSS_CLASS_NAMES).includes(object.visProp.cssclass as string)) {
+            if (Object.values(OBJECTS_TO_CLEAR).includes(object.visProp.cssclass as string)) {
                 board.current.removeObject(object.id);
             }
         }
@@ -370,7 +367,7 @@ export default function ScalingGraph({ subjects, year }: ScalingGraphProps) {
         const objectsList = [...board.current.objectsList] as JXGObject[];
         for (let index = objectsList.length - 1; index >= 0; index -= 1) {
             const object = objectsList[index];
-            if ((object.visProp.cssclass === CSS_CLASS_NAMES.SUBJECT_SCORE)) {
+            if ((object.visProp.cssclass === OBJECTS_TO_CLEAR.SUBJECT_SCORE)) {
                 board.current.removeObject(object.id);
             }
         }
@@ -399,7 +396,7 @@ export default function ScalingGraph({ subjects, year }: ScalingGraphProps) {
                 return (100 / (1 + Math.exp(-a * (x - b))));}, 0, 100], 
                 { 
                     strokeColor: COLORS[subjectIndex % COLORS.length],
-                    cssClass: CSS_CLASS_NAMES.SUBJECT_FUNCTION
+                    cssClass: OBJECTS_TO_CLEAR.SUBJECT_FUNCTION
                 }
             );   // modulus ensures colours repeat if exhausted
 
@@ -424,13 +421,13 @@ export default function ScalingGraph({ subjects, year }: ScalingGraphProps) {
                     face: "cross", 
                     name: SUBJECTS[subjectCode as SubjectCode], 
                     withLabel: true, 
-                    cssClass: CSS_CLASS_NAMES.SUBJECT_SCORE 
+                    cssClass: OBJECTS_TO_CLEAR.SUBJECT_SCORE 
                 }) as JXG.Point;
                 point.hasPoint = function (x, y) { return false; }; // disable highlighting
                 points.current.push(point);
                 
                 // Create subject name label
-                point.label.setAttribute({ offset: [10, -4], cssClass: CSS_CLASS_NAMES.SUBJECT_NAME });
+                point.label.setAttribute({ offset: [10, -4], cssClass: OBJECTS_TO_CLEAR.SUBJECT_NAME });
                 if (!showLabels) point.setAttribute({ withLabel: false });
             }
         }
