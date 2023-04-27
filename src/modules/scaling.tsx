@@ -37,7 +37,7 @@ const OBJECTS_TO_CLEAR = {
 
 // replace default font
 JXG.Options.text.cssDefaultStyle = 'z-index: 0';
-// JXG.Options.text.highlightCssDefaultStyle = '';
+JXG.Options.text.highlightCssDefaultStyle = '';
 
 type JXGObject = JXG.Text | JXG.Point | JXG.Line | JXG.Curve | JXG.Ticks;
 
