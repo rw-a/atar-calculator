@@ -1,5 +1,5 @@
 import './../css/scaling.css';
-import React, { useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import JXG, { COORDS_BY_SCREEN } from 'jsxgraph';
 
 import { SubjectCode, Subjects } from '../types';
@@ -114,7 +114,6 @@ export default function ScalingGraph({ subjects, year }: ScalingGraphProps) {
 
         originalObjects.current = [...board.current.objectsList as JXGObject[]];
     }, []);
-
 
     const originalObjects = useRef([]) as {current: JXGObject[]}; // this needs to be after the mouse coordinates is created so it is preserved
 
