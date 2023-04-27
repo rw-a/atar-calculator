@@ -471,7 +471,6 @@ export default function ScalingGraph({ subjects, year }: ScalingGraphProps) {
         
         board.current.unsuspendUpdate();
         legend.current.unsuspendUpdate();
-        console.log(board.current.objectsList);
     });
 
     let graphHeight: number;
