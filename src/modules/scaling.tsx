@@ -30,6 +30,8 @@ const MOBILE_LEGEND_ZOOM_THRESHOLD = 10;
 JXG.Options.text.cssDefaultStyle = 'z-index: 0';
 JXG.Options.text.highlightCssDefaultStyle = '';
 
+type JXGObject = JXG.Text | JXG.Point | JXG.Line | JXG.Curve | JXG.Ticks;
+
 
 interface ScalingGraphProps {
     subjects: Subjects,
@@ -37,92 +39,98 @@ interface ScalingGraphProps {
 }
 
 export default function ScalingGraph({ subjects, year }: ScalingGraphProps) {
-    const board = useRef(JXG.JSXGraph.initBoard("jsxgraph", {
-        axis: true,
-        maxFrameRate: 30,
-        boundingbox: BOUNDING_BOX,
-        maxboundingbox: [-100, 200, 200, -100],
-        showCopyright: false,
-        showInfobox: false,
-        // showNavigation: false,
-        zoom: {
-            factorX: 1.25,  // horizontal zoom factor (multiplied to JXG.Board#zoomX)
-            factorY: 1.25,  // vertical zoom factor (multiplied to JXG.Board#zoomY)
-            wheel: true,     // allow zooming by mouse wheel or
-            // by pinch-to-toom gesture on touch devices
-            needShift: false,   // mouse wheel zooming needs pressing of the shift key
-            min: 1,        // minimal values of JXG.Board#zoomX and JXG.Board#zoomY, limits zoomOut
-            max: 50,       // maximal values of JXG.Board#zoomX and JXG.Board#zoomY, limits zoomIn
+    const board = useRef({objectsList: []} as unknown as JXG.Board);
+    const legend = useRef({} as JXG.Board);
 
-            pinchHorizontal: false, // Allow pinch-to-zoom to zoom only horizontal axis
-            pinchVertical: false,   // Allow pinch-to-zoom to zoom only vertical axis
-            pinchSensitivity: 7    // Sensitivity (in degrees) for recognizing horizontal or vertical pinch-to-zoom gestures.
-        },
-        pan: {
-            enabled: true,   // Allow panning
-            needTwoFingers: false, // panning is done with two fingers on touch devices
-            needShift: false, // mouse panning needs pressing of the shift key
-        },
-        navbar: {
-            strokeColor: '#333333',
-            fillColor: 'transparent',
-            highlightFillColor: '#aaaaaa',
-            padding: '0px',
-            position: 'absolute',
-            fontSize: '14px',
-            cursor: 'pointer',
-            zIndex: '100',
-            right: '5px',
-            bottom: '0px',
-        }
-    })).current;
+    useEffect(() => {
+        board.current = JXG.JSXGraph.initBoard("jsxgraph", {
+            axis: true,
+            maxFrameRate: 30,
+            boundingbox: BOUNDING_BOX,
+            maxboundingbox: [-100, 200, 200, -100],
+            showCopyright: false,
+            showInfobox: false,
+            // showNavigation: false,
+            zoom: {
+                factorX: 1.25,  // horizontal zoom factor (multiplied to JXG.Board#zoomX)
+                factorY: 1.25,  // vertical zoom factor (multiplied to JXG.Board#zoomY)
+                wheel: true,     // allow zooming by mouse wheel or
+                // by pinch-to-toom gesture on touch devices
+                needShift: false,   // mouse wheel zooming needs pressing of the shift key
+                min: 1,        // minimal values of JXG.Board#zoomX and JXG.Board#zoomY, limits zoomOut
+                max: 50,       // maximal values of JXG.Board#zoomX and JXG.Board#zoomY, limits zoomIn
 
-    const legend = useRef(JXG.JSXGraph.initBoard("jsxlegend", {
-        boundingbox: [0, 120, 20, 0], // min x, max y, max x, min y
-        maxFrameRate: 1,
-        registerEvents: false,
-        showCopyright: false,
-        showInfobox: false,
-        showNavigation: false,
-        zoom: {
-            factorX: 1,
-            factorY: 1,
-            wheel: false,
-            needShift: true,
-            min: 1,
-            max: 1,
+                pinchHorizontal: false, // Allow pinch-to-zoom to zoom only horizontal axis
+                pinchVertical: false,   // Allow pinch-to-zoom to zoom only vertical axis
+                pinchSensitivity: 7    // Sensitivity (in degrees) for recognizing horizontal or vertical pinch-to-zoom gestures.
+            },
+            pan: {
+                enabled: true,   // Allow panning
+                needTwoFingers: false, // panning is done with two fingers on touch devices
+                needShift: false, // mouse panning needs pressing of the shift key
+            },
+            navbar: {
+                strokeColor: '#333333',
+                fillColor: 'transparent',
+                highlightFillColor: '#aaaaaa',
+                padding: '0px',
+                position: 'absolute',
+                fontSize: '14px',
+                cursor: 'pointer',
+                zIndex: '100',
+                right: '5px',
+                bottom: '0px',
+            }
+        });
 
-            pinchHorizontal: false,
-            pinchVertical: false,
-            pinchSensitivity: 7
-        },
-        pan: {
-            enabled: false,
-            needTwoFingers: true,
-            needShift: true,
-        },
-    })).current;
+        legend.current = JXG.JSXGraph.initBoard("jsxlegend", {
+            boundingbox: [0, 120, 20, 0], // min x, max y, max x, min y
+            maxFrameRate: 1,
+            registerEvents: false,
+            showCopyright: false,
+            showInfobox: false,
+            showNavigation: false,
+            zoom: {
+                factorX: 1,
+                factorY: 1,
+                wheel: false,
+                needShift: true,
+                min: 1,
+                max: 1,
 
-    addZoomLevelListeners(); // this could be further optimised by only updating subject label listener, not whole legend listener
-    createMouseCoordinates();
+                pinchHorizontal: false,
+                pinchVertical: false,
+                pinchSensitivity: 7
+            },
+            pan: {
+                enabled: false,
+                needTwoFingers: true,
+                needShift: true,
+            },
+        });
 
-    const originalObjects = useRef([...board.objectsList]).current; // this needs to be after the mouse coordinates is created so it is preserved
+        addZoomLevelListeners(); // this could be further optimised by only updating subject label listener, not whole legend listener
+        createMouseCoordinates();
+
+        originalObjects.current = [...board.current.objectsList as JXGObject[]];
+    }, []);
+
+
+    const originalObjects = useRef([]) as {current: JXGObject[]}; // this needs to be after the mouse coordinates is created so it is preserved
 
     const prevPoints = useRef([]) as {current: JXG.Point[]};
     const prevSubjectsWithLabels = useRef([]) as {current: JXG.Point[]};  // a list of points whose labels are visible
     const prevSubjects = useRef([]) as {current: SubjectCode[]};
     const prevYear = useRef(2022) as {current: number};
 
-    // this.componentDidUpdate();
-
     function clearBoard() {
-        let objectsList = [...board.objectsList];
+        const objectsList = [...board.current.objectsList] as JXGObject[];
         for (let index = objectsList.length - 1; index >= 0; index -= 1) {
             const object = objectsList[index];
             if (object.elType === "line" || object.elType === "curve" 
             || (object.elType === "text" && object.htmlStr.length > 3 && object.visProp.cssclass !== "mouseCoordinates") 
-            || (object.elType === "point" && object.Xjc !== null) || !originalObjects.includes(object))
-                board.removeObject(object.id);
+            || (object.elType === "point" && object.Xjc !== null) || !originalObjects.current.includes(object))
+                board.current.removeObject(object.id);
         }
     }
 
@@ -133,7 +141,7 @@ export default function ScalingGraph({ subjects, year }: ScalingGraphProps) {
             const a = scalingData[subjectCode]["a"];
             const b = scalingData[subjectCode]["b"];
 
-            let subjectFunction = board.create('functiongraph', [function (x: number) {
+            const subjectFunction = board.current.create('functiongraph', [function (x: number) {
                 return (100 / (1 + Math.exp(-a * (x - b))));
             }, 0, 100], { strokeColor: COLORS[subjectIndex % COLORS.length] });   // modulus ensures colours repeat if exhausted
 
@@ -142,10 +150,10 @@ export default function ScalingGraph({ subjects, year }: ScalingGraphProps) {
     }
 
     function clearLegend() {
-        const legendObjectsList = [...legend.objectsList];
+        const legendObjectsList = [...legend.current.objectsList] as JXGObject[];
         for (let index = legendObjectsList.length - 1; index >= 0; index -= 1) {
             const object = legendObjectsList[index];
-            legend.removeObject(object.id);
+            legend.current.removeObject(object.id);
         }
     }
 
@@ -155,16 +163,16 @@ export default function ScalingGraph({ subjects, year }: ScalingGraphProps) {
         const numLines = Math.ceil(longestSubjectName.length / 12);
         const rowHeight = numLines * 9 + 10;
 
-        const newLegend = legend.create('legend', [0, 100], { labels: subjectsNames, colors: COLORS, rowHeight: rowHeight });
+        const newLegend = legend.current.create('legend', [0, 100], { labels: subjectsNames, colors: COLORS, rowHeight: rowHeight });
 
-        let legendHeight = newLegend.lines.at(-1).getTextAnchor().scrCoords.at(-1) + rowHeight + maxWidth / 30;
+        const legendHeight = newLegend.lines.at(-1).getTextAnchor().scrCoords.at(-1) + rowHeight + maxWidth / 30;
         document.getElementById('jsxlegend').style.top = `${graphHeight - legendHeight}px`;
-        legend.resizeContainer(LEGEND_WIDTH, legendHeight, false, true);
+        legend.current.resizeContainer(LEGEND_WIDTH, legendHeight, false, true);
     }
 
     function plotPoints() {
         // determine whether to show the points, at the current zoom level
-        const boundingBox = board.getBoundingBox();
+        const boundingBox = board.current.getBoundingBox();
         const zoomFactor = (BOUNDING_BOX[2] - BOUNDING_BOX[0]) / (boundingBox[2] - boundingBox[0]);
         const showLabels = (zoomFactor >= SUBJECT_LABELS_ZOOM_THRESHOLD);
 
@@ -173,7 +181,7 @@ export default function ScalingGraph({ subjects, year }: ScalingGraphProps) {
             const rawScore = subjects[subjectCode];
             if (rawScore) {
                 const scaledScore = calculateScaledScore(rawScore, subjectCode, year);
-                const point = board.create('point', [rawScore, scaledScore], { face: "cross", name: SUBJECTS[subjectCode], withLabel: true });
+                const point = board.current.create('point', [rawScore, scaledScore], { face: "cross", name: SUBJECTS[subjectCode], withLabel: true });
                 point.label.setAttribute({ offset: [10, -4] });
                 if (!showLabels) point.setAttribute({ withLabel: false });
                 point.hasPoint = function (x, y) { return false; }; // disable highlighting
@@ -196,8 +204,8 @@ export default function ScalingGraph({ subjects, year }: ScalingGraphProps) {
 
         // show/hide labels and/or legend depending on zoom level
         let previousZoomFactor = 0;   // set to zero so there is always a change in zoom at the start
-        board.on('boundingbox', () => {
-            const boundingBox = board.getBoundingBox();
+        board.current.on('boundingbox', () => {
+            const boundingBox = board.current.getBoundingBox();
             const zoomFactor = (BOUNDING_BOX[2] - BOUNDING_BOX[0]) / (boundingBox[2] - boundingBox[0]);
             if (zoomFactor.toFixed(3) === previousZoomFactor.toFixed(3)) return;  // only update if the zoom level changes (rounded due to imprecision)
 
@@ -257,7 +265,7 @@ export default function ScalingGraph({ subjects, year }: ScalingGraphProps) {
             occupiedCoordinates.push(getCoordinate(point));
         }
 
-        board.suspendUpdate();
+        board.current.suspendUpdate();
 
         // first try to add new subject labels if there's space
         for (const point of prevPoints.current) {
@@ -292,12 +300,12 @@ export default function ScalingGraph({ subjects, year }: ScalingGraphProps) {
             }
         }
 
-        board.unsuspendUpdate();
+        board.current.unsuspendUpdate();
     }
 
     function createMouseCoordinates() {
         // create coordinates at mouse
-        const mouseCoordinates = board.create('point', [0, 0], {
+        const mouseCoordinates = board.current.create('point', [0, 0], {
             visible: false,
             fixed: true,
             size: 2,
@@ -322,7 +330,7 @@ export default function ScalingGraph({ subjects, year }: ScalingGraphProps) {
         const updateMouseCoordinates = () => {
             if (prevSubjects.current.length < 1) return false;
 
-            const coords = new JXG.Coords(COORDS_BY_SCREEN, board.getMousePosition(), board).usrCoords.slice(1);
+            const coords = new JXG.Coords(COORDS_BY_SCREEN, board.current.getMousePosition(), board.current).usrCoords.slice(1);
             let nearestX = Math.round(coords[0]);
 
             if (nearestX >= -1 && nearestX <= 101) {
@@ -340,7 +348,7 @@ export default function ScalingGraph({ subjects, year }: ScalingGraphProps) {
 
                 // show coordinates if previously hidden
                 if (!previouslyVisible) {
-                    board.suspendUpdate();
+                    board.current.suspendUpdate();
                     mouseCoordinates.showElement();
                     previouslyVisible = true;
                 }
@@ -351,10 +359,10 @@ export default function ScalingGraph({ subjects, year }: ScalingGraphProps) {
                 previousCoordinates = coordinates;
 
                 // move the point to the mouse and update it's name to be it's coordinate
-                board.suspendUpdate();
+                board.current.suspendUpdate();
                 mouseCoordinates.moveTo(coordinates);
                 mouseCoordinates.setAttribute({ name: `(${nearestX.toFixed(0)}, ${nearestY.toFixed(2)})` });
-                board.unsuspendUpdate();
+                board.current.unsuspendUpdate();
             } else {
                 if (previouslyVisible) {
                     mouseCoordinates.hideElement();
@@ -362,8 +370,8 @@ export default function ScalingGraph({ subjects, year }: ScalingGraphProps) {
                 }
             }
         }
-        board.on('touchstart', updateMouseCoordinates);
-        board.on('pointermove', updateMouseCoordinates);
+        board.current.on('touchstart', updateMouseCoordinates);
+        board.current.on('pointermove', updateMouseCoordinates);
     }
 
     function clearPoints() {
@@ -371,37 +379,39 @@ export default function ScalingGraph({ subjects, year }: ScalingGraphProps) {
         prevPoints.current = [];
         prevSubjectsWithLabels.current = [];
 
-        const objectsList = [...board.objectsList];
+        const objectsList = [...board.current.objectsList] as JXGObject[];
         for (let index = objectsList.length - 1; index >= 0; index -= 1) {
             const object = objectsList[index];
             if ((object.elType === "point" && object.Xjc !== null))
-                board.removeObject(object.id);
+                board.current.removeObject(object.id);
         }
     }
 
-    board.suspendUpdate();
-    legend.suspendUpdate();
-
-    const previousSubjects = [...prevSubjects.current];
-    prevSubjects.current = Object.keys(subjects) as SubjectCode[];
-    const prevSubjectsHaveChanged = !(JSON.stringify(previousSubjects) === JSON.stringify(prevSubjects));
-
-    if (prevSubjectsHaveChanged || prevYear.current !== year) {
-        prevYear.current = year;  // track the year that was previously to check whether the year has changed
-        clearBoard();
-        if (prevSubjects.current.length > 0) plotScalingFunctions();
-    }
-    if (prevSubjectsHaveChanged) {
-        clearLegend();
-        if (prevSubjects.current.length > 0) createLegend();
-    }
-
-    clearPoints();
-    plotPoints();
-    autoHideSubjectLabels();
-
-    board.unsuspendUpdate();
-    legend.unsuspendUpdate();
+    useEffect(() => {
+        board.current.suspendUpdate();
+        legend.current.suspendUpdate();
+    
+        const previousSubjects = [...prevSubjects.current];
+        prevSubjects.current = Object.keys(subjects) as SubjectCode[];
+        const prevSubjectsHaveChanged = !(JSON.stringify(previousSubjects) === JSON.stringify(prevSubjects));
+    
+        if (prevSubjectsHaveChanged || prevYear.current !== year) {
+            prevYear.current = year;  // track the year that was previously to check whether the year has changed
+            clearBoard();
+            if (prevSubjects.current.length > 0) plotScalingFunctions();
+        }
+        if (prevSubjectsHaveChanged) {
+            clearLegend();
+            if (prevSubjects.current.length > 0) createLegend();
+        }
+    
+        clearPoints();
+        plotPoints();
+        autoHideSubjectLabels();
+    
+        board.current.unsuspendUpdate();
+        legend.current.unsuspendUpdate();
+    });
 
     const maxWidth = document.querySelector('.section-inner').getBoundingClientRect().width;
     const isMobile = maxWidth < 400;
