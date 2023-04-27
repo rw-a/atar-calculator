@@ -346,7 +346,6 @@ export default function ScalingGraph({ subjects, year }: ScalingGraphProps) {
         let previouslyVisible = false;      // tracks whether coordinates were previously shown (for optimisation)
 
         function updateMouseCoordinates() {
-            const subjectCodes = Object.keys(subjects) as SubjectCode[];
             if (subjectCodes.length < 1) return false;
 
             const coords = new JXG.Coords(COORDS_BY_SCREEN, board.current.getMousePosition(), board.current).usrCoords.slice(1);
