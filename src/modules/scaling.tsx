@@ -176,8 +176,15 @@ export default function ScalingGraph({ subjects, year }: ScalingGraphProps) {
             autoHideSubjectLabels();
 
             // show/hide legend once zoomed in enough (only for mobile)
-            if (isMobile && zoomFactorChange(zoomFactor, previousZoomFactor, MOBILE_LEGEND_ZOOM_THRESHOLD)) {
-                document.getElementById('jsxlegend').style.display = (zoomFactor >= MOBILE_LEGEND_ZOOM_THRESHOLD) ? 'none' : ''; // none is hidden, blank is shown
+            if (zoomFactorChange(zoomFactor, previousZoomFactor, MOBILE_LEGEND_ZOOM_THRESHOLD)) {
+                const legendElement = document.getElementById('jsxlegend');
+                if (legendElement) {
+                    if (zoomFactor >= MOBILE_LEGEND_ZOOM_THRESHOLD) {
+                        legendElement.classList.add('mobileHidden');
+                    } else {
+                        legendElement.classList.remove('mobileHidden');
+                    }
+                }
             }
 
             previousZoomFactor = zoomFactor;
@@ -469,13 +476,20 @@ export default function ScalingGraph({ subjects, year }: ScalingGraphProps) {
     });
 
     const maxWidth = document.querySelector('.section-inner').getBoundingClientRect().width;
-    const isMobile = maxWidth < 400;
-    const graphHeight = Math.abs(maxWidth * (BOUNDING_BOX[1] - BOUNDING_BOX[3]) / (BOUNDING_BOX[2] - BOUNDING_BOX[0]));  // ensures that 1x1 aspect ratio is maintained
+    const graphHeight = Math.abs(   // ensures that 1x1 aspect ratio is maintained
+        maxWidth * (BOUNDING_BOX[1] - BOUNDING_BOX[3]) / (BOUNDING_BOX[2] - BOUNDING_BOX[0]));
 
     return (
         <div style={{ position: "relative" }}>
-            <div id="jsxgraph" style={{ width: maxWidth, height: graphHeight }}></div>
-            <div id="jsxlegend" style={{ position: "absolute", bottom: 0 /* estimate, will be accurately calculated later */, right: 0, width: LEGEND_WIDTH, height: graphHeight, zIndex: -1 }}></div>
+            <div id="jsxgraph" style={{ width: "100%", height: graphHeight}}></div>
+            <div id="jsxlegend" style={{ 
+                position: "absolute", 
+                bottom: 0, 
+                right: 0, 
+                width: LEGEND_WIDTH, 
+                height: graphHeight, 
+                zIndex: -1 
+            }}></div>
         </div>
     );
 }
