@@ -37,7 +37,7 @@ const OBJECTS_TO_CLEAR = {
 
 // replace default font
 JXG.Options.text.cssDefaultStyle = 'z-index: 0';
-JXG.Options.text.highlightCssDefaultStyle = '';
+// JXG.Options.text.highlightCssDefaultStyle = '';
 
 type JXGObject = JXG.Text | JXG.Point | JXG.Line | JXG.Curve | JXG.Ticks;
 
@@ -283,18 +283,16 @@ export default function ScalingGraph({ subjects, year }: ScalingGraphProps) {
         const mouseCoordinates = board.current.create('point', [0, 0], {
             visible: false,
             fixed: true,
+            highlight: false,
             size: 2,
             fillColor: 'black',
-            highlightFillColor: 'black',
             fillOpacity: 0.7,
-            highlightFillOpacity: 0.7,
-            highlightStrokeWidth: 0,
             strokeWidth: 0,   // disable stroke so only fill is considered
             precision: {  // ensures always highlighted
                 touch: 0,
                 mouse: 0,
                 pen: 0
-            }
+            },
         });
         mouseCoordinates.label.setAttribute({ offset: [7, 13] });
 
@@ -411,12 +409,11 @@ export default function ScalingGraph({ subjects, year }: ScalingGraphProps) {
             const subjectFunction = board.current.create('functiongraph', [function (x: number) {
                 return (100 / (1 + Math.exp(-a * (x - b))));}, 0, 100], 
                 { 
-                    strokeColor: COLORS[subjectIndex % COLORS.length],
-                    cssClass: OBJECTS_TO_CLEAR.SUBJECT_FUNCTION
+                    strokeColor: COLORS[subjectIndex % COLORS.length], // modulus ensures colours repeat if exhausted
+                    cssClass: OBJECTS_TO_CLEAR.SUBJECT_FUNCTION,
+                    highlight: false
                 }
-            );   // modulus ensures colours repeat if exhausted
-
-            subjectFunction.hasPoint = function (x, y) { return false; }; // disable highlighting
+            );   
         }
     }
 
@@ -437,13 +434,14 @@ export default function ScalingGraph({ subjects, year }: ScalingGraphProps) {
                     face: "cross", 
                     name: SUBJECTS[subjectCode as SubjectCode], 
                     withLabel: true, 
-                    cssClass: OBJECTS_TO_CLEAR.SUBJECT_SCORE 
+                    cssClass: OBJECTS_TO_CLEAR.SUBJECT_SCORE,
+                    highlight: false,
+                    fixed: true,
                 }) as JXG.Point;
-                point.hasPoint = function (x, y) { return false; }; // disable highlighting
                 points.current.push(point);
                 
                 // Create subject name label
-                point.label.setAttribute({ offset: [10, -4], cssClass: OBJECTS_TO_CLEAR.SUBJECT_NAME });
+                point.label.setAttribute({ offset: [10, -4], cssClass: OBJECTS_TO_CLEAR.SUBJECT_NAME, highlight: false });
                 if (!showLabels) point.setAttribute({ withLabel: false });
             }
         }
@@ -473,6 +471,7 @@ export default function ScalingGraph({ subjects, year }: ScalingGraphProps) {
         
         board.current.unsuspendUpdate();
         legend.current.unsuspendUpdate();
+        console.log(board.current.objectsList);
     });
 
     const maxWidth = document.querySelector('.section-inner').getBoundingClientRect().width;
