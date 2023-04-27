@@ -2,7 +2,7 @@ import './../css/scaling.css';
 import { useEffect, useRef } from 'react';
 import JXG, { COORDS_BY_SCREEN } from 'jsxgraph';
 
-import { SubjectCode, Subjects } from '../types';
+import { SubjectCode, Subjects, Score } from '../types';
 import { calculateScaledScore } from '../utility/atar_calculations';
 
 import SUBJECTS from '../data/all_subjects.json';
@@ -39,8 +39,17 @@ interface ScalingGraphProps {
 }
 
 export default function ScalingGraph({ subjects, year }: ScalingGraphProps) {
+    const subjectCodes = Object.keys(subjects) as SubjectCode[];
+
     const board = useRef({objectsList: []} as unknown as JXG.Board);
     const legend = useRef({} as JXG.Board);
+
+    const originalObjects = useRef([]) as {current: JXGObject[]}; // this needs to be after the mouse coordinates is created so it is preserved
+
+    const prevSubjects = useRef([]) as {current: SubjectCode[]};
+    const prevPoints = useRef([]) as {current: JXG.Point[]};
+    const prevSubjectsWithLabels = useRef([]) as {current: JXG.Point[]};  // a list of points whose labels are visible
+    const prevYear = useRef(2022) as {current: number};     // track the year that was previously to check whether the year has changed
 
     useEffect(() => {
         // Initialise the board and legend AFTER the initial render
@@ -115,14 +124,8 @@ export default function ScalingGraph({ subjects, year }: ScalingGraphProps) {
         createMouseCoordinates();
 
         originalObjects.current = [...board.current.objectsList as JXGObject[]];
-    }, []);
-
-    const originalObjects = useRef([]) as {current: JXGObject[]}; // this needs to be after the mouse coordinates is created so it is preserved
-
-    const prevPoints = useRef([]) as {current: JXG.Point[]};
-    const prevSubjectsWithLabels = useRef([]) as {current: JXG.Point[]};  // a list of points whose labels are visible
-    const prevSubjects = useRef([]) as {current: SubjectCode[]};
-    const prevYear = useRef(2022) as {current: number};
+        prevSubjects.current = [];
+    }, []);    
 
     function clearBoard() {
         // Removes every object in the board but preserves the objects required to render a blank board
@@ -139,7 +142,7 @@ export default function ScalingGraph({ subjects, year }: ScalingGraphProps) {
     function plotScalingFunctions() {
         // Plots the scaling function for each subject
 
-        for (const [subjectIndex, subjectCode] of prevSubjects.current.entries()) {  // entries on a list does enumerate
+        for (const [subjectIndex, subjectCode] of subjectCodes.entries()) {  // entries on a list does enumerate
             // create function
             const scalingData = getScalingData(year);
             const a = scalingData[subjectCode]["a"];
@@ -166,7 +169,7 @@ export default function ScalingGraph({ subjects, year }: ScalingGraphProps) {
     function createLegend() {
         // Adds the subject names to the legend board and resizes the legend board size to fit
 
-        const subjectsNames = prevSubjects.current.map((subjectCode: SubjectCode) => { return SUBJECTS[subjectCode] });
+        const subjectsNames = subjectCodes.map((subjectCode) => { return SUBJECTS[subjectCode] });
         const longestSubjectName = subjectsNames.reduce((subject1, subject2) => { return (subject1.length > subject2.length) ? subject1 : subject2 });
         const numLines = Math.ceil(longestSubjectName.length / 12);
         const rowHeight = numLines * 9 + 10;
@@ -186,12 +189,11 @@ export default function ScalingGraph({ subjects, year }: ScalingGraphProps) {
         const zoomFactor = (BOUNDING_BOX[2] - BOUNDING_BOX[0]) / (boundingBox[2] - boundingBox[0]);
         const showLabels = (zoomFactor >= SUBJECT_LABELS_ZOOM_THRESHOLD);
 
-        for (const subjectCode of prevSubjects.current) {
+        for (const [subjectCode, rawScore] of Object.entries(subjects)) {
             // plot raw score input
-            const rawScore = subjects[subjectCode];
             if (rawScore) {
-                const scaledScore = calculateScaledScore(rawScore, subjectCode, year);
-                const point = board.current.create('point', [rawScore, scaledScore], { face: "cross", name: SUBJECTS[subjectCode], withLabel: true });
+                const scaledScore = calculateScaledScore(rawScore, subjectCode as SubjectCode, year);
+                const point = board.current.create('point', [rawScore, scaledScore], { face: "cross", name: SUBJECTS[subjectCode as SubjectCode], withLabel: true });
                 point.label.setAttribute({ offset: [10, -4] });
                 if (!showLabels) point.setAttribute({ withLabel: false });
                 point.hasPoint = function (x, y) { return false; }; // disable highlighting
@@ -337,15 +339,15 @@ export default function ScalingGraph({ subjects, year }: ScalingGraphProps) {
                 pen: 0
             }
         });
-        mouseCoordinates.label.setAttribute({ offset: [7, 13] }); // set offset of coordinates at mouse
-        mouseCoordinates.label.setAttribute({ cssClass: "mouseCoordinates" });
+        mouseCoordinates.label.setAttribute({ offset: [7, 13], cssClass: "mouseCoordinates" });
 
         // update position of mouse coordinates
         let previousCoordinates = [0, 0];   // tracks whether there has been a change in coordinates (only update on change for optimisation)
         let previouslyVisible = false;      // tracks whether coordinates were previously shown (for optimisation)
 
         function updateMouseCoordinates() {
-            if (prevSubjects.current.length < 1) return false;
+            const subjectCodes = Object.keys(subjects) as SubjectCode[];
+            if (subjectCodes.length < 1) return false;
 
             const coords = new JXG.Coords(COORDS_BY_SCREEN, board.current.getMousePosition(), board.current).usrCoords.slice(1);
             let nearestX = Math.round(coords[0]);
@@ -356,7 +358,7 @@ export default function ScalingGraph({ subjects, year }: ScalingGraphProps) {
                 if (nearestX >= 100) nearestX = 100;
 
                 // pick the closest subject to select
-                const closestSubject = prevSubjects.current.reduce((subjectCode1, subjectCode2) => {  // get the subject with raw score closest to the cursor
+                const closestSubject = subjectCodes.reduce((subjectCode1, subjectCode2) => {  // get the subject with raw score closest to the cursor
                     return (Math.abs(calculateScaledScore(nearestX, subjectCode1, year) - coords[1]) 
                         < Math.abs(calculateScaledScore(nearestX, subjectCode2, year) - coords[1])) 
                         ? subjectCode1 : subjectCode2;
@@ -410,20 +412,17 @@ export default function ScalingGraph({ subjects, year }: ScalingGraphProps) {
         board.current.suspendUpdate();
         legend.current.suspendUpdate();
     
-        const previousSubjects = [...prevSubjects.current];
-        prevSubjects.current = Object.keys(subjects) as SubjectCode[];
-        const prevSubjectsHaveChanged = !(JSON.stringify(previousSubjects) === JSON.stringify(prevSubjects));
+        const prevSubjectsHaveChanged = !(JSON.stringify(prevSubjects.current) === JSON.stringify(subjectCodes));
+        prevSubjects.current = subjectCodes;
     
         if (prevSubjectsHaveChanged || prevYear.current !== year) {
-            prevYear.current = year;  // track the year that was previously to check whether the year has changed
+            prevYear.current = year;
             clearBoard();
-            if (prevSubjects.current.length > 0) plotScalingFunctions();
-        } else {
-            console.log("A");
+            if (subjectCodes.length > 0) plotScalingFunctions();
         }
         if (prevSubjectsHaveChanged) {
             clearLegend();
-            if (prevSubjects.current.length > 0) createLegend();
+            if (subjectCodes.length > 0) createLegend();
         }
     
         clearPoints();
