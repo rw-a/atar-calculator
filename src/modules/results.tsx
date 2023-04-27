@@ -32,15 +32,6 @@ function ResultsRow({code, rawScore, scaledScore, teaPotential}: ResultsRowProps
 		subjectName = SUBJECTS[code];
 	}
 
-	let rawScoreDisplay: string;
-	if (rawScore === "") {
-		rawScoreDisplay = "";
-	} else if (rawScore === "‎") {
-		rawScoreDisplay = "‎";
-	} else {
-		rawScoreDisplay = rawScore.toFixed(2);
-	}
-
 	let scaledScoreDisplay: string;
 	if (scaledScore === "") {
 		scaledScoreDisplay = "";
@@ -58,7 +49,7 @@ function ResultsRow({code, rawScore, scaledScore, teaPotential}: ResultsRowProps
 	return(
 		<tr>
 			<td>{subjectName}</td>
-			<td className='text-center'>{rawScoreDisplay}</td>
+			<td className='text-center'>{rawScore}</td>
 			<td className='text-center'>{scaledScoreDisplay}</td>
 			<td className='text-center'>{teaPotentialDisplay}</td>
 		</tr>
