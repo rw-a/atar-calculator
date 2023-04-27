@@ -359,11 +359,11 @@ export default function ScalingGraph({ subjects, year }: ScalingGraphProps) {
 
                 // pick the closest subject to select
                 const closestSubject = subjectCodes.reduce((subjectCode1, subjectCode2) => {  // get the subject with raw score closest to the cursor
-                    return (Math.abs(calculateScaledScore(nearestX, subjectCode1, year) - coords[1]) 
-                        < Math.abs(calculateScaledScore(nearestX, subjectCode2, year) - coords[1])) 
+                    return (Math.abs(calculateScaledScore(nearestX, subjectCode1, prevYear.current) - coords[1]) 
+                        < Math.abs(calculateScaledScore(nearestX, subjectCode2, prevYear.current) - coords[1])) 
                         ? subjectCode1 : subjectCode2;
                 })
-                const nearestY = calculateScaledScore(nearestX, closestSubject, year);
+                const nearestY = calculateScaledScore(nearestX, closestSubject, prevYear.current);
 
                 // show coordinates if previously hidden
                 if (!previouslyVisible) {
