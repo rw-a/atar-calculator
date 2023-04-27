@@ -26,6 +26,16 @@ const LEGEND_WIDTH = 110;
 const SUBJECT_LABELS_ZOOM_THRESHOLD = 1.7;
 const MOBILE_LEGEND_ZOOM_THRESHOLD = 10;
 
+// Every JXG object you create should have a cssClass attribute value (from below)
+// This ensures that they can be properly deleted when clearing the board
+const CSS_CLASS_NAMES = {
+    MOUSE_COORDINATE: "mouseCoordinate",
+    MOUSE_COORDINATE_LABEL: "mouseCoordinateLabel",
+    SUBJECT_SCORE: "subjectScore",
+    SUBJECT_NAME: "subjectName",
+    SUBJECT_FUNCTION: "subjectFunction"
+};
+
 // replace default font
 JXG.Options.text.cssDefaultStyle = 'z-index: 0';
 JXG.Options.text.highlightCssDefaultStyle = '';
@@ -44,11 +54,12 @@ export default function ScalingGraph({ subjects, year }: ScalingGraphProps) {
     const board = useRef({objectsList: []} as unknown as JXG.Board);
     const legend = useRef({} as JXG.Board);
 
-    const originalObjects = useRef([]) as {current: JXGObject[]}; // this needs to be after the mouse coordinates is created so it is preserved
+    // this needs to be after the mouse coordinates is created so it is preserved
+    const originalObjects = useRef([]) as {current: JXGObject[]};
 
     const prevSubjects = useRef([]) as {current: SubjectCode[]};
-    const prevPoints = useRef([]) as {current: JXG.Point[]};
-    const prevSubjectsWithLabels = useRef([]) as {current: JXG.Point[]};  // a list of points whose labels are visible
+    const points = useRef([]) as {current: JXG.Point[]};
+    const pointsWithLabels = useRef([]) as {current: JXG.Point[]};  // a list of points whose labels are visible
     const prevYear = useRef(2022) as {current: number};     // track the year that was previously to check whether the year has changed
 
     useEffect(() => {
@@ -133,7 +144,7 @@ export default function ScalingGraph({ subjects, year }: ScalingGraphProps) {
         for (let index = objectsList.length - 1; index >= 0; index -= 1) {
             const object = objectsList[index];
             if (object.elType === "line" || object.elType === "curve" 
-            || (object.elType === "text" && object.htmlStr.length > 3 && object.visProp.cssclass !== "mouseCoordinates") 
+            || (object.elType === "text" && object.htmlStr.length > 3 && object.visProp.cssclass !== CSS_CLASS_NAMES.MOUSE_COORDINATE_LABEL) 
             || (object.elType === "point" && object.Xjc !== null) || !originalObjects.current.includes(object))
                 board.current.removeObject(object.id);
         }
@@ -149,8 +160,12 @@ export default function ScalingGraph({ subjects, year }: ScalingGraphProps) {
             const b = scalingData[subjectCode]["b"];
 
             const subjectFunction = board.current.create('functiongraph', [function (x: number) {
-                return (100 / (1 + Math.exp(-a * (x - b))));
-            }, 0, 100], { strokeColor: COLORS[subjectIndex % COLORS.length] });   // modulus ensures colours repeat if exhausted
+                return (100 / (1 + Math.exp(-a * (x - b))));}, 0, 100], 
+                { 
+                    strokeColor: COLORS[subjectIndex % COLORS.length],
+                    cssClass: CSS_CLASS_NAMES.SUBJECT_FUNCTION
+                }
+            );   // modulus ensures colours repeat if exhausted
 
             subjectFunction.hasPoint = function (x, y) { return false; }; // disable highlighting
         }
@@ -193,11 +208,19 @@ export default function ScalingGraph({ subjects, year }: ScalingGraphProps) {
             // plot raw score input
             if (rawScore) {
                 const scaledScore = calculateScaledScore(rawScore, subjectCode as SubjectCode, year);
-                const point = board.current.create('point', [rawScore, scaledScore], { face: "cross", name: SUBJECTS[subjectCode as SubjectCode], withLabel: true });
-                point.label.setAttribute({ offset: [10, -4] });
+
+                const point = board.current.create('point', [rawScore, scaledScore], { 
+                    face: "cross", 
+                    name: SUBJECTS[subjectCode as SubjectCode], 
+                    withLabel: true, 
+                    cssClass: CSS_CLASS_NAMES.SUBJECT_SCORE 
+                }) as JXG.Point;
+                point.hasPoint = function () { return false; }; // disable highlighting
+                points.current.push(point);
+                
+                // Create subject name label
+                point.label.setAttribute({ offset: [10, -4], cssClass: CSS_CLASS_NAMES.SUBJECT_NAME });
                 if (!showLabels) point.setAttribute({ withLabel: false });
-                point.hasPoint = function (x, y) { return false; }; // disable highlighting
-                prevPoints.current.push(point);
             }
         }
     }
@@ -214,7 +237,7 @@ export default function ScalingGraph({ subjects, year }: ScalingGraphProps) {
             }
         }
 
-        prevSubjectsWithLabels.current = [];
+        pointsWithLabels.current = [];
 
         // show/hide labels and/or legend depending on zoom level
         let previousZoomFactor = 0;   // set to zero so there is always a change in zoom at the start
@@ -277,21 +300,21 @@ export default function ScalingGraph({ subjects, year }: ScalingGraphProps) {
 
         let occupiedCoordinates = [] as number[][]; // a list of coordinate tuples that tracks which spaces are being occupied by labels
         // compute which spaces are occupied
-        for (const point of prevSubjectsWithLabels.current) {
+        for (const point of pointsWithLabels.current) {
             occupiedCoordinates.push(getCoordinate(point));
         }
 
         board.current.suspendUpdate();
 
         // first try to add new subject labels if there's space
-        for (const point of prevPoints.current) {
-            if (prevSubjectsWithLabels.current.includes(point)) continue;
+        for (const point of points.current) {
+            if (pointsWithLabels.current.includes(point)) continue;
 
             const coordinate = getCoordinate(point);
 
-            if (prevSubjectsWithLabels.current.length < 1 || isFreeSpace(coordinate, occupiedCoordinates)) {
+            if (pointsWithLabels.current.length < 1 || isFreeSpace(coordinate, occupiedCoordinates)) {
                 point.setAttribute({ withLabel: true });
-                prevSubjectsWithLabels.current.unshift(point);
+                pointsWithLabels.current.unshift(point);
                 occupiedCoordinates.push(coordinate);
             } else {
                 if (point.hasLabel) point.setAttribute({ withLabel: false });
@@ -299,7 +322,7 @@ export default function ScalingGraph({ subjects, year }: ScalingGraphProps) {
         }
 
         // then delete subject labels if it's too full
-        for (const point of prevSubjectsWithLabels.current) {
+        for (const point of pointsWithLabels.current) {
             const coordinate = getCoordinate(point);
             const otherCoordinates = occupiedCoordinates.filter((coord) => { 
                 return coord[0] !== coordinate[0] 
@@ -310,7 +333,7 @@ export default function ScalingGraph({ subjects, year }: ScalingGraphProps) {
             if (!isFreeSpace(coordinate, otherCoordinates)) {
                 point.setAttribute({ withLabel: false });
                 occupiedCoordinates = otherCoordinates;
-                prevSubjectsWithLabels.current = prevSubjectsWithLabels.current.filter(
+                pointsWithLabels.current = pointsWithLabels.current.filter(
                     (subject) => { return subject !== point }
                 );
             }
@@ -337,9 +360,10 @@ export default function ScalingGraph({ subjects, year }: ScalingGraphProps) {
                 touch: 0,
                 mouse: 0,
                 pen: 0
-            }
+            },
+            cssClass: CSS_CLASS_NAMES.MOUSE_COORDINATE
         });
-        mouseCoordinates.label.setAttribute({ offset: [7, 13], cssClass: "mouseCoordinates" });
+        mouseCoordinates.label.setAttribute({ offset: [7, 13], cssClass: CSS_CLASS_NAMES.MOUSE_COORDINATE_LABEL });
 
         // update position of mouse coordinates
         let previousCoordinates = [0, 0];   // tracks whether there has been a change in coordinates (only update on change for optimisation)
@@ -396,14 +420,15 @@ export default function ScalingGraph({ subjects, year }: ScalingGraphProps) {
     function clearPoints() {
         // Clear the points which show the raw score but not the functions. Useful if only the raw score changes and not the subjects
 
-        prevPoints.current = [];
-        prevSubjectsWithLabels.current = [];
+        points.current = [];
+        pointsWithLabels.current = [];
 
         const objectsList = [...board.current.objectsList] as JXGObject[];
         for (let index = objectsList.length - 1; index >= 0; index -= 1) {
             const object = objectsList[index];
-            if ((object.elType === "point" && object.Xjc !== null))
+            if ((object.visProp.cssclass === CSS_CLASS_NAMES.SUBJECT_SCORE)) {
                 board.current.removeObject(object.id);
+            }
         }
     }
 
@@ -430,6 +455,7 @@ export default function ScalingGraph({ subjects, year }: ScalingGraphProps) {
     
         board.current.unsuspendUpdate();
         legend.current.unsuspendUpdate();
+        console.log(board.current.objectsList);
     });
 
     const maxWidth = document.querySelector('.section-inner').getBoundingClientRect().width;
