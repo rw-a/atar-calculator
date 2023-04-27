@@ -2,7 +2,7 @@ import './../css/scaling.css';
 import { useEffect, useRef } from 'react';
 import JXG, { COORDS_BY_SCREEN } from 'jsxgraph';
 
-import { SubjectCode, Subjects, Score } from '../types';
+import { SubjectCode, Subjects } from '../types';
 import { calculateScaledScore } from '../utility/atar_calculations';
 
 import SUBJECTS from '../data/all_subjects.json';
@@ -20,6 +20,7 @@ const COLORS = [
 ];
 
 const BOUNDING_BOX = [-9, 103, 113, -6]; // min x, max y, max x, min y
+const BOUNDING_BOX_LEGEND = [0, 120, 20, 0];
 
 const LEGEND_WIDTH = 110;
 
@@ -69,7 +70,7 @@ export default function ScalingGraph({ subjects, year }: ScalingGraphProps) {
             axis: true,
             maxFrameRate: 30,
             boundingbox: BOUNDING_BOX,
-            maxboundingbox: [-100, 200, 200, -100],
+            maxBoundingBox: [-100, 200, 200, -100],
             showCopyright: false,
             showInfobox: false,
             // showNavigation: false,
@@ -106,7 +107,7 @@ export default function ScalingGraph({ subjects, year }: ScalingGraphProps) {
         });
 
         legend.current = JXG.JSXGraph.initBoard("jsxlegend", {
-            boundingbox: [0, 120, 20, 0], // min x, max y, max x, min y
+            boundingbox: BOUNDING_BOX_LEGEND,
             maxFrameRate: 1,
             registerEvents: false,
             showCopyright: false,
@@ -145,12 +146,12 @@ export default function ScalingGraph({ subjects, year }: ScalingGraphProps) {
         const longestSubjectName = subjectsNames.reduce((subject1, subject2) => { return (subject1.length > subject2.length) ? subject1 : subject2 });
         const numLines = Math.ceil(longestSubjectName.length / 12);
         const rowHeight = numLines * 9 + 10;
+        const coordRatio = legend.current.canvasHeight / BOUNDING_BOX_LEGEND[1] // number of pixels per 1 unit on graph
 
-        const newLegend = legend.current.create('legend', [0, 100], { labels: subjectsNames, colors: COLORS, rowHeight: rowHeight });
-
-        const legendHeight = newLegend.lines.at(-1).getTextAnchor().scrCoords.at(-1) + rowHeight + maxWidth / 30;
-        document.getElementById('jsxlegend').style.top = `${graphHeight - legendHeight}px`;
-        legend.current.resizeContainer(LEGEND_WIDTH, legendHeight, false, true);
+        legend.current.create('legend', 
+            [0, rowHeight * subjectCodes.length / coordRatio + 6], // min y and max y 
+            { labels: subjectsNames, colors: COLORS, rowHeight: rowHeight }
+        );
     }
 
     function addZoomLevelListeners() {
@@ -425,7 +426,7 @@ export default function ScalingGraph({ subjects, year }: ScalingGraphProps) {
                     withLabel: true, 
                     cssClass: CSS_CLASS_NAMES.SUBJECT_SCORE 
                 }) as JXG.Point;
-                point.hasPoint = function () { return false; }; // disable highlighting
+                point.hasPoint = function (x, y) { return false; }; // disable highlighting
                 points.current.push(point);
                 
                 // Create subject name label
@@ -468,7 +469,7 @@ export default function ScalingGraph({ subjects, year }: ScalingGraphProps) {
     return (
         <div style={{ position: "relative" }}>
             <div id="jsxgraph" style={{ width: maxWidth, height: graphHeight }}></div>
-            <div id="jsxlegend" style={{ position: "absolute", top: graphHeight - 250 /* estimate, will be accurately calculated later */, right: 0, width: LEGEND_WIDTH, height: graphHeight, zIndex: -1 }}></div>
+            <div id="jsxlegend" style={{ position: "absolute", bottom: 0 /* estimate, will be accurately calculated later */, right: 0, width: LEGEND_WIDTH, height: graphHeight, zIndex: -1 }}></div>
         </div>
     );
 }
