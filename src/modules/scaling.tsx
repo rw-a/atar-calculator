@@ -296,20 +296,29 @@ export default function ScalingGraph({ subjects, year }: ScalingGraphProps) {
         let previouslyVisible = false;      // tracks whether coordinates were previously shown (for optimisation)
 
         function updateMouseCoordinates() {
-            if (subjectCodes.length < 1) return false;
+            // WARNING: for some reason, if this function accesses the props, they are out of date
+            // so must use the values from useRef
 
-            const coords = new JXG.Coords(COORDS_BY_SCREEN, board.current.getMousePosition(), board.current).usrCoords.slice(1);
-            let nearestX = Math.round(coords[0]);
+            if (prevSubjects.current.length < 1) {
+                if (previouslyVisible) {
+                    mouseCoordinates.hideElement();
+                    previouslyVisible = false;
+                }
+                return false;
+            }
+
+            const mouseCoords = new JXG.Coords(COORDS_BY_SCREEN, board.current.getMousePosition(), board.current).usrCoords.slice(1);
+            let nearestX = Math.round(mouseCoords[0]);
 
             if (nearestX >= -1 && nearestX <= 101) {
                 // adds leeway so you don't have to get exactly 0 or 100
                 if (nearestX <= 0) nearestX = 0;
                 if (nearestX >= 100) nearestX = 100;
 
-                // pick the closest subject to select
-                const closestSubject = subjectCodes.reduce((subjectCode1, subjectCode2) => {  // get the subject with raw score closest to the cursor
-                    return (Math.abs(calculateScaledScore(nearestX, subjectCode1, prevYear.current) - coords[1]) 
-                        < Math.abs(calculateScaledScore(nearestX, subjectCode2, prevYear.current) - coords[1])) 
+                // pick the subject closest to the mouse
+                const closestSubject = prevSubjects.current.reduce((subjectCode1, subjectCode2) => { 
+                    return (Math.abs(calculateScaledScore(nearestX, subjectCode1, prevYear.current) - mouseCoords[1]) 
+                        < Math.abs(calculateScaledScore(nearestX, subjectCode2, prevYear.current) - mouseCoords[1])) 
                         ? subjectCode1 : subjectCode2;
                 })
                 const nearestY = calculateScaledScore(nearestX, closestSubject, prevYear.current);
