@@ -474,9 +474,15 @@ export default function ScalingGraph({ subjects, year }: ScalingGraphProps) {
         console.log(board.current.objectsList);
     });
 
-    const maxWidth = document.querySelector('.section-inner').getBoundingClientRect().width;
-    const graphHeight = Math.abs(   // ensures that 1x1 aspect ratio is maintained
-        maxWidth * (BOUNDING_BOX[1] - BOUNDING_BOX[3]) / (BOUNDING_BOX[2] - BOUNDING_BOX[0]));
+    let graphHeight: number;
+    const innerSectionElement = document.querySelector('.section-inner');
+    if (innerSectionElement) {
+        const maxWidth = innerSectionElement.getBoundingClientRect().width;
+        graphHeight = Math.abs(   // ensures that 1x1 aspect ratio is maintained
+            maxWidth * (BOUNDING_BOX[1] - BOUNDING_BOX[3]) / (BOUNDING_BOX[2] - BOUNDING_BOX[0]));
+    } else {
+        graphHeight = 500;
+    }
 
     return (
         <div style={{ position: "relative" }}>
