@@ -36,8 +36,11 @@ input {
     margin-right: 1px;
 }
 
-.DeleteSubject:hover {
-    background-image: url("../assets/delete_filled.svg");
+
+@media (hover: hover) {
+    .DeleteSubject:hover {
+        background-image: url("../assets/delete_filled.svg");
+    }
 }
 
 .subject-selector__input-container {
