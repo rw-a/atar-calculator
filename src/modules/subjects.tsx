@@ -41,10 +41,11 @@ function SubjectName({name, year}: SubjectNameProps) {
 
 interface SubjectRawScoreProps {
 	score: Score,
+	code: SubjectCode,
 	onScoreChange: ((score: Score) => void);
 }
   
-function SubjectRawScore({score, onScoreChange}: SubjectRawScoreProps) {
+function SubjectRawScore({score, code, onScoreChange}: SubjectRawScoreProps) {
 	function handleScoreChange(event: React.FormEvent<HTMLInputElement> & {target: HTMLInputElement}) {
 		if (!event.target) return;
 
@@ -67,7 +68,7 @@ function SubjectRawScore({score, onScoreChange}: SubjectRawScoreProps) {
 			type="number" 
 			min="0" 
 			max="100"
-			title="Subject Raw Score Input"
+			title={`${SUBJECTS[code]} Raw Score`}
 			value={score} 
 			onChange={handleScoreChange}>
 		</input>
@@ -96,7 +97,7 @@ function SubjectRow({code, year, score, onScoreChange, onSubjectDelete}: Subject
 		<li className="SubjectRow">
 			<span className="DeleteSubject" onClick={handleSubjectDelete}></span>
 			<SubjectName name={SUBJECTS[code]} year={year}/>
-			<SubjectRawScore score={score} onScoreChange={handleScoreChange} />
+			<SubjectRawScore code={code} score={score} onScoreChange={handleScoreChange} />
 		</li>
 	);
 }
