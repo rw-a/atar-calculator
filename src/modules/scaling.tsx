@@ -406,7 +406,7 @@ export default function ScalingGraph({ subjects, year }: ScalingGraphProps) {
             const a = scalingData[subjectCode]["a"];
             const b = scalingData[subjectCode]["b"];
 
-            const subjectFunction = board.current.create('functiongraph', [function (x: number) {
+            board.current.create('functiongraph', [function (x: number) {
                 return (100 / (1 + Math.exp(-a * (x - b))));}, 0, 100], 
                 { 
                     strokeColor: COLORS[subjectIndex % COLORS.length], // modulus ensures colours repeat if exhausted
