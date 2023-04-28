@@ -2,7 +2,7 @@ div.JXGtext {
     line-height: 0.85rem;
 }
 
-@media only screen and (max-width: 400px) {
+@media only screen and (max-width: 576px) {
     .mobileHidden {
         display: none;
     }
