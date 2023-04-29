@@ -135,7 +135,9 @@ export default function Calculator() {
 				<p className='text-small fst-italic me-1 mb-2 mb-md-1'>
 					ATAR Calculator and Subject Scaling Grapher for Queensland (QCE system). 
 					Neither QTAC nor QCAA endorse or are affiliated with this website. 
-					Scaling changes every year, so use at your own risk!
+					Scaling changes every year, so use at your own risk! 
+					If you would like to contribute to this calculator, 
+					please visit <a href="https://forms.gle/Hwat7MJtwU35q1Gj8">here.</a>
 				</p>
 				<YearSelector onYearSelect={handleYearSelect}></YearSelector>
 			</div>	
