@@ -19,6 +19,10 @@ const COLORS = [
     'magenta'
 ];
 
+const JSX_GRAPH_ELEMENT_ID = "jsxgraph";
+const JSX_LEGEND_ELEMENT_ID = "jsxlegend";
+const JSX_NAVBAR_ELEMENT_ID = "jsxgraph_navigationbar";
+
 const BOUNDING_BOX = [-9, 103, 113, -6]; // min x, max y, max x, min y
 const BOUNDING_BOX_LEGEND = [0, 120, 20, 0];
 
@@ -179,7 +183,7 @@ export default function ScalingGraph({ subjects, year }: ScalingGraphProps) {
 
         // initially hide navbar if mobile
         if (isMobile) {
-            toggleElement('jsxgraph_navigationbar', Infinity);  // always hides navbar
+            toggleElement(JSX_NAVBAR_ELEMENT_ID, Infinity);  // always hides navbar
         }
 
         // show/hide labels and/or legend depending on zoom level
@@ -200,16 +204,16 @@ export default function ScalingGraph({ subjects, year }: ScalingGraphProps) {
                         && boundingBoxRounded[1] === BOUNDING_BOX[1] 
                         && boundingBoxRounded[2] === BOUNDING_BOX[2] 
                         && boundingBoxRounded[3] === BOUNDING_BOX[3]) {
-                        toggleElement('jsxgraph_navigationbar', Infinity);  // always hides navbar
+                        toggleElement(JSX_NAVBAR_ELEMENT_ID, Infinity);  // always hides navbar
                     } else {
-                        toggleElement('jsxgraph_navigationbar', zoomFactor);
+                        toggleElement(JSX_NAVBAR_ELEMENT_ID, zoomFactor);
                     }
                 }
 
                 // show/hide elements they cross the zoom threshold
                 if (zoomFactorChange(zoomFactor, previousZoomFactor, MOBILE_HIDE_ELEMENTS_ZOOM_THRESHOLD)) {
-                    toggleElement('jsxlegend', zoomFactor);
-                    toggleElement('jsxgraph_navigationbar', zoomFactor);
+                    toggleElement(JSX_LEGEND_ELEMENT_ID, zoomFactor);
+                    toggleElement(JSX_NAVBAR_ELEMENT_ID, zoomFactor);
                 }
 
                 previousZoomFactor = zoomFactor;
@@ -512,8 +516,8 @@ export default function ScalingGraph({ subjects, year }: ScalingGraphProps) {
 
     return (
         <div style={{ position: "relative" }}>
-            <div id="jsxgraph" style={{ width: "100%", height: graphHeight}}></div>
-            <div id="jsxlegend" style={{ 
+            <div id={JSX_GRAPH_ELEMENT_ID} style={{ width: "100%", height: graphHeight}}></div>
+            <div id={JSX_LEGEND_ELEMENT_ID} style={{ 
                 position: "absolute", 
                 bottom: 0, 
                 right: 0, 
