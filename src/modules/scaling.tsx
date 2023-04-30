@@ -201,7 +201,7 @@ export default function ScalingGraph({ subjects, year }: ScalingGraphProps) {
                     // show/hide elements they cross the zoom threshold
                     if (zoomFactorChange(zoomFactor, previousZoomFactor, MOBILE_HIDE_ELEMENTS_ZOOM_THRESHOLD)) {
                         toggleElement(JSX_LEGEND_ELEMENT_ID, zoomFactor);
-                        toggleElement(JSX_NAVBAR_ELEMENT_ID, zoomFactor);
+                        // toggleElement(JSX_NAVBAR_ELEMENT_ID, zoomFactor);
                     }
                 }
 
