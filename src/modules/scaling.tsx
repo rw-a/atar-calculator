@@ -186,34 +186,40 @@ export default function ScalingGraph({ subjects, year }: ScalingGraphProps) {
             toggleElement(JSX_NAVBAR_ELEMENT_ID, Infinity);  // always hides navbar
         }
 
-        // show/hide labels and/or legend depending on zoom level
         let previousZoomFactor = 0;   // set to zero so there is always a change in zoom at the start
+        let navbarVisible = false;
         board.current.on('boundingbox', () => {
             autoHideSubjectLabels();
 
             if (isMobile) {
+                // show/hide labels and/or legend depending on zoom level
                 const boundingBox = board.current.getBoundingBox();
-                const boundingBoxRounded = boundingBox.map((coordinate) => Math.round(coordinate));
-
                 const zoomFactor = (BOUNDING_BOX[2] - BOUNDING_BOX[0]) / (boundingBox[2] - boundingBox[0]);
-                if (zoomFactor.toFixed(3) === previousZoomFactor.toFixed(3)) return;  // only update if the zoom level changes (rounded due to imprecision)
 
-                // show/hide elements once they are no longer on the default zoom
-                if (zoomFactorChange(zoomFactor, previousZoomFactor, 1.001)) {
-                    if (boundingBoxRounded[0] === BOUNDING_BOX[0] 
-                        && boundingBoxRounded[1] === BOUNDING_BOX[1] 
-                        && boundingBoxRounded[2] === BOUNDING_BOX[2] 
-                        && boundingBoxRounded[3] === BOUNDING_BOX[3]) {
-                        toggleElement(JSX_NAVBAR_ELEMENT_ID, Infinity);  // always hides navbar
-                    } else {
+                // only update if the zoom level changes (rounded due to imprecision)
+                if (zoomFactor.toFixed(3) !== previousZoomFactor.toFixed(3)) {
+                    // show/hide elements they cross the zoom threshold
+                    if (zoomFactorChange(zoomFactor, previousZoomFactor, MOBILE_HIDE_ELEMENTS_ZOOM_THRESHOLD)) {
+                        toggleElement(JSX_LEGEND_ELEMENT_ID, zoomFactor);
                         toggleElement(JSX_NAVBAR_ELEMENT_ID, zoomFactor);
                     }
                 }
 
-                // show/hide elements they cross the zoom threshold
-                if (zoomFactorChange(zoomFactor, previousZoomFactor, MOBILE_HIDE_ELEMENTS_ZOOM_THRESHOLD)) {
-                    toggleElement(JSX_LEGEND_ELEMENT_ID, zoomFactor);
-                    toggleElement(JSX_NAVBAR_ELEMENT_ID, zoomFactor);
+                // auto hide navbar if its hidden by x-axis
+                const axisCoords: number[] = board.current.defaultAxes.x.point1.coords.scrCoords;  // returns tuple of 3: (0, x, y)
+                if (axisCoords[2] < graphHeight && axisCoords[2] > graphHeight - 30) {
+                    if (navbarVisible) {
+                        toggleElement(JSX_NAVBAR_ELEMENT_ID, Infinity);  // always hides navbar
+                        navbarVisible = false;
+                    }
+                } else {
+                    if (!navbarVisible) {
+                        // check first anyways for optimisation to prevent dom query
+                        if (zoomFactor < MOBILE_HIDE_ELEMENTS_ZOOM_THRESHOLD) {
+                            toggleElement(JSX_NAVBAR_ELEMENT_ID, zoomFactor);
+                        }
+                        navbarVisible = true;
+                    }
                 }
 
                 previousZoomFactor = zoomFactor;
