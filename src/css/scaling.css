@@ -3,7 +3,7 @@ div.JXGtext {
 }
 
 @media only screen and (max-width: 576px) {
-    #jsxlegend {
+    #jsxlegend, #jsxgraph_navigationbar {
         opacity: 1;
         transition: opacity 0.5s;
     }

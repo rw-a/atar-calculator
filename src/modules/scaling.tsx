@@ -25,7 +25,7 @@ const BOUNDING_BOX_LEGEND = [0, 120, 20, 0];
 const LEGEND_WIDTH = 110;
 
 const SUBJECT_LABELS_ZOOM_THRESHOLD = 1.7;
-const MOBILE_LEGEND_ZOOM_THRESHOLD = 10;
+const MOBILE_HIDE_ELEMENTS_ZOOM_THRESHOLD = 8;
 
 // Every JXG object you create should have a cssClass attribute value (from below)
 // This ensures that they can be properly deleted when clearing the board
@@ -164,30 +164,56 @@ export default function ScalingGraph({ subjects, year }: ScalingGraphProps) {
             }
         }
 
+        function toggleElement(elementID: string, zoomFactor: number) {
+            const element = document.getElementById(elementID);
+                if (element) {
+                    if (zoomFactor >= MOBILE_HIDE_ELEMENTS_ZOOM_THRESHOLD) {
+                        element.classList.add('mobileHidden');
+                    } else {
+                        element.classList.remove('mobileHidden');
+                    }
+                }
+        }
+
         pointsWithLabels.current = [];
+
+        // initially hide navbar if mobile
+        if (isMobile) {
+            toggleElement('jsxgraph_navigationbar', Infinity);  // always hides navbar
+        }
 
         // show/hide labels and/or legend depending on zoom level
         let previousZoomFactor = 0;   // set to zero so there is always a change in zoom at the start
         board.current.on('boundingbox', () => {
-            const boundingBox = board.current.getBoundingBox();
-            const zoomFactor = (BOUNDING_BOX[2] - BOUNDING_BOX[0]) / (boundingBox[2] - boundingBox[0]);
-            if (zoomFactor.toFixed(3) === previousZoomFactor.toFixed(3)) return;  // only update if the zoom level changes (rounded due to imprecision)
-
             autoHideSubjectLabels();
 
-            // show/hide legend once zoomed in enough (only for mobile)
-            if (zoomFactorChange(zoomFactor, previousZoomFactor, MOBILE_LEGEND_ZOOM_THRESHOLD)) {
-                const legendElement = document.getElementById('jsxlegend');
-                if (legendElement) {
-                    if (zoomFactor >= MOBILE_LEGEND_ZOOM_THRESHOLD) {
-                        legendElement.classList.add('mobileHidden');
+            if (isMobile) {
+                const boundingBox = board.current.getBoundingBox();
+                const boundingBoxRounded = boundingBox.map((coordinate) => Math.round(coordinate));
+
+                const zoomFactor = (BOUNDING_BOX[2] - BOUNDING_BOX[0]) / (boundingBox[2] - boundingBox[0]);
+                if (zoomFactor.toFixed(3) === previousZoomFactor.toFixed(3)) return;  // only update if the zoom level changes (rounded due to imprecision)
+
+                // show/hide elements once they are no longer on the default zoom
+                if (zoomFactorChange(zoomFactor, previousZoomFactor, 1.001)) {
+                    if (boundingBoxRounded[0] === BOUNDING_BOX[0] 
+                        && boundingBoxRounded[1] === BOUNDING_BOX[1] 
+                        && boundingBoxRounded[2] === BOUNDING_BOX[2] 
+                        && boundingBoxRounded[3] === BOUNDING_BOX[3]) {
+                        toggleElement('jsxgraph_navigationbar', Infinity);  // always hides navbar
                     } else {
-                        legendElement.classList.remove('mobileHidden');
+                        toggleElement('jsxgraph_navigationbar', zoomFactor);
                     }
                 }
-            }
 
-            previousZoomFactor = zoomFactor;
+                // show/hide elements they cross the zoom threshold
+                if (zoomFactorChange(zoomFactor, previousZoomFactor, MOBILE_HIDE_ELEMENTS_ZOOM_THRESHOLD)) {
+                    toggleElement('jsxlegend', zoomFactor);
+                    toggleElement('jsxgraph_navigationbar', zoomFactor);
+                }
+
+                previousZoomFactor = zoomFactor;
+            }
         });
     }
 
@@ -473,14 +499,15 @@ export default function ScalingGraph({ subjects, year }: ScalingGraphProps) {
         legend.current.unsuspendUpdate();
     });
 
-    let graphHeight: number;
+    let graphHeight = 500;
+    let isMobile = false;
+
     const innerSectionElement = document.querySelector('.section-inner');
     if (innerSectionElement) {
         const maxWidth = innerSectionElement.getBoundingClientRect().width;
         graphHeight = Math.abs(   // ensures that 1x1 aspect ratio is maintained
             maxWidth * (BOUNDING_BOX[1] - BOUNDING_BOX[3]) / (BOUNDING_BOX[2] - BOUNDING_BOX[0]));
-    } else {
-        graphHeight = 500;
+        isMobile = maxWidth < 576;
     }
 
     return (
