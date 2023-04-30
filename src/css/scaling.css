@@ -3,7 +3,12 @@ div.JXGtext {
 }
 
 @media only screen and (max-width: 576px) {
+    #jsxlegend {
+        opacity: 1;
+        transition: opacity 0.5s;
+    }
     .mobileHidden {
-        display: none;
+        opacity: 0 !important;
+        transition: opacity 0.5s;
     }
 }
