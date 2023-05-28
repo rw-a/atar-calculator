@@ -15,6 +15,7 @@ import ResultsTable from './modules/results';
 import subjectScalingTabImg from './assets/subject_scaling_tab.svg';
 import resultsTabImg from './assets/results_tab.svg';
 
+const LOCAL_STORAGE_NAME = "atarCalculatorSubjects";
 
 const ScalingGraph = React.lazy(() => import('./modules/scaling'));
 
@@ -82,7 +83,7 @@ function Section({subjects, year, defaultTab, className}: SectionProps) {
 export default function Calculator() {
 	const [year, setYear] = useState(2022);
 	
-	const storedSubjects = localStorage.getItem("subjects");
+	const storedSubjects = localStorage.getItem(LOCAL_STORAGE_NAME);
 	const prevSubjects = (storedSubjects) ? JSON.parse(storedSubjects) : {} as Subjects;
 	const [savedSubjects, setSavedSubjects] = useState(prevSubjects);
 	const [subjects, setSubjects] = useState(prevSubjects);
@@ -107,7 +108,7 @@ export default function Calculator() {
 	}
 
 	useEffect(() => {
-		localStorage.setItem("subjects", JSON.stringify(savedSubjects));
+		localStorage.setItem(LOCAL_STORAGE_NAME, JSON.stringify(savedSubjects));
 	}, [savedSubjects]);
 
 	function handleSubjectsSave() {
@@ -135,9 +136,7 @@ export default function Calculator() {
 				<p className='text-small fst-italic me-1 mb-2 mb-md-1'>
 					ATAR Calculator and Subject Scaling Grapher for Queensland (QCE system). 
 					Neither QTAC nor QCAA endorse or are affiliated with this website. 
-					Scaling changes every year, so use at your own risk! 
-					If you would like to contribute to this calculator, 
-					please visit <a href="https://forms.gle/Hwat7MJtwU35q1Gj8">here.</a>
+					Scaling changes every year, so use at your own risk!
 				</p>
 				<YearSelector onYearSelect={handleYearSelect}></YearSelector>
 			</div>	
