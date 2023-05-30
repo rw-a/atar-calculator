@@ -6,6 +6,7 @@ import ToggleButtonGroup from 'react-bootstrap/ToggleButtonGroup';
 import Nav from 'react-bootstrap/Nav';
 import NavDropdown from 'react-bootstrap/NavDropdown';
 import Image from 'react-bootstrap/Image';
+import Alert from 'react-bootstrap/Alert';
 
 import { SubjectCode, Subjects, Score, Tabs } from './types';
 import { getSubjects } from './utility/data';
@@ -132,6 +133,9 @@ export default function Calculator() {
 	return (
 		<div id="content">
 			<h2>ATAR Calculator QLD/QCE</h2>
+			<Alert variant='primary' className='text-small p-2 m-0'>
+				The <Alert.Link href='/externals-predictor'>External Exam Score Predictor</Alert.Link> is now out!
+			</Alert>
 			<div className="d-flex flex-column flex-md-row justify-content-between my-2">
 				<p className='text-small fst-italic me-1 mb-2 mb-md-1'>
 					ATAR Calculator and Subject Scaling Grapher for Queensland (QCE system). 
