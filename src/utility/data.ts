@@ -64,7 +64,7 @@ export function estimateAtarModel(tea: number, year: number) {
         case 2021:
             return -0.0000971137 * (tea ** 2) + 0.251785 * tea - 0.000701489;
         case 2022:
-            return -0.0000866052 * (tea ** 2) + 0.247 * tea + 0.00542687;
+            return -0.0000893535 * (tea ** 2) + 0.248245 * tea - 0.0104858;
         default:
             console.error(`Invalid year at predictAtarModel(). Year=${year}`);
             return 0 as never;
